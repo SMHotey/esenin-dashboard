@@ -1,6 +1,7 @@
 import { readFile, writeFile, mkdir, cp, rm, readdir } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import { join, dirname } from 'node:path';
+import { createHash } from 'node:crypto';
 
 const ROOT = process.cwd();
 const DIST = join(ROOT, 'dist');
@@ -8,6 +9,11 @@ const config = existsSync(join(ROOT, 'site.config.json'))
   ? JSON.parse(await readFile(join(ROOT, 'site.config.json'), 'utf8'))
   : { siteUrl: 'https://example.org' };
 const SITE = String(config.siteUrl || 'https://example.org').replace(/\/$/, '');
+const assetVersion = createHash('sha1')
+  .update(await readFile('src/styles.css'))
+  .update(await readFile('src/app.js'))
+  .digest('hex')
+  .slice(0, 8);
 
 const works = JSON.parse(await readFile('data/works.json', 'utf8'));
 const people = JSON.parse(await readFile('data/people.json', 'utf8'));
@@ -118,7 +124,7 @@ function layout({ title, description, content, active = '', bodyClass = '', page
 <title>${esc(title)}${title.includes('Есенин') ? '' : ' — Сергей Есенин'}</title>
 <meta name="description" content="${esc(description)}">
 <link rel="preload" href="/img/yesenin.jpg" as="image">
-<link rel="stylesheet" href="/styles.css">
+<link rel="stylesheet" href="/styles.css?v=${assetVersion}">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <meta property="og:type" content="website">
 <meta property="og:title" content="${esc(title)}">
@@ -192,7 +198,7 @@ ${content}
     <div class="search-results"></div>
   </div>
 </div>
-<script src="/app.js" defer></script>
+<script src="/app.js?v=${assetVersion}" defer></script>
 </body>
 </html>`;
 }
