@@ -1,8 +1,12 @@
 node_modules/
 dist/
 data/raw-cache.json
+data/wiki-biografiya.txt
 .playwright/
+.netlify/
+.vercel/
+.idea/
+.vscode/
 *.log
 .DS_Store
 Thumbs.db
-data/wiki-biografiya.txt

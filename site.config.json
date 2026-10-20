@@ -1,5 +1,73 @@
 {
   "siteUrl": "https://esenin.example",
-  "title": "Сергей Есенин",
-  "years": "1895—1925"
+  "updated": "2026-10-21",
+  "ogImage": "/img/og.jpg",
+  "textsPublicDomain": true,
+  "locale": "ru_RU",
+  "lang": "ru",
+  "author": {
+    "firstName": "Сергей",
+    "lastName": "Есенин",
+    "name": "Сергей Есенин",
+    "fullName": "Сергей Александрович Есенин",
+    "genitive": "Есенина",
+    "prepositional": "Есенине",
+    "role": "поэт",
+    "roleGenitive": "поэта",
+    "years": "1895—1925",
+    "birthDate": "1895-10-03",
+    "deathDate": "1925-12-28",
+    "birthPlace": "Константиново, Рязанская губерния",
+    "deathPlace": "Ленинград",
+    "shortDescription": "Русский поэт",
+    "lead": "Русский поэт, в котором деревенская Россия встретилась с революцией, имажинизмом и большой трагедией XX века.",
+    "portrait": "/img/yesenin.jpg",
+    "portraitAlt": "Портрет Сергея Есенина",
+    "portraitCaption": "Сергей Есенин. Фотография до 1925 года.<br>Wikimedia Commons, Public Domain",
+    "footerAbout": "Дашборд-лендинг о Сергее Есенине: проверенная биография, люди вокруг поэта, полная библиотека произведений и научная литература.",
+    "footerNote": "Материалы сверяются с академическими изданиями. Спорные вопросы вынесены в раздел «Версии».",
+    "copyright": "© 2026 Проект о Сергее Есенине. Тексты произведений — общественное достояние.",
+    "licenseNote": "Тексты произведений — общественное достояние. Фотографии — Wikimedia Commons (PD). Библиографические описания — в информационных целях."
+  },
+  "peopleCategories": {
+    "family": "Семья",
+    "relatives": "Родственники",
+    "friends": "Друзья",
+    "wives": "Жёны",
+    "women": "Женщины",
+    "children": "Дети"
+  },
+  "home": {
+    "featuredWorks": ["Берёза", "Черёмуха", "Письмо к женщине", "Анна Снегина", "Чёрный человек", "Спит ковыль. Равнина дорогая"],
+    "featuredPeople": ["alexander-nikitich", "tatyana-fyodorovna", "zinaida-raikh", "isadora-duncan", "sofia-tolstaya", "blok", "mariengof", "benislavskaya"],
+    "keyEvents": ["1895-10-03", "1909", "1914", "1915", "1916", "1917-07-30", "1922-05-02", "1925-12-28"]
+  },
+  "affiliate": {
+    "enabled": true,
+    "disclosure": "Материал содержит рекламу. Ссылки на книги — партнёрские: если вы купите книгу по такой ссылке, проект может получить вознаграждение от магазина. Цена для покупателя не меняется; наличие, цена и формат уточняются на стороне магазина.",
+    "stores": {
+      "litres": {
+        "label": "ЛитРес",
+        "tagParam": "lfrom",
+        "tag": "",
+        "search": "https://www.litres.ru/search/?q={q}"
+      },
+      "ozon": {
+        "label": "Ozon",
+        "tagParam": "",
+        "tag": "",
+        "search": "https://www.ozon.ru/search/?text={q}"
+      },
+      "labirint": {
+        "label": "Лабиринт",
+        "tagParam": "",
+        "tag": "",
+        "search": "https://www.labirint.ru/search/?q={q}"
+      }
+    }
+  },
+  "analytics": {
+    "yandexMetrika": "",
+    "googleAnalytics": ""
+  }
 }

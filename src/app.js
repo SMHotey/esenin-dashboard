@@ -1,6 +1,6 @@
 (() => {
   const root = document.documentElement;
-  const THEME_KEY = 'esenin-theme';
+  const THEME_KEY = 'site-theme';
 
   function applyTheme(theme) {
     root.dataset.theme = theme;
@@ -24,29 +24,47 @@
       applyTheme(next);
     }
     const nav = e.target.closest('[data-nav-toggle]');
-    if (nav) document.querySelector('.main-nav')?.classList.toggle('open');
+    if (nav) {
+      const menu = document.querySelector('.main-nav');
+      const open = menu?.classList.toggle('open');
+      nav.setAttribute('aria-expanded', String(Boolean(open)));
+    }
+    if (e.target.closest('.main-nav a')) {
+      document.querySelector('.main-nav')?.classList.remove('open');
+      document.querySelector('[data-nav-toggle]')?.setAttribute('aria-expanded', 'false');
+    }
   });
 
   // ---------- search ----------
   const dialog = document.querySelector('[data-search-dialog]');
   let searchData = null;
   let activeIndex = 0;
+  let lastFocus = null;
 
-  async function openSearch() {
+  async function openSearch(query = '') {
     if (!dialog) return;
+    lastFocus = document.activeElement;
     dialog.setAttribute('open', '');
+    document.body.style.overflow = 'hidden';
     const input = dialog.querySelector('input');
-    input.value = '';
+    input.value = query;
     input.focus();
     if (!searchData) {
-      const res = await fetch(dialog.dataset.searchSrc || '/search.json');
-      searchData = await res.json();
+      try {
+        const res = await fetch(dialog.dataset.searchSrc || '/search.json');
+        searchData = await res.json();
+      } catch {
+        searchData = [];
+      }
     }
-    renderResults('');
+    renderResults(query);
   }
 
   function closeSearch() {
-    dialog?.removeAttribute('open');
+    if (!dialog?.hasAttribute('open')) return;
+    dialog.removeAttribute('open');
+    document.body.style.overflow = '';
+    if (lastFocus && typeof lastFocus.focus === 'function') lastFocus.focus();
   }
 
   function renderResults(query) {
@@ -88,10 +106,28 @@
     if (e.target === dialog) closeSearch();
   });
 
+  document.addEventListener('submit', (e) => {
+    const form = e.target.closest('[data-search-form]');
+    if (!form) return;
+    e.preventDefault();
+    openSearch(form.querySelector('input')?.value || '');
+  });
+
   document.addEventListener('keydown', (e) => {
     if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') { e.preventDefault(); openSearch(); }
-    if (e.key === 'Escape') closeSearch();
     if (!dialog?.hasAttribute('open')) return;
+    if (e.key === 'Escape') { closeSearch(); return; }
+
+    if (e.key === 'Tab') {
+      const focusable = [...dialog.querySelectorAll('input, button, a[href]')]
+        .filter((el) => !el.disabled && el.offsetParent !== null);
+      if (!focusable.length) return;
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+      return;
+    }
 
     const results = [...dialog.querySelectorAll('.search-result')];
     if (e.key === 'ArrowDown') {

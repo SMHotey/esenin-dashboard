@@ -5,33 +5,76 @@ import { createHash } from 'node:crypto';
 
 const ROOT = process.cwd();
 const DIST = join(ROOT, 'dist');
-const config = existsSync(join(ROOT, 'site.config.json'))
-  ? JSON.parse(await readFile(join(ROOT, 'site.config.json'), 'utf8'))
-  : { siteUrl: 'https://example.org' };
-const SITE = String(config.siteUrl || 'https://example.org').replace(/\/$/, '');
-const assetVersion = createHash('sha1')
-  .update(await readFile('src/styles.css'))
-  .update(await readFile('src/app.js'))
-  .digest('hex')
-  .slice(0, 8);
 
-const works = JSON.parse(await readFile('data/works.json', 'utf8'));
-const people = JSON.parse(await readFile('data/people.json', 'utf8'));
-const timeline = JSON.parse(await readFile('data/timeline.json', 'utf8'));
-const research = JSON.parse(await readFile('data/research.json', 'utf8'));
-const sources = JSON.parse(await readFile('data/sources.json', 'utf8'));
-const studies = JSON.parse(await readFile('data/studies.json', 'utf8'));
-const passions = JSON.parse(await readFile('data/passions.json', 'utf8'));
-const versions = JSON.parse(await readFile('data/versions.json', 'utf8'));
+async function readJson(rel, fallback) {
+  const file = join(ROOT, rel);
+  if (!existsSync(file)) return fallback;
+  return JSON.parse(await readFile(file, 'utf8'));
+}
 
-const categories = {
-  family: 'Семья',
-  relatives: 'Родственники',
-  friends: 'Друзья',
-  wives: 'Жёны',
-  women: 'Женщины',
-  children: 'Дети',
+const config = await readJson('site.config.json', {});
+
+const A = {
+  firstName: 'Автор',
+  lastName: '',
+  name: 'Автор',
+  fullName: 'Автор',
+  genitive: 'автора',
+  prepositional: 'авторе',
+  role: 'писатель',
+  roleGenitive: 'писателя',
+  years: '',
+  birthDate: '',
+  deathDate: '',
+  birthPlace: '',
+  deathPlace: '',
+  shortDescription: 'Писатель',
+  lead: '',
+  portrait: '',
+  portraitAlt: '',
+  portraitCaption: '',
+  footerAbout: '',
+  footerNote: '',
+  copyright: '',
+  licenseNote: '',
+  ...(config.author || {}),
 };
+if (!A.roleGenitive) A.roleGenitive = A.role;
+if (!A.lastName) A.lastName = A.name;
+
+const SITE = String(config.siteUrl || 'https://example.org').replace(/\/$/, '');
+const TEXTS_PD = config.textsPublicDomain !== false;
+const LANG = config.lang || 'ru';
+const UPDATED = config.updated || new Date().toISOString().slice(0, 10);
+const MONTHS = ['января', 'февраля', 'марта', 'апреля', 'мая', 'июня', 'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря'];
+
+function formatDate(iso) {
+  const m = String(iso || '').match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if (!m) return String(iso || '');
+  return `${Number(m[3])} ${MONTHS[Number(m[2]) - 1]} ${m[1]}`;
+}
+const UPDATED_LABEL = formatDate(UPDATED);
+
+const stylesSource = await readFile('src/styles.css');
+const appSource = await readFile('src/app.js');
+const themeSource = await readFile('src/theme.js');
+const assetVersion = createHash('sha1')
+  .update(stylesSource).update(appSource).update(themeSource)
+  .digest('hex').slice(0, 8);
+
+const works = await readJson('data/works.json', []);
+const people = await readJson('data/people.json', []);
+const timeline = await readJson('data/timeline.json', []);
+const research = await readJson('data/research.json', []);
+const sources = await readJson('data/sources.json', []);
+const studies = await readJson('data/studies.json', []);
+const passions = await readJson('data/passions.json', []);
+const versions = await readJson('data/versions.json', []);
+const books = await readJson('data/books.json', []);
+
+const categories = Object.keys(config.peopleCategories || {}).length
+  ? config.peopleCategories
+  : { family: 'Семья', friends: 'Друзья', colleagues: 'Коллеги' };
 
 const esc = (s) => String(s ?? '')
   .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
@@ -46,7 +89,10 @@ const plural = (n, forms) => {
   return forms[2];
 };
 
-const norm = (s) => s.toLowerCase().replace(/ё/g, 'е');
+const norm = (s) => String(s ?? '').toLowerCase().replace(/ё/g, 'е');
+const withName = (t) => t.replaceAll('{name}', A.name).replaceAll('{genitive}', A.genitive)
+  .replaceAll('{prepositional}', A.prepositional).replaceAll('{role}', A.role)
+  .replaceAll('{roleGenitive}', A.roleGenitive).replaceAll('{years}', A.years);
 
 // ---------- markdown ----------
 
@@ -89,14 +135,15 @@ function inline(text) {
 }
 
 async function readArticle(file) {
-  const raw = await readFile(join('content', file), 'utf8');
+  const raw = (await readFile(join('content', file), 'utf8')).replace(/\r\n/g, '\n');
   const m = raw.match(/^---\n([\s\S]*?)\n---\n([\s\S]*)$/);
-  if (!m) return { meta: {}, body: raw };
+  if (!m) return { meta: { slug: file.replace(/\.md$/, '') }, body: raw };
   const meta = {};
   for (const line of m[1].split('\n')) {
     const kv = line.match(/^(\w+):\s*(?:"([\s\S]*)"|(.+))$/);
     if (kv) meta[kv[1]] = (kv[2] ?? kv[3] ?? '').trim();
   }
+  if (!meta.slug) meta.slug = file.replace(/\.md$/, '');
   return { meta, body: m[2] };
 }
 
@@ -107,52 +154,96 @@ const nav = [
   ['/people/', 'Люди', 'people'],
   ['/life/', 'Жизнь', 'life'],
   ['/works/', 'Библиотека', 'works'],
+  ['/books/', 'Книги', 'books'],
   ['/research/', 'Наука', 'research'],
   ['/versions.html', 'Версии', 'versions'],
   ['/sources.html', 'Источники', 'sources'],
 ];
 
-function layout({ title, description, content, active = '', bodyClass = '', pageTitle = 'Сергей Есенин' }) {
+function analyticsHtml() {
+  const ym = config.analytics?.yandexMetrika;
+  const ga = config.analytics?.googleAnalytics;
+  let out = '';
+  if (ym) {
+    out += `<script>(function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};m[i].l=1*new Date();for(var j=0;j<document.scripts.length;j++){if(document.scripts[j].src===r){return}}k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})(window,document,"script","https://mc.yandex.ru/metrika/tag.js","ym");ym(${JSON.stringify(String(ym))},"init",{clickmap:true,trackLinks:true,accurateTrackBounce:true});</script><noscript><div><img src="https://mc.yandex.ru/watch/${esc(ym)}" style="position:absolute;left:-9999px" alt=""></div></noscript>`;
+  }
+  if (ga) {
+    out += `<script async src="https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(ga)}"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag("js",new Date());gtag("config",${JSON.stringify(String(ga))});</script>`;
+  }
+  return out;
+}
+
+function layout({ title, description, content, active = '', bodyClass = '', jsonLd = [], noindex = false, ogType = 'website', preloadImage = '' }) {
   const navHtml = nav.map(([href, label, key]) =>
     `<a href="${href}"${active === key ? ' aria-current="page"' : ''}>${label}</a>`).join('');
 
+  const fullTitle = title.includes(A.lastName) || title.includes(A.name) ? title : `${title} — ${A.name}`;
+  const ogImage = config.ogImage || A.portrait;
+  const ogDims = config.ogImage ? '\n<meta property="og:image:width" content="1200">\n<meta property="og:image:height" content="630">' : '';
+  const twitterCard = config.ogImage ? 'summary_large_image' : 'summary';
+  const graph = [
+    {
+      '@type': 'Person',
+      '@id': `${SITE}/#person`,
+      name: A.fullName,
+      alternateName: A.name,
+      birthDate: A.birthDate || undefined,
+      deathDate: A.deathDate || undefined,
+      birthPlace: A.birthPlace ? { '@type': 'Place', name: A.birthPlace } : undefined,
+      deathPlace: A.deathPlace ? { '@type': 'Place', name: A.deathPlace } : undefined,
+      description: A.shortDescription,
+      jobTitle: A.role,
+      image: A.portrait ? `${SITE}${A.portrait}` : undefined,
+      url: `${SITE}/`,
+    },
+    {
+      '@type': 'WebSite',
+      '@id': `${SITE}/#website`,
+      url: `${SITE}/`,
+      name: `${A.name} — биография, произведения, книги`,
+      inLanguage: LANG,
+      publisher: { '@id': `${SITE}/#person` },
+    },
+  ];
+  if (jsonLd) graph.push(...(Array.isArray(jsonLd) ? jsonLd : [jsonLd]));
+
   return `<!doctype html>
-<html lang="ru" data-theme="light">
+<html lang="${esc(LANG)}" data-theme="light">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>${esc(title)}${title.includes('Есенин') ? '' : ' — Сергей Есенин'}</title>
+<title>${esc(fullTitle)}</title>
 <meta name="description" content="${esc(description)}">
-<link rel="preload" href="/img/yesenin.jpg" as="image">
+<meta name="robots" content="${noindex ? 'noindex, follow' : 'index, follow'}">
+<link rel="canonical" href="__CANONICAL__">
+${preloadImage ? `<link rel="preload" href="${esc(preloadImage)}" as="image">` : ''}
 <link rel="stylesheet" href="/styles.css?v=${assetVersion}">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
-<meta property="og:type" content="website">
-<meta property="og:title" content="${esc(title)}">
+<meta property="og:type" content="${ogType}">
+<meta property="og:site_name" content="${esc(A.name)}">
+<meta property="og:locale" content="${esc(config.locale || 'ru_RU')}">
+<meta property="og:title" content="${esc(fullTitle)}">
 <meta property="og:description" content="${esc(description)}">
-<meta property="og:image" content="${SITE}/img/yesenin.jpg">
-<meta name="theme-color" content="#f7f2e8">
-<script type="application/ld+json">${JSON.stringify({
-    '@context': 'https://schema.org',
-    '@type': 'Person',
-    name: 'Сергей Александрович Есенин',
-    birthDate: '1895-10-03',
-    deathDate: '1925-12-28',
-    birthPlace: 'Константиново, Рязанская губерния',
-    deathPlace: 'Ленинград',
-    description: 'Русский поэт',
-    image: `${SITE}/img/yesenin.jpg`,
-  })}</script>
+<meta property="og:url" content="__CANONICAL__">
+${ogImage ? `<meta property="og:image" content="${SITE}${esc(ogImage)}">${ogDims}\n<meta name="twitter:card" content="${twitterCard}">` : '<meta name="twitter:card" content="summary">'}
+<meta name="twitter:title" content="${esc(fullTitle)}">
+<meta name="twitter:description" content="${esc(description)}">
+${ogImage ? `<meta name="twitter:image" content="${SITE}${esc(ogImage)}">` : ''}
+<meta name="theme-color" content="#f7f2e8" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#141311" media="(prefers-color-scheme: dark)">
+<script type="application/ld+json">${JSON.stringify({ '@context': 'https://schema.org', '@graph': graph })}</script>
+<script src="/theme.js?v=${assetVersion}"></script>
 </head>
 <body class="${bodyClass}">
 <a class="skip-link" href="#main">К содержанию</a>
 <header class="site-header">
   <div class="wrap header-inner">
-    <a class="brand" href="/"><span class="brand-mark">Есенин</span><span class="brand-years">1895—1925</span></a>
+    <a class="brand" href="/"><span class="brand-mark">${esc(A.lastName)}</span><span class="brand-years">${esc(A.years)}</span></a>
     <nav class="main-nav" aria-label="Основная навигация">${navHtml}</nav>
     <div class="header-tools">
-      <button class="icon-btn" data-search-open aria-label="Поиск по сайту" title="Поиск (Ctrl+K)">⌕</button>
+      <button class="icon-btn" data-search-open aria-label="Поиск по сайту" title="Поиск (Ctrl+K)" aria-haspopup="dialog" aria-controls="site-search">⌕</button>
       <button class="icon-btn" data-theme-toggle aria-label="Переключить тему" title="Тема">☾</button>
-      <button class="icon-btn nav-toggle" data-nav-toggle aria-label="Меню">☰</button>
+      <button class="icon-btn nav-toggle" data-nav-toggle aria-label="Меню" aria-expanded="false">☰</button>
     </div>
   </div>
 </header>
@@ -164,8 +255,8 @@ ${content}
     <div class="footer-grid">
       <div>
         <h4>О проекте</h4>
-        <p style="max-width:40ch;color:var(--muted);font-size:14px">Дашборд-лендинг о Сергее Есенине: проверенная биография, люди вокруг поэта, полная библиотека произведений и научная литература.</p>
-        <p style="font-size:12px;color:var(--muted)">Материалы сверяются с академическими изданиями. Спорные вопросы вынесены в раздел «Версии».</p>
+        <p style="max-width:40ch;color:var(--muted);font-size:14px">${esc(A.footerAbout)}</p>
+        <p style="font-size:12px;color:var(--muted)">${esc(A.footerNote)}</p>
       </div>
       <div>
         <h4>Разделы</h4>
@@ -173,6 +264,7 @@ ${content}
           <li><a href="/biography/">Биография</a></li>
           <li><a href="/people/">Люди</a></li>
           <li><a href="/works/">Библиотека</a></li>
+          <li><a href="/books/">Книги</a></li>
           <li><a href="/research/">Научные работы</a></li>
         </ul>
       </div>
@@ -182,22 +274,24 @@ ${content}
           <li><a href="/sources.html">Источники</a></li>
           <li><a href="/versions.html">Версии</a></li>
           <li><a href="/about.html">О проекте и правах</a></li>
+          <li><a href="/sitemap.xml">Карта сайта</a></li>
           <li><a href="/search.json">Индекс поиска</a></li>
         </ul>
       </div>
     </div>
     <div class="footer-note">
-      <span>© 2026 Проект о Сергее Есенине. Тексты произведений — общественное достояние.</span>
-      <span>Обновлено 20 октября 2026</span>
+      <span>${esc(A.copyright)}</span>
+      <span>Обновлено ${esc(UPDATED_LABEL)}</span>
     </div>
   </div>
 </footer>
-<div class="search-dialog" data-search-dialog data-search-src="/search.json" role="dialog" aria-modal="true" aria-label="Поиск">
+<div class="search-dialog" id="site-search" data-search-dialog data-search-src="/search.json" role="dialog" aria-modal="true" aria-label="Поиск">
   <div class="search-box">
-    <header><span aria-hidden="true">⌕</span><input type="search" placeholder="Найти произведение, человека, статью…" aria-label="Поисковый запрос"><button class="icon-btn" data-search-close aria-label="Закрыть">✕</button></header>
+    <header><span aria-hidden="true">⌕</span><input type="search" placeholder="Найти произведение, человека, книгу…" aria-label="Поисковый запрос"><button class="icon-btn" data-search-close aria-label="Закрыть">✕</button></header>
     <div class="search-results"></div>
   </div>
 </div>
+${analyticsHtml()}
 <script src="/app.js?v=${assetVersion}" defer></script>
 </body>
 </html>`;
@@ -234,62 +328,140 @@ function crumbs(items) {
     `${i ? '<span>→</span>' : ''}${href ? `<a href="${href}">${esc(label)}</a>` : esc(label)}`).join('')}</nav>`;
 }
 
+function affiliateUrl(url, store) {
+  try {
+    if (!store?.tagParam || !store?.tag) return url;
+    const u = new URL(url);
+    u.searchParams.set(store.tagParam, store.tag);
+    return u.toString();
+  } catch { return url; }
+}
+
+const stores = config.affiliate?.stores || {};
+
+function bookStoreLinks(b) {
+  const links = [];
+  for (const l of b.links || []) {
+    const store = stores[l.store];
+    if (!store || !l.url) continue;
+    links.push({ key: l.store, label: store.label || l.store, url: affiliateUrl(l.url, store) });
+  }
+  for (const [key, store] of Object.entries(stores)) {
+    if (!store.search) continue;
+    if ((b.links || []).some((l) => l.store === key)) continue;
+    const q = b.searchQuery || `${A.lastName} ${b.title}`;
+    links.push({ key, label: store.label || key, url: affiliateUrl(store.search.replace('{q}', encodeURIComponent(q)), store) });
+  }
+  return links;
+}
+
+function bookCard(b, index) {
+  const tone = index % 5;
+  const isAudio = /аудио/i.test(b.format || '');
+  const meta = [b.year, b.pages ? `${b.pages} с.` : '', b.isbn ? `ISBN ${b.isbn}` : '', b.performer ? `Читает ${b.performer}` : '']
+    .filter(Boolean).map(esc).join(' · ');
+  const links = bookStoreLinks(b).map((l, i) =>
+    `<a class="book-link${i === 0 ? ' is-primary' : ''}" href="${esc(l.url)}" target="_blank" rel="sponsored nofollow noopener" aria-label="Купить в ${esc(l.label)} (откроется в новой вкладке)">${esc(l.label)} <span class="arr" aria-hidden="true">↗</span></a>`).join('');
+  const tags = (b.tags || []).slice(0, 3).map((t) => `<span class="tag">${esc(t)}</span>`).join('');
+
+  return `<article class="book-card">
+    <div class="book-cover" data-tone="${tone}" aria-hidden="true">
+      <span class="bc-author">${esc(A.lastName)}</span>
+      <span class="bc-format">${isAudio ? 'аудио' : 'эл. книга'}</span>
+      <span class="bc-rule"></span>
+      <span class="bc-title">${esc(b.title)}</span>
+      ${b.series ? `<span class="bc-series">${esc(b.series)}</span>` : ''}
+    </div>
+    <div class="book-body">
+      <h3>${esc(b.title)}</h3>
+      ${b.subtitle ? `<div class="book-sub">${esc(b.subtitle)}</div>` : ''}
+      <div class="book-meta"><span class="book-format">${esc(b.format)}</span>${meta ? ' · ' + meta : ''}</div>
+      <p class="book-annotation">${esc(b.annotation)}</p>
+      <div class="book-tags">
+        ${b.highlight ? '<span class="tag is-pick">выбор редакции</span>' : ''}
+        ${tags}
+      </div>
+      <div class="book-actions">${links}</div>
+    </div>
+  </article>`;
+}
+
 const stats = {
   works: works.length,
   poems: works.filter((w) => w.genre === 'Стихотворение').length,
   people: people.length,
   research: research.length,
-  years: '1895—1925',
+  books: books.length,
+  years: A.years,
 };
+
+const worksWord = (n) => plural(n, ['произведение', 'произведения', 'произведений']);
+const initials = `${String(A.firstName || '').trim()[0] || ''}${String(A.lastName || '').trim()[0] || ''}`;
 
 // ---------- home ----------
 
-const featuredTitles = ['Берёза', 'Черёмуха', 'Письмо к женщине', 'Анна Снегина', 'Чёрный человек', 'Спит ковыль. Равнина дорогая'];
-const featured = featuredTitles.map((t) => works.find((w) => norm(w.title).startsWith(norm(t)))).filter(Boolean);
+const featuredTitles = config.home?.featuredWorks || [];
+const featured = (featuredTitles.length ? featuredTitles.map((t) => works.find((w) => norm(w.title).startsWith(norm(t)))) : works.slice(0, 6))
+  .filter(Boolean).slice(0, 6);
 
-const keyEvents = timeline.filter((e) => ['1895-10-03', '1909', '1914', '1915', '1916', '1917-07-30', '1922-05-02', '1925-12-28'].includes(e.date)).slice(0, 8);
+const keyEventDates = config.home?.keyEvents || [];
+const keyEvents = (keyEventDates.length ? timeline.filter((e) => keyEventDates.includes(e.date)) : timeline).slice(0, 8);
 
-const homePeople = ['alexander-nikitich', 'tatyana-fyodorovna', 'zinaida-raikh', 'isadora-duncan', 'sofia-tolstaya', 'blok', 'mariengof', 'benislavskaya']
-  .map((id) => people.find((p) => p.id === id)).filter(Boolean);
+const homePeopleIds = config.home?.featuredPeople || [];
+const homePeople = (homePeopleIds.length ? homePeopleIds.map((id) => people.find((p) => p.id === id)) : people.slice(0, 8))
+  .filter(Boolean).slice(0, 8);
+
+const homeBooks = (books.some((b) => b.highlight) ? books.filter((b) => b.highlight) : books).slice(0, 2);
+
+const tiles = [
+  ['/biography/', '01', 'Биография', 'Обзор и статьи по периодам'],
+  ['/people/', '02', 'Люди', `Семья, друзья, коллеги — ${stats.people}`],
+  ['/life/', '03', 'Жизнь', 'Учёба, увлечения, хронология'],
+  ['/works/', '04', 'Библиотека', `${stats.works} ${worksWord(stats.works)} с каталогом`],
+  ['/books/', '05', 'Книги', books.length ? `${stats.books} ${plural(stats.books, ['издание', 'издания', 'изданий'])} · партнёрские ссылки` : 'Издания автора'],
+  ['/research/', '06', 'Наука', `${stats.research} ${plural(stats.research, ['работа', 'работы', 'работ'])} о ${A.prepositional}`],
+  ['/versions.html', '07', 'Версии', 'Спорные вопросы биографии'],
+  ['/sources.html', '08', 'Источники', 'Реестр и уровни достоверности'],
+  ['/about.html', '09', 'О проекте', 'Принципы, права, обновления'],
+];
 
 const home = `
 <section class="hero">
-  <div class="wrap hero-grid">
+  <div class="wrap hero-grid${A.portrait ? '' : ' no-portrait'}">
     <div>
-      <div class="eyebrow">поэт · 1895—1925</div>
-      <h1><span class="first">Сергей</span>Есенин</h1>
-      <p class="hero-lead">Русский поэт, в котором деревенская Россия встретилась с революцией, имажинизмом и большой трагедией XX века.</p>
+      <div class="eyebrow">${esc(A.role)} · ${esc(A.years)}</div>
+      <h1><span class="first">${esc(A.firstName)}</span>${esc(A.lastName)}</h1>
+      <p class="hero-lead">${esc(A.lead)}</p>
       <div class="hero-actions">
         <a class="btn btn-primary" href="/biography/">Читать биографию</a>
         <a class="btn btn-ghost" href="/works/">Открыть библиотеку</a>
       </div>
       <div class="hero-stats">
-        <div class="hero-stat"><b>${stats.works}</b><span>произведений</span></div>
-        <div class="hero-stat"><b>${stats.people}</b><span>персон</span></div>
-        <div class="hero-stat"><b>${stats.research}</b><span>работ о поэте</span></div>
+        <div class="hero-stat"><b>${stats.works}</b><span>${worksWord(stats.works)}</span></div>
+        <div class="hero-stat"><b>${stats.people}</b><span>${plural(stats.people, ['персона', 'персоны', 'персон'])}</span></div>
+        <div class="hero-stat"><b>${stats.books}</b><span>${plural(stats.books, ['издание', 'издания', 'изданий'])}</span></div>
+        <div class="hero-stat"><b>${stats.research}</b><span>${plural(stats.research, ['работа', 'работы', 'работ'])}</span></div>
       </div>
     </div>
-    <div class="portrait-wrap portrait-frame">
-      <img class="portrait" src="/img/yesenin.jpg" alt="Портрет Сергея Есенина" width="360" height="480">
-      <div class="portrait-caption">Сергей Есенин. Фотография до 1925 года.<br>Wikimedia Commons, Public Domain</div>
-    </div>
+    ${A.portrait ? `<div class="portrait-wrap portrait-frame" data-years="${esc(A.years)}">
+      <img class="portrait" src="${esc(A.portrait)}" alt="${esc(A.portraitAlt)}" width="360" height="480" fetchpriority="high" decoding="async">
+      <div class="portrait-caption">${A.portraitCaption}</div>
+    </div>` : `<div class="hero-emblem" aria-hidden="true">
+      <span class="emblem-initials">${esc(initials)}</span>
+      <span class="emblem-rule"></span>
+      <span class="emblem-years">${esc(A.years)}</span>
+      <span class="emblem-name">${esc(A.fullName)}</span>
+    </div>`}
   </div>
 </section>
 
 <section class="section">
   <div class="wrap">
     <div class="section-head">
-      <div><h2>Разделы проекта</h2><p>Всё содержание собрано в восемь связанных между собой разделов.</p></div>
+      <div><h2>Разделы проекта</h2><p>Всё содержание собрано в связанные разделы — от биографии и людей до библиотеки и книжных изданий.</p></div>
     </div>
     <div class="tiles">
-      <a class="tile" href="/biography/"><span class="tile-kicker">01</span><span class="tile-title">Биография</span><span class="tile-count">Обзор и статьи по периодам</span></a>
-      <a class="tile" href="/people/"><span class="tile-kicker">02</span><span class="tile-title">Люди</span><span class="tile-count">Семья, друзья, жёны — ${stats.people}</span></a>
-      <a class="tile" href="/life/"><span class="tile-kicker">03</span><span class="tile-title">Жизнь</span><span class="tile-count">Учёба, увлечения, хронология</span></a>
-      <a class="tile" href="/works/"><span class="tile-kicker">04</span><span class="tile-title">Библиотека</span><span class="tile-count">${stats.works} произведений с каталогом</span></a>
-      <a class="tile" href="/research/"><span class="tile-kicker">05</span><span class="tile-title">Наука</span><span class="tile-count">${stats.research} работ о Есенине</span></a>
-      <a class="tile" href="/versions.html"><span class="tile-kicker">06</span><span class="tile-title">Версии</span><span class="tile-count">Спорные вопросы биографии</span></a>
-      <a class="tile" href="/sources.html"><span class="tile-kicker">07</span><span class="tile-title">Источники</span><span class="tile-count">Реестр и уровни достоверности</span></a>
-      <a class="tile" href="/about.html"><span class="tile-kicker">08</span><span class="tile-title">О проекте</span><span class="tile-count">Принципы, права, обновления</span></a>
+      ${tiles.map(([href, kicker, title, count]) => `<a class="tile" href="${href}"><span class="tile-kicker">${kicker}</span><span class="tile-title">${esc(title)}</span><span class="tile-count">${esc(count)}</span></a>`).join('')}
     </div>
   </div>
 </section>
@@ -300,7 +472,7 @@ const home = `
       <div class="panel">
         <h3>Ключевые даты</h3>
         <ul class="timeline-mini">
-          ${keyEvents.map((e) => `<li><span class="year">${esc(e.display.split(' ').slice(-1)[0])}</span><span class="what">${esc(e.title)}<small>${esc(e.display)}</small></span></li>`).join('')}
+          ${keyEvents.map((e) => `<li><span class="year">${esc(String(e.display || '').split(' ').slice(-1)[0])}</span><span class="what">${esc(e.title)}<small>${esc(e.display)}</small></span></li>`).join('')}
         </ul>
         <p style="margin-top:14px"><a class="section-link" href="/life/timeline.html">Полная хронология →</a></p>
       </div>
@@ -309,22 +481,33 @@ const home = `
         <div class="people-chips">
           ${homePeople.map((p) => `<a class="chip" href="/people/${p.id}.html">${esc(p.name)}</a>`).join('')}
         </div>
-        <p style="margin-top:18px;font-size:13px;color:var(--muted)">В разделе «Люди» — карточки членов семьи, друзей, жён и женщин, которым посвящены стихи.</p>
+        <p style="margin-top:18px;font-size:13px;color:var(--muted)">В разделе «Люди» — карточки членов семьи, друзей и современников, с которыми связана биография.</p>
         <p><a class="section-link" href="/people/">Все персоны →</a></p>
       </div>
     </div>
   </div>
 </section>
 
-<section class="section">
+${featured.length ? `<section class="section">
   <div class="wrap">
     <div class="section-head">
-      <div><h2>Из библиотеки</h2><p>${stats.works} текстов: стихотворения, малые поэмы, поэмы, проза, письма и статьи.</p></div>
+      <div><h2>Из библиотеки</h2><p>${stats.works} ${worksWord(stats.works)}: полные тексты с указанием источника.</p></div>
       <a class="section-link" href="/works/">Весь каталог →</a>
     </div>
     <div class="works-grid">${featured.map(workCard).join('')}</div>
   </div>
-</section>
+</section>` : ''}
+
+${homeBooks.length ? `<section class="section">
+  <div class="wrap">
+    <div class="section-head">
+      <div><h2>Книги</h2><p>Издания, которые можно купить: бумажные и электронные версии, аудиокниги.</p></div>
+      <a class="section-link" href="/books/">Все книги →</a>
+    </div>
+    <div class="books-grid">${homeBooks.map(bookCard).join('')}</div>
+    <p style="margin-top:16px;font-size:12px;color:var(--muted)"><b>Реклама.</b> ${esc(config.affiliate?.disclosure || '')}</p>
+  </div>
+</section>` : ''}
 
 <section class="section">
   <div class="wrap">
@@ -335,7 +518,7 @@ const home = `
     <div class="research-list">
       ${research.slice(0, 4).map((r) => `<div class="research-item">
         <div class="research-year">${r.year}</div>
-        <div><h3>${esc(r.title)}</h3><div class="authors">${esc(r.authors.join(', '))}</div>
+        <div><h3>${esc(r.title)}</h3><div class="authors">${esc((r.authors || []).join(', '))}</div>
         <div class="pub">${esc(r.publisher)}${r.pages ? ', ' + esc(r.pages) : ''}</div>
         <p class="annotation">${esc(r.annotation)}</p></div>
       </div>`).join('')}
@@ -354,28 +537,32 @@ const home = `
 
 // ---------- biography ----------
 
-const articleFiles = ['overview.md', 'early-years.md', 'petrograd.md', 'late-years.md'];
+const contentDir = join(ROOT, 'content');
+let articleFiles = [];
+if (existsSync(contentDir)) {
+  articleFiles = (await readdir(contentDir)).filter((f) => f.endsWith('.md')).sort();
+}
 const articles = [];
 for (const f of articleFiles) {
   const { meta, body } = await readArticle(f);
-  articles.push({ ...meta, body, html: mdToHtml(body) });
+  articles.push({ ...meta, body, html: mdToHtml(body), order: Number(meta.order || 999) });
 }
-const overview = articles[0];
+articles.sort((a, b) => (a.kind === 'overview' ? -1 : 0) - (b.kind === 'overview' ? -1 : 0) || a.order - b.order);
 
 const biographyIndex = `
 ${crumbs([['/', 'Главная'], [null, 'Биография']])}
 <div class="wrap page-head">
   <h1>Биография</h1>
-  <p>Обзорный очерк и статьи о ключевых периодах жизни поэта. Даты и имена сверены с академическими изданиями; спорные сюжеты вынесены в раздел «Версии».</p>
+  <p>Обзорный очерк и статьи о ключевых периодах жизни ${esc(A.genitive)}. Даты и имена сверены с академическими изданиями; спорные сюжеты вынесены в раздел «Версии».</p>
 </div>
 <div class="wrap" style="padding-bottom:50px">
-  <div class="works-grid">
+  ${articles.length ? `<div class="works-grid">
     ${articles.map((a) => `<a class="work-card" href="/biography/${a.slug}.html">
       <span class="genre">${a.kind === 'overview' ? 'Обзор' : 'Период'}</span>
       <span class="title">${esc(a.title)}</span>
       <span class="preview">${esc(a.excerpt)}</span>
     </a>`).join('')}
-  </div>
+  </div>` : '<div class="note">Статьи о биографии готовятся. Пока доступны хронология и раздел «Люди».</div>'}
 </div>`;
 
 function articlePage(a) {
@@ -383,7 +570,7 @@ function articlePage(a) {
   <div class="wrap article-layout">
     <article>
       <h1 style="font-size:clamp(32px,5vw,48px);margin-bottom:14px">${esc(a.title)}</h1>
-      <div class="meta-line"><span class="badge">${a.kind === 'overview' ? 'обзор' : 'статья о жизни'}</span><span>Обновлено 20 октября 2026</span></div>
+      <div class="meta-line"><span class="badge">${a.kind === 'overview' ? 'обзор' : 'статья о жизни'}</span><span>Обновлено ${esc(UPDATED_LABEL)}</span></div>
       <div class="prose">${a.html}</div>
       <div class="source-box"><b>Источники и аппарат.</b> Полный перечень — в разделе <a href="/sources.html">«Источники»</a>. Оценки и версии, по которым в литературе нет согласия, разобраны в разделе <a href="/versions.html">«Версии»</a>.</div>
     </article>
@@ -395,9 +582,10 @@ function articlePage(a) {
         </ul>
         <h4 style="margin-top:18px">Связанное</h4>
         <ul>
-          <li><a href="/people/">Люди вокруг поэта</a></li>
+          <li><a href="/people/">Люди вокруг ${esc(A.genitive)}</a></li>
           <li><a href="/life/timeline.html">Хронология</a></li>
           <li><a href="/works/">Библиотека</a></li>
+          <li><a href="/books/">Книги</a></li>
         </ul>
       </div>
     </aside>
@@ -409,36 +597,34 @@ function articlePage(a) {
 const peopleIndex = `
 ${crumbs([['/', 'Главная'], [null, 'Люди']])}
 <div class="wrap page-head">
-  <h1>Люди вокруг Есенина</h1>
-  <p>Семья, родственники, друзья, жёны и женщины, которым посвящены стихи. У каждой карточки указан статус отношений и источник сведений.</p>
+  <h1>Люди вокруг ${esc(A.genitive)}</h1>
+  <p>Семья, друзья и современники, с которыми связана биография. У каждой карточки указан статус отношений и источник сведений.</p>
 </div>
 <div class="wrap" style="padding-bottom:50px">
-  ${Object.entries(categories).map(([key, label]) => {
+  ${people.length ? Object.entries(categories).map(([key, label]) => {
     const list = people.filter((p) => p.category === key);
     if (!list.length) return '';
     return `<section style="margin-bottom:44px">
-      <div class="section-head"><div><h2 style="font-size:28px">${label}</h2><p>${list.length} ${plural(list.length, ['человек', 'человека', 'человек'])}</p></div><a class="section-link" href="/people/${key}.html">Отдельная страница →</a></div>
+      <div class="section-head"><div><h2 style="font-size:28px">${esc(label)}</h2><p>${list.length} ${plural(list.length, ['человек', 'человека', 'человек'])}</p></div><a class="section-link" href="/people/${key}.html">Отдельная страница →</a></div>
       <div class="people-grid">${list.map(personCard).join('')}</div>
     </section>`;
-  }).join('')}
+  }).join('') : '<div class="note">Раздел готовится.</div>'}
 </div>`;
 
 function categoryPage(key) {
   const list = people.filter((p) => p.category === key);
   return `${crumbs([['/', 'Главная'], ['/people/', 'Люди'], [null, categories[key]]])}
-  <div class="wrap page-head"><h1>${categories[key]}</h1><p>${list.length} карточек. Все сведения сопровождаются указанием источника.</p></div>
+  <div class="wrap page-head"><h1>${esc(categories[key])}</h1><p>${list.length} ${plural(list.length, ['карточка', 'карточки', 'карточек'])}. Все сведения сопровождаются указанием источника.</p></div>
   <div class="wrap" style="padding-bottom:50px"><div class="people-grid">${list.map(personCard).join('')}</div></div>`;
 }
 
 function personPage(p) {
-  const related = works.filter((w) => norm(w.text).includes(norm(p.name.split(' ')[0]))).slice(0, 6);
-  const rel = [
-    ...people.filter((x) => x.category === p.category && x.id !== p.id).slice(0, 6),
-  ];
-  return `${crumbs([['/', 'Главная'], ['/people/', 'Люди'], [`/people/${p.category}.html`, categories[p.category]], [null, p.name]])}
+  const related = works.filter((w) => norm(w.text).includes(norm(String(p.name || '').split(' ')[0]))).slice(0, 6);
+  const rel = people.filter((x) => x.category === p.category && x.id !== p.id).slice(0, 6);
+  return `${crumbs([['/', 'Главная'], ['/people/', 'Люди'], [`/people/${p.category}.html`, categories[p.category] || 'Люди'], [null, p.name]])}
   <div class="wrap">
     <div class="person-hero">
-      <div class="person-mono" aria-hidden="true">${esc(p.name[0])}</div>
+      <div class="person-mono" aria-hidden="true">${esc(String(p.name || '?')[0])}</div>
       <div>
         <div class="meta-line"><span class="badge">${esc(p.role)}</span><span>${esc(p.years)}</span></div>
         <h1 style="font-size:clamp(30px,4.5vw,44px)">${esc(p.name)}</h1>
@@ -449,7 +635,7 @@ function personPage(p) {
       <div class="panel">
         <h3>Связи</h3>
         <div class="people-chips">${rel.map((x) => `<a class="chip" href="/people/${x.id}.html">${esc(x.name)}</a>`).join('')}</div>
-        <p style="margin-top:16px;font-size:13px;color:var(--muted)">Полный граф связей — в разделе <a href="/people/">«Люди»</a>.</p>
+        <p style="margin-top:16px;font-size:13px;color:var(--muted)">Полный список — в разделе <a href="/people/">«Люди»</a>.</p>
       </div>
       <div class="panel">
         <h3>В произведениях</h3>
@@ -467,39 +653,39 @@ ${crumbs([['/', 'Главная'], [null, 'Жизнь']])}
 <div class="wrap page-head"><h1>Жизнь</h1><p>Учёба, интересы и хронология — три способа увидеть биографию не только как список дат.</p></div>
 <div class="wrap" style="padding-bottom:50px">
   <div class="tiles">
-    <a class="tile" href="/life/studies.html"><span class="tile-kicker">01</span><span class="tile-title">Учёба</span><span class="tile-count">Школа, училище, университет</span></a>
-    <a class="tile" href="/life/passions.html"><span class="tile-kicker">02</span><span class="tile-title">Увлечения</span><span class="tile-count">Темы, круги, путешествия</span></a>
-    <a class="tile" href="/life/timeline.html"><span class="tile-kicker">03</span><span class="tile-title">Хронология</span><span class="tile-count">${timeline.length} событий</span></a>
+    <a class="tile" href="/life/studies.html"><span class="tile-kicker">01</span><span class="tile-title">Учёба</span><span class="tile-count">${studies.length ? 'Школа, училище, университет' : 'Раздел готовится'}</span></a>
+    <a class="tile" href="/life/passions.html"><span class="tile-kicker">02</span><span class="tile-title">Увлечения</span><span class="tile-count">${passions.length ? 'Темы, круги, путешествия' : 'Раздел готовится'}</span></a>
+    <a class="tile" href="/life/timeline.html"><span class="tile-kicker">03</span><span class="tile-title">Хронология</span><span class="tile-count">${timeline.length} ${plural(timeline.length, ['событие', 'события', 'событий'])}</span></a>
     <a class="tile" href="/biography/"><span class="tile-kicker">04</span><span class="tile-title">Биография</span><span class="tile-count">Обзор и статьи</span></a>
   </div>
 </div>`;
 
 const studiesPage = `
 ${crumbs([['/', 'Главная'], ['/life/', 'Жизнь'], [null, 'Учёба']])}
-<div class="wrap page-head"><h1>Учёба</h1><p>Образование Есенина: от сельской школы до вольного слушания в университете.</p></div>
+<div class="wrap page-head"><h1>Учёба</h1><p>Образование: от школы до университета.</p></div>
 <div class="wrap" style="padding-bottom:50px">
-  ${studies.map((s) => `<div class="panel" style="margin-bottom:14px">
+  ${studies.length ? studies.map((s) => `<div class="panel" style="margin-bottom:14px">
     <div class="meta-line"><span class="badge">${esc(s.type)}</span><span>${esc(s.years)}</span></div>
     <h3 style="font-size:22px">${esc(s.title)}</h3>
     <p style="color:var(--ink-soft);max-width:70ch">${esc(s.text)}</p>
-  </div>`).join('')}
+  </div>`).join('') : '<div class="note">Раздел готовится.</div>'}
   <div class="source-box"><b>Источник.</b> Сведения приведены по биографическим статьям и академическим изданиям; см. <a href="/sources.html">«Источники»</a>.</div>
 </div>`;
 
 const passionsPage = `
 ${crumbs([['/', 'Главная'], ['/life/', 'Жизнь'], [null, 'Увлечения']])}
-<div class="wrap page-head"><h1>Увлечения и темы</h1><p>Не список хобби, а круг интересов, из которого выросла поэзия Есенина.</p></div>
+<div class="wrap page-head"><h1>Увлечения и темы</h1><p>Не список хобби, а круг интересов, из которого выросло творчество.</p></div>
 <div class="wrap" style="padding-bottom:50px">
-  ${passions.map((p) => `<div class="panel" style="margin-bottom:14px">
+  ${passions.length ? passions.map((p) => `<div class="panel" style="margin-bottom:14px">
     <h3 style="font-size:22px">${esc(p.title)}</h3>
     <p style="color:var(--ink-soft);max-width:70ch">${esc(p.text)}</p>
-    <div class="tag-row">${p.tags.map((t) => `<span class="tag">${esc(t)}</span>`).join('')}</div>
-  </div>`).join('')}
+    <div class="tag-row">${(p.tags || []).map((t) => `<span class="tag">${esc(t)}</span>`).join('')}</div>
+  </div>`).join('') : '<div class="note">Раздел готовится.</div>'}
 </div>`;
 
 const timelinePage = `
 ${crumbs([['/', 'Главная'], ['/life/', 'Жизнь'], [null, 'Хронология']])}
-<div class="wrap page-head"><h1>Хронология</h1><p>${timeline.length} событий — от рождения в Константинове до смерти в Ленинграде.</p></div>
+<div class="wrap page-head"><h1>Хронология</h1><p>${timeline.length} ${plural(timeline.length, ['событие', 'события', 'событий'])} — от рождения до последних лет.</p></div>
 <div class="wrap" style="padding-bottom:60px">
   <ul class="timeline-mini" style="background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px 24px">
     ${timeline.map((e) => `<li><span class="year">${esc(e.display)}</span><span class="what"><b>${esc(e.title)}</b><small>${esc(e.text)}</small></span></li>`).join('')}
@@ -511,11 +697,13 @@ ${crumbs([['/', 'Главная'], ['/life/', 'Жизнь'], [null, 'Хроно�
 const genres = [...new Set(works.map((w) => w.genre))];
 const decades = [...new Set(works.filter((w) => w.year).map((w) => Math.floor(w.year / 10) * 10))].sort();
 
+const genreSummary = genres.map((g) => `${esc(String(g).toLowerCase())} — ${works.filter((w) => w.genre === g).length}`).join(', ');
+
 const worksIndex = `
 ${crumbs([['/', 'Главная'], [null, 'Библиотека']])}
 <div class="wrap page-head">
   <h1>Библиотека</h1>
-  <p>${stats.works} произведений: стихотворения — ${works.filter((w) => w.genre === 'Стихотворение').length}, малые поэмы — ${works.filter((w) => w.genre === 'Малая поэма').length}, поэмы — ${works.filter((w) => w.genre === 'Поэма').length}, проза — ${works.filter((w) => w.genre === 'Проза').length}, статьи — ${works.filter((w) => w.genre === 'Статья').length}, автобиография — 1. Поиск — по названию и первой строке.</p>
+  <p>${stats.works} ${worksWord(stats.works)}${genreSummary ? `: ${genreSummary}` : ''}. Поиск — по названию и первой строке.</p>
 </div>
 <div class="catalog-toolbar">
   <div class="wrap">
@@ -541,9 +729,9 @@ ${crumbs([['/', 'Главная'], [null, 'Библиотека']])}
   </div>
 </div>
 <div class="wrap">
-  <div class="results-line"><span>Найдено: <b data-result-count>${works.length}</b></span><span>Источник текстов: Викитека</span></div>
+  <div class="results-line"><span>Найдено: <b data-result-count>${works.length}</b></span><span>${TEXTS_PD ? 'Полные тексты с указанием источника' : 'Метаданные и ссылки на издания'}</span></div>
   <div class="catalog-grid" data-catalog>
-    ${works.map((w) => `<a class="catalog-card" href="${workUrl(w)}" data-title="${esc(w.title)}" data-genre="${esc(w.genre)}" data-decade="${w.year ? Math.floor(w.year / 10) * 10 : ''}" data-year="${w.year || ''}" data-chars="${w.chars}" data-first="${esc(firstLine(w.text))}">
+    ${works.map((w) => `<a class="catalog-card" href="${workUrl(w)}" data-title="${esc(w.title)}" data-genre="${esc(w.genre)}" data-decade="${w.year ? Math.floor(w.year / 10) * 10 : ''}" data-year="${w.year || ''}" data-chars="${w.chars || 0}" data-first="${esc(firstLine(w.text))}">
       <span class="t">${esc(w.title)}</span>
       <span class="f">${esc(firstLine(w.text))}</span>
       <span class="m">${w.year ? w.year : '—'} · ${esc(w.genre)}</span>
@@ -587,7 +775,7 @@ function workPage(w, index) {
     <div class="source-box">
       <b>Источник текста.</b> <a href="${esc(w.sourceUrl)}" rel="noopener">${esc(w.title)}</a> в Викитеке.
       ${w.source ? `<br><b>Редакция/издание:</b> ${esc(cleanSource(w.source))}` : ''}
-      <br>Текст находится в общественном достоянии. При цитировании указывайте источник.
+      <br>${TEXTS_PD ? 'Текст находится в общественном достоянии. При цитировании указывайте источник.' : 'Полный текст не размещён: произведение охраняется авторским правом. Ссылка ведёт на страницу-источник.'}
     </div>
     <nav style="display:flex;justify-content:space-between;gap:16px;margin-top:30px" aria-label="Навигация по произведениям">
       <span>${prev ? `<a href="${workUrl(prev)}">← ${esc(prev.title)}</a>` : ''}</span>
@@ -602,13 +790,31 @@ function workPage(w, index) {
   </section>`;
 }
 
+// ---------- books ----------
+
+const booksPage = `
+${crumbs([['/', 'Главная'], [null, 'Книги']])}
+<div class="wrap page-head">
+  <h1>Книги ${esc(A.genitive)}</h1>
+  <p>Издания, которые можно купить: электронные версии, бумажные книги и аудиокниги. Полные тексты произведений при этом остаются бесплатными в <a href="/works/">библиотеке</a>.</p>
+</div>
+<div class="wrap" style="padding-bottom:40px">
+  ${books.length ? `
+  <div class="disclosure"><span class="ad-mark">реклама</span>${esc(config.affiliate?.disclosure || '')}</div>
+  <div class="books-grid">${books.map(bookCard).join('')}</div>
+  <div class="books-foot">
+    <div class="note">Цены, наличие и формат указаны на стороне магазина и могут меняться. Ссылки ведут в «ЛитРес», Ozon и «Лабиринт»; проект не хранит данные о покупках.</div>
+    <a class="btn btn-ghost" href="/works/">Читать бесплатно в библиотеке</a>
+  </div>` : `<div class="note">Раздел готовится: здесь появятся издания ${esc(A.genitive)} с партнёрскими ссылками. Пока полные тексты доступны в <a href="/works/">библиотеке</a>.</div>`}
+</div>`;
+
 // ---------- research ----------
 
 const researchPage = `
 ${crumbs([['/', 'Главная'], [null, 'Научные работы']])}
 <div class="wrap page-head">
-  <h1>Научные работы о Есенине</h1>
-  <p>${research.length} библиографических записей: биографии, хроники, монографии и энциклопедические статьи. Полные тексты не размещаются — только метаданные и аннотации.</p>
+  <h1>Научные работы о ${esc(A.prepositional)}</h1>
+  <p>${research.length} ${plural(research.length, ['библиографическая запись', 'библиографические записи', 'библиографических записей'])}: биографии, хроники, монографии и энциклопедические статьи. Полные тексты не размещаются — только метаданные и аннотации.</p>
 </div>
 <div class="wrap" style="padding-bottom:50px">
   <div class="note">Раздел задуман как отправная точка для исследования. Аннотации кратко описывают тему работы и не заменяют чтение источника.</div>
@@ -617,10 +823,10 @@ ${crumbs([['/', 'Главная'], [null, 'Научные работы']])}
       <div class="research-year">${r.year}</div>
       <div>
         <h3>${esc(r.title)}</h3>
-        <div class="authors">${esc(r.authors.join(', '))}</div>
+        <div class="authors">${esc((r.authors || []).join(', '))}</div>
         <div class="pub">${esc(r.place)}: ${esc(r.publisher)}${r.pages ? ', ' + esc(r.pages) : ''}${r.isbn ? ' · ISBN ' + esc(r.isbn) : ''}</div>
         <p class="annotation">${esc(r.annotation)}</p>
-        <div class="tag-row"><span class="tag">${esc(r.type)}</span>${r.tags.map((t) => `<span class="tag">${esc(t)}</span>`).join('')}</div>
+        <div class="tag-row"><span class="tag">${esc(r.type)}</span>${(r.tags || []).map((t) => `<span class="tag">${esc(t)}</span>`).join('')}</div>
       </div>
     </article>`).join('')}
   </div>
@@ -644,7 +850,7 @@ ${crumbs([['/', 'Главная'], [null, 'Источники']])}
       ${s.url ? `<a href="${esc(s.url)}" rel="noopener" style="font-size:13px">${esc(s.url)}</a>` : ''}
     </div>
   </div>`).join('')}
-  <div class="note">Дата обращения ко всем источникам — 20 октября 2026 года. Ссылки проверяются ежемесячно; устаревшие адреса фиксируются в журнале обновлений.</div>
+  <div class="note">Дата обращения ко всем источникам — ${esc(UPDATED_LABEL)}. Ссылки проверяются ежемесячно; устаревшие адреса фиксируются в журнале обновлений.</div>
 </div>`;
 
 const versionsPage = `
@@ -669,13 +875,15 @@ ${crumbs([['/', 'Главная'], [null, 'О проекте']])}
 <div class="wrap article-layout" style="padding-bottom:60px">
   <article class="prose">
     <h1 style="font-size:clamp(30px,4.5vw,44px)">О проекте</h1>
-    <p>Это некоммерческий просветительский проект, посвящённый Сергею Александровичу Есенину. Его задача — собрать в одном месте проверенную биографию, людей вокруг поэта, полную библиотеку текстов и научную литературу.</p>
+    <p>Это некоммерческий просветительский проект, посвящённый ${esc(A.fullName)}. Его задача — собрать в одном месте проверенную биографию, людей вокруг ${esc(A.roleGenitive)}, полную библиотеку текстов, книжные издания и научную литературу.</p>
     <h2>Принципы работы с фактами</h2>
     <p>Каждое утверждение опирается на источник. При расхождении источников мы показываем версии, а не выбираем удобную. Спорные сюжеты вынесены в раздел «Версии».</p>
     <h2>Тексты</h2>
-    <p>Произведения Есенина находятся в общественном достоянии. Тексты импортированы из Викитеки; у каждого произведения указана страница-источник и, где возможно, редакция академического издания.</p>
+    <p>${esc(A.copyright)} ${TEXTS_PD ? 'Произведения находятся в общественном достоянии; у каждого указана страница-источник и, где возможно, редакция академического издания.' : 'Полные тексты произведений не размещаются, пока действует авторское право: доступны метаданные и ссылки на правомерные издания.'}</p>
     <h2>Изображения</h2>
     <p>Используются только файлы из Wikimedia Commons, находящиеся в общественном достоянии или под свободной лицензией. Атрибуция указана рядом с изображением.</p>
+    <h2>Книги и партнёрские ссылки</h2>
+    <p>В разделе «Книги» собраны издания, которые можно приобрести. Ссылки на магазины — партнёрские: проект может получить вознаграждение, цена для покупателя не меняется. Материал помечен как реклама. Наличие и стоимость уточняются на стороне магазина.</p>
     <h2>Научные работы</h2>
     <p>Размещаются только библиографические описания и краткие аннотации. Полные тексты не публикуются без разрешения правообладателей.</p>
     <h2>Обновления</h2>
@@ -686,17 +894,42 @@ ${crumbs([['/', 'Главная'], [null, 'О проекте']])}
       <h4>Технологии</h4>
       <p>Статический сайт, собранный из JSON-данных и Markdown. Поиск работает на клиенте, без серверной базы данных.</p>
       <h4 style="margin-top:16px">Права</h4>
-      <p>Тексты — общественное достояние. Фотографии — Wikimedia Commons (PD). Библиографические описания — в информационных целях.</p>
+      <p>${esc(A.licenseNote)}</p>
+      <h4 style="margin-top:16px">Обратная связь</h4>
+      <p>Ошибки и уточнения принимаются с указанием источника; правки фиксируются в журнале обновлений.</p>
     </div>
   </aside>
 </div>`;
 
+// ---------- 404 ----------
+
+const deskArt = existsSync(join(ROOT, 'src/art/desk-404.svg'))
+  ? await readFile(join(ROOT, 'src/art/desk-404.svg'), 'utf8')
+  : '';
+
 const notFound = `
-${crumbs([['/', 'Главная'], [null, '404']])}
-<div class="wrap page-head" style="text-align:center;padding:90px 0">
-  <h1 style="font-size:96px;color:var(--gold)">404</h1>
-  <p>Такой страницы нет. Попробуйте начать с <a href="/">главной</a> или открыть <a href="/works/">каталог произведений</a>.</p>
-</div>`;
+<section class="error-page">
+  <div class="wrap error-grid">
+    <div class="error-copy">
+      <div class="error-code" aria-hidden="true">404</div>
+      <h1>Этой страницы нет</h1>
+      <p class="error-lead">Похоже, лист остался чистым: такого адреса на сайте нет или страница переехала. Начните с поиска — или вернитесь к началу.</p>
+      <form class="error-search" data-search-form role="search">
+        <input type="search" name="q" placeholder="Поиск по сайту…" aria-label="Поиск по сайту">
+        <button type="submit">Искать</button>
+      </form>
+      <p class="error-hint">Поиск идёт по названиям, первой строке произведений и описаниям разделов.</p>
+      <div class="error-links">
+        <a class="chip" href="/">Главная</a>
+        <a class="chip" href="/biography/">Биография</a>
+        <a class="chip" href="/works/">Библиотека</a>
+        <a class="chip" href="/books/">Книги</a>
+        <a class="chip" href="/people/">Люди</a>
+      </div>
+    </div>
+    <div class="error-art" aria-hidden="true">${deskArt}</div>
+  </div>
+</section>`;
 
 // ---------- write ----------
 
@@ -715,28 +948,31 @@ await mkdir(DIST, { recursive: true });
 async function writePage(rel, html) {
   const file = join(DIST, rel);
   await mkdir(dirname(file), { recursive: true });
-  await writeFile(file, html, 'utf8');
+  const url = rel === 'index.html' ? '/' : '/' + rel.replace(/index\.html$/, '');
+  const out = html.replaceAll('__CANONICAL__', encodeURI(SITE + url));
+  await writeFile(file, out, 'utf8');
+  return out;
 }
 
 await writePage('index.html', layout({
-  title: 'Сергей Есенин — дашборд-лендинг',
-  description: 'Биография, люди, библиотека произведений и научные работы о Сергее Есенине (1895–1925).',
-  content: home, active: '',
+  title: `${A.name}: биография, библиотека, книги`,
+  description: `${A.shortDescription}: биография, люди, библиотека произведений, книги и научные работы. ${A.years}`,
+  content: home, active: '', preloadImage: A.portrait,
 }));
 
 await writePage('biography/index.html', layout({
-  title: 'Биография', description: 'Обзорная биография Сергея Есенина и статьи о периодах жизни.',
+  title: 'Биография', description: `Обзорная биография ${A.genitive} и статьи о периодах жизни.`,
   content: biographyIndex, active: 'biography',
 }));
 
 for (const a of articles) {
   await writePage(`biography/${a.slug}.html`, layout({
-    title: a.title, description: a.excerpt, content: articlePage(a), active: 'biography',
+    title: a.title, description: a.excerpt || '', content: articlePage(a), active: 'biography', ogType: 'article',
   }));
 }
 
 await writePage('people/index.html', layout({
-  title: 'Люди вокруг Есенина', description: 'Семья, родственники, друзья, жёны и женщины в биографии Сергея Есенина.',
+  title: `Люди вокруг ${A.genitive}`, description: `Семья, друзья и современники ${A.genitive}: ${people.length} карточек с ролями, годами жизни и источниками сведений.`,
   content: peopleIndex, active: 'people',
 }));
 
@@ -744,74 +980,132 @@ for (const key of Object.keys(categories)) {
   const list = people.filter((p) => p.category === key);
   if (!list.length) continue;
   await writePage(`people/${key}.html`, layout({
-    title: categories[key], description: `${categories[key]} Сергея Есенина: ${list.length} карточек.`,
+    title: categories[key], description: `${categories[key]} ${A.genitive}: ${list.length} карточек с ролью, годами жизни и указанием источника.`,
     content: categoryPage(key), active: 'people',
   }));
 }
 
 for (const p of people) {
   await writePage(`people/${p.id}.html`, layout({
-    title: p.name, description: p.summary.slice(0, 180), content: personPage(p), active: 'people',
+    title: p.name,
+    description: `${p.name} — ${p.role}${p.years ? ', ' + p.years : ''}. ${String(p.summary || '')}`.slice(0, 200),
+    content: personPage(p), active: 'people',
   }));
 }
 
 await writePage('life/index.html', layout({
-  title: 'Жизнь', description: 'Учёба, увлечения и хронология жизни Сергея Есенина.',
+  title: 'Жизнь', description: `Учёба, увлечения и хронология жизни ${A.genitive} (${A.years}): три способа увидеть биографию не только как список дат.`,
   content: lifeIndex, active: 'life',
 }));
 await writePage('life/studies.html', layout({
-  title: 'Учёба', description: 'Образование Сергея Есенина: земское училище, Спас-Клепики, университет Шанявского.',
+  title: 'Учёба', description: `Образование ${A.genitive}: школы, училища и университеты — по документам и биографическим источникам.`,
   content: studiesPage, active: 'life',
 }));
 await writePage('life/passions.html', layout({
-  title: 'Увлечения', description: 'Темы и интересы Сергея Есенина: деревня, литературные объединения, путешествия, песня.',
+  title: 'Увлечения', description: `Темы и интересы ${A.genitive}: круг чтения, литературные объединения, путешествия и то, что стало основой творчества.`,
   content: passionsPage, active: 'life',
 }));
 await writePage('life/timeline.html', layout({
-  title: 'Хронология', description: 'Основные события жизни Сергея Есенина.',
+  title: 'Хронология', description: `Основные события жизни ${A.genitive} (${A.years}): ${timeline.length} дат от рождения до последних лет.`,
   content: timelinePage, active: 'life',
 }));
 
 await writePage('works/index.html', layout({
-  title: 'Библиотека произведений', description: `Каталог произведений Сергея Есенина: ${stats.works} текстов с поиском и фильтрами.`,
+  title: 'Библиотека произведений', description: `Каталог произведений ${A.genitive}: ${stats.works} текстов с поиском и фильтрами.`,
   content: worksIndex, active: 'works',
 }));
 
 for (let i = 0; i < works.length; i++) {
   const w = works[i];
+  const ld = {
+    '@type': 'CreativeWork',
+    '@id': `${SITE}${workUrl(w)}#work`,
+    name: w.title,
+    author: { '@id': `${SITE}/#person` },
+    genre: w.genre,
+    inLanguage: LANG,
+    url: `${SITE}${workUrl(w)}`,
+    isAccessibleForFree: true,
+    ...(w.year ? { datePublished: String(w.year) } : {}),
+    ...(w.sourceUrl ? { isBasedOn: w.sourceUrl } : {}),
+  };
   await writePage(`works/${w.slug}.html`, layout({
-    title: w.title, description: `${w.title} — Сергей Есенин. ${w.year || ''}`.trim(),
-    content: workPage(w, i), active: 'works',
+    title: w.title,
+    description: `«${w.title}» — ${String(w.genre || '').toLowerCase()} ${A.genitive}${w.year ? ', ' + w.year : ''}. ${firstLine(w.text).slice(0, 120)} Читайте полный текст с указанием источника.`,
+    content: workPage(w, i), active: 'works', ogType: 'article', jsonLd: ld,
   }));
 }
 
-await writePage('research/index.html', layout({
-  title: 'Научные работы', description: 'Библиографии и исследования о Сергее Есенине.',
-  content: researchPage, active: 'research',
+await writePage('books/index.html', layout({
+  title: `Книги ${A.genitive}`, description: `Издания ${A.genitive}: электронные книги, бумажные версии и аудиокниги. Партнёрские ссылки.`,
+  content: booksPage, active: 'books',
+  jsonLd: books.length ? {
+    '@type': 'ItemList',
+    name: `Книги ${A.genitive}`,
+    numberOfItems: books.length,
+    itemListElement: books.map((b, i) => ({
+      '@type': 'ListItem',
+      position: i + 1,
+      item: {
+        '@type': 'Book',
+        name: b.title,
+        author: { '@id': `${SITE}/#person` },
+        inLanguage: LANG,
+        ...(b.isbn ? { isbn: b.isbn } : {}),
+        ...(b.year ? { datePublished: String(b.year) } : {}),
+        ...(b.pages ? { numberOfPages: b.pages } : {}),
+        bookFormat: /аудио/i.test(b.format || '') ? 'https://schema.org/AudiobookFormat' : 'https://schema.org/EBook',
+      },
+    })),
+  } : null,
 }));
+
+await writePage('research/index.html', layout({
+  title: 'Научные работы', description: `Библиографии и исследования о ${A.prepositional}: ${research.length} записей с аннотациями и выходными данными.`,
+  content: researchPage, active: 'research',
+  jsonLd: research.length ? {
+    '@type': 'ItemList',
+    name: `Научные работы о ${A.prepositional}`,
+    numberOfItems: research.length,
+    itemListElement: research.map((r, i) => ({
+      '@type': 'ListItem',
+      position: i + 1,
+      item: {
+        '@type': 'CreativeWork',
+        name: r.title,
+        author: (r.authors || []).map((n) => ({ '@type': 'Person', name: n })),
+        datePublished: String(r.year),
+        inLanguage: LANG,
+      },
+    })),
+  } : null,
+}));
+
 await writePage('sources.html', layout({
-  title: 'Источники', description: 'Реестр источников проекта о Сергее Есенине.',
+  title: 'Источники', description: `Реестр источников проекта о ${A.prepositional}: академические издания, энциклопедии, мемуары и справочные ресурсы с уровнями A–D.`,
   content: sourcesPage, active: 'sources',
 }));
 await writePage('versions.html', layout({
-  title: 'Версии и спорные вопросы', description: 'Спорные вопросы биографии Сергея Есенина.',
+  title: 'Версии и спорные вопросы', description: `Спорные вопросы биографии ${A.genitive}: что установлено, какие есть версии и почему мы не выдаём их за факты.`,
   content: versionsPage, active: 'versions',
 }));
 await writePage('about.html', layout({
-  title: 'О проекте', description: 'Принципы работы проекта, права на материалы, обновления.',
+  title: 'О проекте', description: 'Принципы работы проекта: проверка фактов, права на тексты и изображения, партнёрские ссылки и обновления.',
   content: aboutPage, active: '',
 }));
 await writePage('404.html', layout({
-  title: 'Страница не найдена', description: 'Страница не найдена.', content: notFound, active: '',
+  title: 'Страница не найдена', description: 'Страница не найдена. Вернитесь на главную или воспользуйтесь поиском по произведениям, людям и разделам сайта.', content: notFound,
+  active: '', noindex: true,
 }));
 
 // ---------- assets ----------
 
 await cp('src/styles.css', join(DIST, 'styles.css'));
 await cp('src/app.js', join(DIST, 'app.js'));
+await cp('src/theme.js', join(DIST, 'theme.js'));
 await cp('public/img', join(DIST, 'img'), { recursive: true });
 
-await writeFile(join(DIST, 'favicon.svg'), `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="12" fill="#7b2f2f"/><text x="32" y="45" font-family="Georgia,serif" font-size="38" fill="#f7f2e8" text-anchor="middle">Е</text></svg>`, 'utf8');
+await writeFile(join(DIST, 'favicon.svg'), `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="12" fill="#7b2f2f"/><text x="32" y="45" font-family="Georgia,serif" font-size="38" fill="#f7f2e8" text-anchor="middle">${esc(String(A.lastName || A.name)[0])}</text></svg>`, 'utf8');
 
 // ---------- search index ----------
 
@@ -821,12 +1115,16 @@ const searchItems = [
     k: `${w.genre}${w.year ? ' · ' + w.year : ''}`,
     s: firstLine(w.text).slice(0, 90),
   })),
-  ...articles.map((a) => ({ t: a.title, u: `/biography/${a.slug}.html`, g: 'Биография', k: a.kind === 'overview' ? 'Обзор' : 'Период', s: a.excerpt })),
-  ...people.map((p) => ({ t: p.name, u: `/people/${p.id}.html`, g: 'Человек', k: p.role, s: p.summary.slice(0, 90) })),
-  ...research.map((r) => ({ t: r.title, u: '/research/index.html', g: 'Научная работа', k: `${r.authors.join(', ')} · ${r.year}`, s: r.annotation })),
+  ...articles.map((a) => ({ t: a.title, u: `/biography/${a.slug}.html`, g: 'Биография', k: a.kind === 'overview' ? 'Обзор' : 'Период', s: a.excerpt || '' })),
+  ...people.map((p) => ({ t: p.name, u: `/people/${p.id}.html`, g: 'Человек', k: p.role, s: String(p.summary || '').slice(0, 90) })),
+  ...books.map((b) => ({ t: b.title, u: '/books/', g: 'Книга', k: `${b.format}${b.year ? ' · ' + b.year : ''}`, s: String(b.annotation || '').slice(0, 90) })),
+  ...research.map((r) => ({ t: r.title, u: '/research/', g: 'Научная работа', k: `${(r.authors || []).join(', ')} · ${r.year}`, s: r.annotation })),
   { t: 'Хронология', u: '/life/timeline.html', g: 'Раздел', k: 'Жизнь', s: 'Основные события биографии' },
   { t: 'Учёба', u: '/life/studies.html', g: 'Раздел', k: 'Жизнь', s: 'Школа, училище, университет' },
+  { t: 'Книги', u: '/books/', g: 'Раздел', k: 'Издания', s: 'Купить книги, аудиокниги' },
   { t: 'Источники', u: '/sources.html', g: 'Раздел', k: 'Реестр', s: 'Уровни достоверности' },
+  { t: 'Версии', u: '/versions.html', g: 'Раздел', k: 'Спорные вопросы', s: 'Что установлено, а что — версия' },
+  { t: 'О проекте', u: '/about.html', g: 'Раздел', k: 'Права и принципы', s: 'Лицензии, партнёрские ссылки, обновления' },
 ];
 
 await writeFile(join(DIST, 'search.json'), JSON.stringify(searchItems), 'utf8');
@@ -834,7 +1132,8 @@ await writeFile(join(DIST, 'search.json'), JSON.stringify(searchItems), 'utf8');
 // ---------- sitemap ----------
 
 const urls = [
-  '/', '/biography/', '/people/', '/life/', '/works/', '/research/', '/versions.html', '/sources.html', '/about.html',
+  '/', '/biography/', '/people/', '/life/', '/works/', '/books/', '/research/',
+  '/versions.html', '/sources.html', '/about.html',
   ...articles.map((a) => `/biography/${a.slug}.html`),
   ...Object.keys(categories).filter((k) => people.some((p) => p.category === k)).map((k) => `/people/${k}.html`),
   ...people.map((p) => `/people/${p.id}.html`),
@@ -844,10 +1143,51 @@ const urls = [
 
 const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${urls.map((u) => `  <url><loc>${SITE}${u}</loc><lastmod>2026-10-20</lastmod></url>`).join('\n')}
+${urls.map((u) => `  <url><loc>${encodeURI(SITE + u)}</loc><lastmod>${UPDATED}</lastmod></url>`).join('\n')}
 </urlset>`;
 await writeFile(join(DIST, 'sitemap.xml'), sitemap, 'utf8');
-await writeFile(join(DIST, 'robots.txt'), `User-agent: *\nAllow: /\nSitemap: ${SITE}/sitemap.xml\n`, 'utf8');
+await writeFile(join(DIST, 'robots.txt'), `User-agent: *\nAllow: /\nDisallow: /404.html\nSitemap: ${SITE}/sitemap.xml\n`, 'utf8');
 
-console.log('built pages:', urls.length + 1);
-console.log('works:', works.length, 'people:', people.length, 'research:', research.length);
+// ---------- deploy artifacts ----------
+
+const ym = config.analytics?.yandexMetrika;
+const ga = config.analytics?.googleAnalytics;
+const scriptSrc = ["'self'", ...(ym ? ["'unsafe-inline'", 'https://mc.yandex.ru'] : []), ...(ga ? ["'unsafe-inline'", 'https://www.googletagmanager.com'] : [])].join(' ');
+const imgSrc = ["'self'", 'data:', ...(ym ? ['https://mc.yandex.ru'] : [])].join(' ');
+const connectSrc = ["'self'", ...(ym ? ['https://mc.yandex.ru'] : []), ...(ga ? ['https://www.googletagmanager.com', 'https://www.google-analytics.com'] : [])].join(' ');
+const csp = `default-src 'self'; img-src ${imgSrc}; style-src 'self' 'unsafe-inline'; script-src ${scriptSrc}; connect-src ${connectSrc}; font-src 'self' data:; frame-ancestors 'none'; base-uri 'self'; form-action 'self'`;
+
+await writeFile(join(DIST, '_headers'), `# Заголовки для Netlify / Cloudflare Pages (файл читается хостингом, не браузером)
+/*
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: SAMEORIGIN
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: geolocation=(), microphone=(), camera=()
+  Strict-Transport-Security: max-age=31536000; includeSubDomains
+  Content-Security-Policy: ${csp}
+
+/styles.css
+  Cache-Control: public, max-age=31536000, immutable
+/app.js
+  Cache-Control: public, max-age=31536000, immutable
+/theme.js
+  Cache-Control: public, max-age=31536000, immutable
+/img/*
+  Cache-Control: public, max-age=31536000, immutable
+/*.html
+  Cache-Control: public, max-age=0, must-revalidate
+`, 'utf8');
+
+await writeFile(join(DIST, '_redirects'), '/*  /404.html  404\n', 'utf8');
+await writeFile(join(DIST, '.nojekyll'), '', 'utf8');
+
+// ---------- report ----------
+
+const pageCount = urls.length + 1;
+console.log('built pages:', pageCount);
+console.log('works:', works.length, 'people:', people.length, 'books:', books.length, 'research:', research.length);
+if (/\.example\b|example\.(org|com)/.test(SITE)) console.warn('WARN: siteUrl is still a placeholder — set the production domain in site.config.json');
+if (config.affiliate?.enabled && books.length && !Object.values(stores).some((s) => s.tag)) {
+  console.warn('WARN: affiliate links have no partner tags — fill affiliate.stores.*.tag before publishing');
+}
+if (!books.length) console.warn('WARN: data/books.json is empty — the Books section will show a stub');

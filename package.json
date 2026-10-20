@@ -10,7 +10,13 @@
     "build:works": "node scripts/build-works.mjs",
     "build": "node scripts/build.mjs",
     "check": "node scripts/check-links.mjs",
+    "verify": "npm run build && npm run check && node scripts/verify.mjs",
+    "verify:strict": "npm run build && npm run check && node scripts/verify.mjs --strict",
     "serve": "python -m http.server 4173 --directory dist",
+    "preview": "npm run build && npm run serve",
     "dev": "npm run build && npm run serve"
+  },
+  "engines": {
+    "node": ">=20"
   }
 }
