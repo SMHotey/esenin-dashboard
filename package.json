@@ -1,0 +1,16 @@
+{
+  "name": "esenin-dashboard",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Дашборд-лендинг о Сергее Есенине: биография, люди, библиотека произведений, научные работы",
+  "scripts": {
+    "import:genres": "node scripts/import-genres.mjs",
+    "import:works": "node scripts/import-works.mjs",
+    "build:works": "node scripts/build-works.mjs",
+    "build": "node scripts/build.mjs",
+    "check": "node scripts/check-links.mjs",
+    "serve": "python -m http.server 4173 --directory dist",
+    "dev": "npm run build && npm run serve"
+  }
+}
