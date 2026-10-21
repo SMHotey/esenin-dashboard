@@ -125,12 +125,22 @@ for (const b of books) {
     if (!/^https:\/\//.test(l.url)) errors.push(`books.json: ${b.id} — ссылка не https`);
   }
 }
-if (config.affiliate?.enabled && books.length && !Object.values(config.affiliate?.stores || {}).some((s) => s.tag)) {
+const markedLinks = books.some((b) => (b.links || []).some((l) => /[?&](erid|partnerid)=/i.test(l.url || '')));
+if (config.affiliate?.enabled && books.length && !Object.values(config.affiliate?.stores || {}).some((s) => s.tag) && !markedLinks) {
   warnings.push('партнёрские ссылки без меток: заполните affiliate.stores.*.tag');
 }
 const booksHtml = await readFile(join(DIST, 'books/index.html'), 'utf8');
 if (books.length && !booksHtml.includes('rel="sponsored')) errors.push('books: у ссылок нет rel="sponsored"');
 if (books.length && !booksHtml.includes('ad-mark')) errors.push('books: нет пометки «реклама»');
+// Проверяем маркировку интернет-рекламы: если в ссылке есть erid, он должен быть виден на странице.
+for (const b of books) {
+  for (const l of b.links || []) {
+    const erid = (String(l.url).match(/[?&]erid=([^&]+)/i) || [])[1];
+    if (erid && !booksHtml.includes(`erid: ${decodeURIComponent(erid)}`)) {
+      errors.push(`books: у ${b.id} ссылка с erid=${decodeURIComponent(erid)}, но erid не выведен на странице`);
+    }
+  }
+}
 
 // --- служебные файлы ---
 for (const f of ['404.html', 'robots.txt', 'sitemap.xml', 'search.json', '_headers', '_redirects', '.nojekyll', 'favicon.svg', 'styles.css', 'app.js']) {

@@ -424,16 +424,29 @@ function bookStoreLinks(b) {
 function bookCard(b, index) {
   const tone = index % 5;
   const isAudio = /аудио/i.test(b.format || '');
-  const meta = [b.year, b.pages ? `${b.pages} с.` : '', b.isbn ? `ISBN ${b.isbn}` : '', b.performer ? `Читает ${b.performer}` : '']
+  const isPaper = /бумаж/i.test(b.format || '');
+  const meta = [b.year, b.pages ? `${b.pages} с.` : '', b.publisher, b.isbn ? `ISBN ${b.isbn}` : '', b.performer ? `Читает ${b.performer}` : '']
     .filter(Boolean).map(esc).join(' · ');
-  const links = bookStoreLinks(b).map((l, i) =>
-    `<a class="book-link${i === 0 ? ' is-primary' : ''}" href="${esc(l.url)}" target="_blank" rel="sponsored nofollow noopener" aria-label="Купить в ${esc(l.label)} (откроется в новой вкладке)">${esc(l.label)} <span class="arr" aria-hidden="true">↗</span></a>`).join('');
+  // erid — идентификатор маркировки интернет-рекламы (ст. 18.1 ФЗ «О рекламе»):
+  // его нужно показывать рядом с рекламной ссылкой, поэтому вытаскиваем его из URL.
+  const eridOf = (url) => {
+    const m = String(url || '').match(/[?&]erid=([^&]+)/i);
+    return m ? decodeURIComponent(m[1]) : '';
+  };
+  const links = bookStoreLinks(b).map((l, i) => {
+    const erid = eridOf(l.url);
+    const label = `Купить в ${esc(l.label)} (открывается в новой вкладке${erid ? ', реклама' : ''})`;
+    return `<span class="book-buy">
+      <a class="book-link${i === 0 ? ' is-primary' : ''}" href="${esc(l.url)}" target="_blank" rel="sponsored nofollow noopener" aria-label="${label}">${esc(l.label)} <span class="arr" aria-hidden="true">↗</span></a>
+      ${erid ? `<span class="book-erid">реклама · erid: ${esc(erid)}</span>` : ''}
+    </span>`;
+  }).join('');
   const tags = (b.tags || []).slice(0, 3).map((t) => `<span class="tag">${esc(t)}</span>`).join('');
 
   return `<article class="book-card">
     <div class="book-cover" data-tone="${tone}" aria-hidden="true">
       <span class="bc-author">${esc(A.lastName)}</span>
-      <span class="bc-format">${isAudio ? 'аудио' : 'эл. книга'}</span>
+      <span class="bc-format">${isAudio ? 'аудио' : isPaper ? 'бумажная' : 'эл. книга'}</span>
       <span class="bc-rule"></span>
       <span class="bc-title">${esc(b.title)}</span>
       ${b.series ? `<span class="bc-series">${esc(b.series)}</span>` : ''}
@@ -1463,7 +1476,10 @@ const pageCount = uniqueUrls.length + 1;
 console.log('built pages:', pageCount);
 console.log('works:', works.length, 'people:', people.length, 'books:', books.length, 'research:', research.length);
 if (/\.example\b|example\.(org|com)/.test(SITE)) console.warn('ВНИМАНИЕ: siteUrl — заглушка, укажите боевой домен в site.config.json');
-if (config.affiliate?.enabled && books.length && !Object.values(stores).some((s) => s.tag)) {
+// Ссылка считается промаркированной, если она пришла из партнёрской программы готовой
+// (erid/partnerId внутри URL): тогда метка в конфиге не нужна.
+const markedLinks = books.some((b) => (b.links || []).some((l) => /[?&](erid|partnerid)=/i.test(l.url || '')));
+if (config.affiliate?.enabled && books.length && !Object.values(stores).some((s) => s.tag) && !markedLinks) {
   console.warn('ВНИМАНИЕ: у партнёрских ссылок нет меток — заполните affiliate.stores.*.tag перед публикацией');
 }
 if (!books.length) console.warn('ВНИМАНИЕ: data/books.json пуст — раздел «Книги» покажет заглушку');

@@ -63,6 +63,13 @@
         "tagParam": "",
         "tag": "",
         "search": "https://www.labirint.ru/search/?q={q}"
+      },
+      "chitai-gorod": {
+        "label": "Читай-город",
+        "tagParam": "",
+        "tag": "",
+        "search": "https://www.chitai-gorod.ru/search.html?query={q}",
+        "note": "Партнёрские ссылки магазин выдаёт готовыми: https://www.chitai-gorod.ru/r/XXXX?erid=… — подставлять метку не нужно, erid уже внутри ссылки."
       }
     }
   },
