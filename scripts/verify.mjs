@@ -12,7 +12,11 @@ const errors = [];
 const warnings = [];
 const info = [];
 
-const readJson = async (p) => JSON.parse(await readFile(p, 'utf8'));
+const readJson = async (p) => {
+  const raw = (await readFile(p, 'utf8')).trim();
+  // Пустой файл данных — «пока нет», раздел показывает заглушку (см. build.mjs).
+  return raw ? JSON.parse(raw) : [];
+};
 const config = await readJson('site.config.json');
 const SITE = String(config.siteUrl || '').replace(/\/$/, '');
 

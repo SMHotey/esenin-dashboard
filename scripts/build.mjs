@@ -10,7 +10,10 @@ const DIST = join(ROOT, 'dist');
 async function readJson(rel, fallback) {
   const file = join(ROOT, rel);
   if (!existsSync(file)) return fallback;
-  return JSON.parse(await readFile(file, 'utf8'));
+  const raw = (await readFile(file, 'utf8')).trim();
+  // Пустой файл (0 байт) — это «данных пока нет», а не ошибка: раздел покажет заглушку.
+  if (!raw) return fallback;
+  return JSON.parse(raw);
 }
 
 const config = await readJson('site.config.json', {});
@@ -1459,8 +1462,8 @@ await writeFile(join(DIST, 'CNAME'), `${new URL(SITE).host}\n`, 'utf8');
 const pageCount = uniqueUrls.length + 1;
 console.log('built pages:', pageCount);
 console.log('works:', works.length, 'people:', people.length, 'books:', books.length, 'research:', research.length);
-if (/\.example\b|example\.(org|com)/.test(SITE)) console.warn('WARN: siteUrl is still a placeholder — set the production domain in site.config.json');
+if (/\.example\b|example\.(org|com)/.test(SITE)) console.warn('ВНИМАНИЕ: siteUrl — заглушка, укажите боевой домен в site.config.json');
 if (config.affiliate?.enabled && books.length && !Object.values(stores).some((s) => s.tag)) {
-  console.warn('WARN: affiliate links have no partner tags — fill affiliate.stores.*.tag before publishing');
+  console.warn('ВНИМАНИЕ: у партнёрских ссылок нет меток — заполните affiliate.stores.*.tag перед публикацией');
 }
-if (!books.length) console.warn('WARN: data/books.json is empty — the Books section will show a stub');
+if (!books.length) console.warn('ВНИМАНИЕ: data/books.json пуст — раздел «Книги» покажет заглушку');
