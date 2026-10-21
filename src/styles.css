@@ -508,7 +508,7 @@ select, .select {
 /* ---------- footer ---------- */
 
 .site-footer { border-top: 1px solid var(--line); padding: 40px 0 50px; margin-top: 30px; background: var(--paper-2); }
-.footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 32px; }
+.footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 28px; }
 .footer-grid h4 { font-family: var(--sans); font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--gold); }
 .footer-grid ul { list-style: none; padding: 0; margin: 0; font-size: 14px; }
 .footer-grid li { margin-bottom: 8px; }
@@ -700,6 +700,33 @@ select, .select {
 .desk-art .d-spindles path { stroke: var(--art-line); stroke-width: 4; fill: none; opacity: .8; stroke-linecap: round; }
 .desk-art .d-cushion { fill: var(--art-green); stroke: var(--art-line); stroke-width: 1.5; }
 
+/* ---------- места, наследие, темы, словарь ---------- */
+
+.fact-list { display: grid; gap: 0; margin: 6px 0 0; }
+.fact-list > div { display: grid; grid-template-columns: 170px minmax(0, 1fr); gap: 12px; padding: 9px 0; border-top: 1px solid var(--line); }
+.fact-list > div:first-child { border-top: 0; }
+.fact-list dt { font-family: var(--sans); font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.fact-list dd { margin: 0; font-size: 15px; color: var(--ink-soft); }
+
+.topic-work-list { list-style: none; padding: 0; margin: 0; border-top: 1px solid var(--line); }
+.topic-work-list li { display: grid; grid-template-columns: minmax(0, 1.1fr) 84px minmax(0, 1.5fr); gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--line); align-items: baseline; }
+.topic-work-list a { font-family: var(--serif); font-size: 17px; }
+.tw-year { font-size: 12px; color: var(--muted); }
+.tw-first { font-size: 13px; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+.glossary { display: grid; gap: 0; margin-top: 12px; }
+.glossary-item { padding: 12px 0; border-bottom: 1px solid var(--line); font-size: 15px; color: var(--ink-soft); }
+.glossary-item b { font-family: var(--serif); font-size: 18px; color: var(--ink); }
+.glossary-ex { display: block; font-family: var(--serif); font-style: italic; color: var(--muted); margin-top: 6px; }
+.glossary-src { display: inline-block; font-size: 12px; margin-top: 4px; color: var(--accent); }
+
+.lang-grid { display: flex; flex-wrap: wrap; gap: 6px; margin: 12px 0 20px; }
+
+.az-nav { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; }
+.az-list { list-style: none; padding: 0; margin: 8px 0 0; columns: 2; column-gap: 34px; }
+.az-list li { break-inside: avoid; padding: 4px 0; font-size: 15px; }
+.az-list .tw-year { margin-left: 8px; }
+
 /* ---------- responsive ---------- */
 
 @media (max-width: 1080px) {
@@ -757,6 +784,10 @@ select, .select {
   .person-hero { grid-template-columns: 1fr; }
   .research-item { grid-template-columns: 1fr; gap: 6px; }
   .footer-grid { grid-template-columns: 1fr; }
+  .fact-list > div { grid-template-columns: 1fr; gap: 3px; }
+  .topic-work-list li { grid-template-columns: 1fr; gap: 2px; }
+  .tw-first { white-space: normal; }
+  .az-list { columns: 1; }
   .prose { font-size: 17px; }
   .hero { padding-top: 30px; }
   .catalog-toolbar { top: 64px; }

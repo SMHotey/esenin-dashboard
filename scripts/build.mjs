@@ -2,6 +2,7 @@ import { readFile, writeFile, mkdir, cp, rm, readdir } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { createHash } from 'node:crypto';
+import { buildSectionPages } from './sections.mjs';
 
 const ROOT = process.cwd();
 const DIST = join(ROOT, 'dist');
@@ -71,6 +72,16 @@ const studies = await readJson('data/studies.json', []);
 const passions = await readJson('data/passions.json', []);
 const versions = await readJson('data/versions.json', []);
 const books = await readJson('data/books.json', []);
+const places = await readJson('data/places.json', []);
+const museums = await readJson('data/museums.json', []);
+const monuments = await readJson('data/monuments.json', []);
+const music = await readJson('data/music.json', { items: [] });
+const films = await readJson('data/films.json', { items: [] });
+const languages = await readJson('data/languages.json', { languages: [] });
+const topics = await readJson('data/topics.json', []);
+const glossary = await readJson('data/glossary.json', { groups: [] });
+const faq = await readJson('data/faq.json', []);
+const death = await readJson('data/death.json', { blocks: [] });
 
 const categories = Object.keys(config.peopleCategories || {}).length
   ? config.peopleCategories
@@ -154,10 +165,10 @@ const nav = [
   ['/people/', 'Люди', 'people'],
   ['/life/', 'Жизнь', 'life'],
   ['/works/', 'Библиотека', 'works'],
+  ['/places/', 'Места', 'places'],
+  ['/legacy/', 'Наследие', 'legacy'],
   ['/books/', 'Книги', 'books'],
   ['/research/', 'Наука', 'research'],
-  ['/versions.html', 'Версии', 'versions'],
-  ['/sources.html', 'Источники', 'sources'],
 ];
 
 function analyticsHtml() {
@@ -173,7 +184,7 @@ function analyticsHtml() {
   return out;
 }
 
-function layout({ title, description, content, active = '', bodyClass = '', jsonLd = [], noindex = false, ogType = 'website', preloadImage = '' }) {
+function layout({ title, description, content, active = '', bodyClass = '', jsonLd = [], noindex = false, ogType = 'website', preloadImage = '', breadcrumb = [] }) {
   const navHtml = nav.map(([href, label, key]) =>
     `<a href="${href}"${active === key ? ' aria-current="page"' : ''}>${label}</a>`).join('');
 
@@ -203,8 +214,35 @@ function layout({ title, description, content, active = '', bodyClass = '', json
       name: `${A.name} — биография, произведения, книги`,
       inLanguage: LANG,
       publisher: { '@id': `${SITE}/#person` },
+      potentialAction: {
+        '@type': 'SearchAction',
+        target: { '@type': 'EntryPoint', urlTemplate: `${SITE}/works/?q={search_term_string}` },
+        'query-input': 'required name=search_term_string',
+      },
+    },
+    {
+      '@type': 'WebPage',
+      '@id': '__CANONICAL__#webpage',
+      url: '__CANONICAL__',
+      name: fullTitle,
+      description,
+      isPartOf: { '@id': `${SITE}/#website` },
+      inLanguage: LANG,
+      dateModified: UPDATED,
     },
   ];
+  if (breadcrumb.length) {
+    graph.push({
+      '@type': 'BreadcrumbList',
+      '@id': '__CANONICAL__#breadcrumb',
+      itemListElement: breadcrumb.map(([href, label], i) => ({
+        '@type': 'ListItem',
+        position: i + 1,
+        name: label,
+        ...(href ? { item: `${SITE}${href}` } : {}),
+      })),
+    });
+  }
   if (jsonLd) graph.push(...(Array.isArray(jsonLd) ? jsonLd : [jsonLd]));
 
   return `<!doctype html>
@@ -214,7 +252,7 @@ function layout({ title, description, content, active = '', bodyClass = '', json
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>${esc(fullTitle)}</title>
 <meta name="description" content="${esc(description)}">
-<meta name="robots" content="${noindex ? 'noindex, follow' : 'index, follow'}">
+<meta name="robots" content="${noindex ? 'noindex, follow' : 'index, follow, max-image-preview:large, max-snippet:-1'}">
 <link rel="canonical" href="__CANONICAL__">
 ${preloadImage ? `<link rel="preload" href="${esc(preloadImage)}" as="image">` : ''}
 <link rel="stylesheet" href="/styles.css?v=${assetVersion}">
@@ -264,8 +302,20 @@ ${content}
           <li><a href="/biography/">Биография</a></li>
           <li><a href="/people/">Люди</a></li>
           <li><a href="/works/">Библиотека</a></li>
+          <li><a href="/places/">Есенинские места</a></li>
+          <li><a href="/legacy/">Наследие</a></li>
           <li><a href="/books/">Книги</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Читателю</h4>
+        <ul>
+          <li><a href="/topics/">Стихи по темам</a></li>
+          <li><a href="/works/az.html">Алфавитный указатель</a></li>
+          <li><a href="/glossary.html">Словарь к стихам</a></li>
+          <li><a href="/faq.html">Частые вопросы</a></li>
           <li><a href="/research/">Научные работы</a></li>
+          <li><a href="/legacy/memory.html">Музеи и памятники</a></li>
         </ul>
       </div>
       <div>
@@ -400,6 +450,9 @@ const initials = `${String(A.firstName || '').trim()[0] || ''}${String(A.lastNam
 
 // ---------- home ----------
 
+// Карта «произведение → темы» заполняется при сборке дополнительных разделов.
+let workTopics = new Map();
+
 const featuredTitles = config.home?.featuredWorks || [];
 const featured = (featuredTitles.length ? featuredTitles.map((t) => works.find((w) => norm(w.title).startsWith(norm(t)))) : works.slice(0, 6))
   .filter(Boolean).slice(0, 6);
@@ -418,11 +471,14 @@ const tiles = [
   ['/people/', '02', 'Люди', `Семья, друзья, коллеги — ${stats.people}`],
   ['/life/', '03', 'Жизнь', 'Учёба, увлечения, хронология'],
   ['/works/', '04', 'Библиотека', `${stats.works} ${worksWord(stats.works)} с каталогом`],
-  ['/books/', '05', 'Книги', books.length ? `${stats.books} ${plural(stats.books, ['издание', 'издания', 'изданий'])} · партнёрские ссылки` : 'Издания автора'],
-  ['/research/', '06', 'Наука', `${stats.research} ${plural(stats.research, ['работа', 'работы', 'работ'])} о ${A.prepositional}`],
-  ['/versions.html', '07', 'Версии', 'Спорные вопросы биографии'],
-  ['/sources.html', '08', 'Источники', 'Реестр и уровни достоверности'],
-  ['/about.html', '09', 'О проекте', 'Принципы, права, обновления'],
+  ['/places/', '05', 'Места', `${places.length} ${plural(places.length, ['место', 'места', 'мест'])}: от Константинова до Нью-Йорка`],
+  ['/legacy/', '06', 'Наследие', 'Гибель, музеи, музыка, кино, переводы'],
+  ['/topics/', '07', 'Темы', `${topics.length} ${plural(topics.length, ['подборка', 'подборки', 'подборок'])} стихов`],
+  ['/books/', '08', 'Книги', books.length ? `${stats.books} ${plural(stats.books, ['издание', 'издания', 'изданий'])} · партнёрские ссылки` : 'Издания автора'],
+  ['/research/', '09', 'Наука', `${stats.research} ${plural(stats.research, ['работа', 'работы', 'работ'])} о ${A.prepositional}`],
+  ['/glossary.html', '10', 'Словарь', 'Диалекты и архаизмы в стихах'],
+  ['/faq.html', '11', 'Вопросы', 'Короткие ответы на частые вопросы'],
+  ['/about.html', '12', 'О проекте', 'Принципы, права, обновления'],
 ];
 
 const home = `
@@ -484,6 +540,52 @@ const home = `
         <p style="margin-top:18px;font-size:13px;color:var(--muted)">В разделе «Люди» — карточки членов семьи, друзей и современников, с которыми связана биография.</p>
         <p><a class="section-link" href="/people/">Все персоны →</a></p>
       </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="wrap">
+    <div class="section-head">
+      <div><h2>Есенинские места</h2><p>Восемь точек на карте: родина, две столицы, Кавказ и заграничные поездки.</p></div>
+      <a class="section-link" href="/places/">Все места →</a>
+    </div>
+    <div class="works-grid">
+      ${['konstantinovo', 'moskva', 'peterburg'].map((id) => places.find((p) => p.id === id)).filter(Boolean).map((p) => `<a class="work-card" href="/places/${p.id}.html">
+        <span class="genre">${esc(p.kicker)}</span><span class="title">${esc(p.title)}</span>
+        <span class="year">${esc(p.years || '')}</span><span class="preview">${esc(p.subtitle)}</span>
+      </a>`).join('')}
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="wrap">
+    <div class="section-head">
+      <div><h2>Наследие</h2><p>Гибель поэта, музеи и памятники, музыка, кино и переводы — пять разрезов одной темы.</p></div>
+      <a class="section-link" href="/legacy/">Весь раздел →</a>
+    </div>
+    <div class="tiles">
+      <a class="tile" href="/legacy/gibel.html"><span class="tile-kicker">01</span><span class="tile-title">Гибель поэта</span><span class="tile-count">Документы и версии</span></a>
+      <a class="tile" href="/legacy/memory.html"><span class="tile-kicker">02</span><span class="tile-title">Музеи и памятники</span><span class="tile-count">${museums.length + monuments.length} адресов</span></a>
+      <a class="tile" href="/legacy/music.html"><span class="tile-kicker">03</span><span class="tile-title">Есенин в музыке</span><span class="tile-count">Песни и романсы</span></a>
+      <a class="tile" href="/legacy/cinema.html"><span class="tile-kicker">04</span><span class="tile-title">Есенин на экране</span><span class="tile-count">Фильмы и сериалы</span></a>
+      <a class="tile" href="/legacy/translations.html"><span class="tile-kicker">05</span><span class="tile-title">Переводы</span><span class="tile-count">${(languages.languages || []).length} языков</span></a>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="wrap">
+    <div class="section-head">
+      <div><h2>Стихи по темам</h2><p>${topics.length} подборок: природа, Родина, деревня, любовь, город, смерть, Кавказ, революция.</p></div>
+      <a class="section-link" href="/topics/">Все подборки →</a>
+    </div>
+    <div class="tag-row" style="gap:8px">
+      ${topics.map((t) => `<a class="chip" href="/topics/${t.id}.html">${esc(t.title.replace('Стихи Есенина ', '').replace(/^о /, ''))}</a>`).join('')}
+      <a class="chip" href="/works/az.html">Алфавитный указатель</a>
+      <a class="chip" href="/glossary.html">Словарь</a>
+      <a class="chip" href="/faq.html">Частые вопросы</a>
     </div>
   </div>
 </section>
@@ -704,6 +806,12 @@ ${crumbs([['/', 'Главная'], [null, 'Библиотека']])}
 <div class="wrap page-head">
   <h1>Библиотека</h1>
   <p>${stats.works} ${worksWord(stats.works)}${genreSummary ? `: ${genreSummary}` : ''}. Поиск — по названию и первой строке.</p>
+  <div class="tag-row" style="margin-top:14px">
+    <a class="chip" href="/topics/">Стихи по темам</a>
+    <a class="chip" href="/works/az.html">Алфавитный указатель</a>
+    <a class="chip" href="/glossary.html">Словарь к стихам</a>
+    <a class="chip" href="/legacy/music.html">Песни и романсы</a>
+  </div>
 </div>
 <div class="catalog-toolbar">
   <div class="wrap">
@@ -760,7 +868,7 @@ function workPage(w, index) {
 
   return `${crumbs([['/', 'Главная'], ['/works/', 'Библиотека'], [null, w.title]])}
   <article class="wrap poem-page">
-    <div class="meta-line"><span class="badge">${esc(w.genre)}</span>${w.year ? `<span>${w.year}</span>` : ''}<span>Источник: Викитека</span></div>
+    <div class="meta-line"><span class="badge">${esc(w.genre)}</span>${w.year ? `<span>${w.year}</span>` : ''}<span>Источник: ${esc(w.sourceLabel || 'Викитека')}</span></div>
     <h1 class="poem-title">${esc(w.title)}</h1>
     <div class="poem-tools">
       <span class="label">Текст:</span>
@@ -776,6 +884,13 @@ function workPage(w, index) {
       <b>Источник текста.</b> <a href="${esc(w.sourceUrl)}" rel="noopener">${esc(w.title)}</a> в Викитеке.
       ${w.source ? `<br><b>Редакция/издание:</b> ${esc(cleanSource(w.source))}` : ''}
       <br>${TEXTS_PD ? 'Текст находится в общественном достоянии. При цитировании указывайте источник.' : 'Полный текст не размещён: произведение охраняется авторским правом. Ссылка ведёт на страницу-источник.'}
+    </div>
+    <div class="tag-row" style="margin-top:18px">
+      ${(workTopics.get(w.slug) || []).length ? `<span style="font-size:13px;color:var(--muted);align-self:center">Темы:</span>
+      ${(workTopics.get(w.slug) || []).map((t) => `<a class="chip" href="/topics/${t.id}.html">${esc(t.kicker || t.title)}</a>`).join('')}` : ''}
+      <a class="chip" href="/works/az.html">Алфавитный указатель</a>
+      <a class="chip" href="/glossary.html">Словарь к стихам</a>
+      <a class="chip" href="/topics/">Все подборки</a>
     </div>
     <nav style="display:flex;justify-content:space-between;gap:16px;margin-top:30px" aria-label="Навигация по произведениям">
       <span>${prev ? `<a href="${workUrl(prev)}">← ${esc(prev.title)}</a>` : ''}</span>
@@ -880,6 +995,9 @@ ${crumbs([['/', 'Главная'], [null, 'О проекте']])}
     <p>Каждое утверждение опирается на источник. При расхождении источников мы показываем версии, а не выбираем удобную. Спорные сюжеты вынесены в раздел «Версии».</p>
     <h2>Тексты</h2>
     <p>${esc(A.copyright)} ${TEXTS_PD ? 'Произведения находятся в общественном достоянии; у каждого указана страница-источник и, где возможно, редакция академического издания.' : 'Полные тексты произведений не размещаются, пока действует авторское право: доступны метаданные и ссылки на правомерные издания.'}</p>
+    <h2>Разделы о местах, музыке, кино и языке</h2>
+    <p>Тексты разделов «Есенинские места», «Наследие», «Стихи по темам», «Словарь к стихам» и «Частые вопросы» написаны для этого проекта. Они опираются на общедоступные факты — даты, названия, адреса, библиографические сведения — и не воспроизводят чужие статьи, очерки или музейные описания. Факт как таковой не является объектом авторского права; авторским правом охраняется форма изложения, поэтому все объяснения, связки и оценки в этих разделах — оригинальные.</p>
+    <p>Стихотворные строки в словаре и подборках приведены из произведений ${esc(A.genitive)}, находящихся в общественном достоянии. Библиографические описания книг и статей даны в информационных целях.</p>
     <h2>Изображения</h2>
     <p>Используются только файлы из Wikimedia Commons, находящиеся в общественном достоянии или под свободной лицензией. Атрибуция указана рядом с изображением.</p>
     <h2>Книги и партнёрские ссылки</h2>
@@ -933,6 +1051,14 @@ const notFound = `
 
 // ---------- write ----------
 
+// Дополнительные разделы считаем до записи страниц: они дают карту тем для
+// страниц произведений (ссылки «Темы» внизу каждого текста).
+const extra = buildSectionPages({
+  A, SITE, LANG, UPDATED, UPDATED_LABEL, esc, plural, norm, crumbs, workUrl,
+  works, places, museums, monuments, music, films, languages, topics, glossary, faq, death,
+});
+workTopics = extra.workTopics;
+
 async function emptyDir(dir) {
   await mkdir(dir, { recursive: true });
   let entries = [];
@@ -963,17 +1089,20 @@ await writePage('index.html', layout({
 await writePage('biography/index.html', layout({
   title: 'Биография', description: `Обзорная биография ${A.genitive} и статьи о периодах жизни.`,
   content: biographyIndex, active: 'biography',
+  breadcrumb: [['/', 'Главная'], [null, 'Биография']],
 }));
 
 for (const a of articles) {
   await writePage(`biography/${a.slug}.html`, layout({
     title: a.title, description: a.excerpt || '', content: articlePage(a), active: 'biography', ogType: 'article',
+    breadcrumb: [['/', 'Главная'], ['/biography/', 'Биография'], [null, a.title]],
   }));
 }
 
 await writePage('people/index.html', layout({
   title: `Люди вокруг ${A.genitive}`, description: `Семья, друзья и современники ${A.genitive}: ${people.length} карточек с ролями, годами жизни и источниками сведений.`,
   content: peopleIndex, active: 'people',
+  breadcrumb: [['/', 'Главная'], [null, 'Люди']],
 }));
 
 for (const key of Object.keys(categories)) {
@@ -982,6 +1111,7 @@ for (const key of Object.keys(categories)) {
   await writePage(`people/${key}.html`, layout({
     title: categories[key], description: `${categories[key]} ${A.genitive}: ${list.length} карточек с ролью, годами жизни и указанием источника.`,
     content: categoryPage(key), active: 'people',
+    breadcrumb: [['/', 'Главная'], ['/people/', 'Люди'], [null, categories[key]]],
   }));
 }
 
@@ -990,29 +1120,35 @@ for (const p of people) {
     title: p.name,
     description: `${p.name} — ${p.role}${p.years ? ', ' + p.years : ''}. ${String(p.summary || '')}`.slice(0, 200),
     content: personPage(p), active: 'people',
+    breadcrumb: [['/', 'Главная'], ['/people/', 'Люди'], [null, p.name]],
   }));
 }
 
 await writePage('life/index.html', layout({
   title: 'Жизнь', description: `Учёба, увлечения и хронология жизни ${A.genitive} (${A.years}): три способа увидеть биографию не только как список дат.`,
   content: lifeIndex, active: 'life',
+  breadcrumb: [['/', 'Главная'], [null, 'Жизнь']],
 }));
 await writePage('life/studies.html', layout({
   title: 'Учёба', description: `Образование ${A.genitive}: школы, училища и университеты — по документам и биографическим источникам.`,
   content: studiesPage, active: 'life',
+  breadcrumb: [['/', 'Главная'], ['/life/', 'Жизнь'], [null, 'Учёба']],
 }));
 await writePage('life/passions.html', layout({
   title: 'Увлечения', description: `Темы и интересы ${A.genitive}: круг чтения, литературные объединения, путешествия и то, что стало основой творчества.`,
   content: passionsPage, active: 'life',
+  breadcrumb: [['/', 'Главная'], ['/life/', 'Жизнь'], [null, 'Увлечения']],
 }));
 await writePage('life/timeline.html', layout({
   title: 'Хронология', description: `Основные события жизни ${A.genitive} (${A.years}): ${timeline.length} дат от рождения до последних лет.`,
   content: timelinePage, active: 'life',
+  breadcrumb: [['/', 'Главная'], ['/life/', 'Жизнь'], [null, 'Хронология']],
 }));
 
 await writePage('works/index.html', layout({
   title: 'Библиотека произведений', description: `Каталог произведений ${A.genitive}: ${stats.works} текстов с поиском и фильтрами.`,
   content: worksIndex, active: 'works',
+  breadcrumb: [['/', 'Главная'], [null, 'Библиотека']],
 }));
 
 for (let i = 0; i < works.length; i++) {
@@ -1033,12 +1169,14 @@ for (let i = 0; i < works.length; i++) {
     title: w.title,
     description: `«${w.title}» — ${String(w.genre || '').toLowerCase()} ${A.genitive}${w.year ? ', ' + w.year : ''}. ${firstLine(w.text).slice(0, 120)} Читайте полный текст с указанием источника.`,
     content: workPage(w, i), active: 'works', ogType: 'article', jsonLd: ld,
+    breadcrumb: [['/', 'Главная'], ['/works/', 'Библиотека'], [null, w.title]],
   }));
 }
 
 await writePage('books/index.html', layout({
   title: `Книги ${A.genitive}`, description: `Издания ${A.genitive}: электронные книги, бумажные версии и аудиокниги. Партнёрские ссылки.`,
   content: booksPage, active: 'books',
+  breadcrumb: [['/', 'Главная'], [null, 'Книги']],
   jsonLd: books.length ? {
     '@type': 'ItemList',
     name: `Книги ${A.genitive}`,
@@ -1063,6 +1201,7 @@ await writePage('books/index.html', layout({
 await writePage('research/index.html', layout({
   title: 'Научные работы', description: `Библиографии и исследования о ${A.prepositional}: ${research.length} записей с аннотациями и выходными данными.`,
   content: researchPage, active: 'research',
+  breadcrumb: [['/', 'Главная'], [null, 'Наука']],
   jsonLd: research.length ? {
     '@type': 'ItemList',
     name: `Научные работы о ${A.prepositional}`,
@@ -1084,19 +1223,36 @@ await writePage('research/index.html', layout({
 await writePage('sources.html', layout({
   title: 'Источники', description: `Реестр источников проекта о ${A.prepositional}: академические издания, энциклопедии, мемуары и справочные ресурсы с уровнями A–D.`,
   content: sourcesPage, active: 'sources',
+  breadcrumb: [['/', 'Главная'], [null, 'Источники']],
 }));
 await writePage('versions.html', layout({
   title: 'Версии и спорные вопросы', description: `Спорные вопросы биографии ${A.genitive}: что установлено, какие есть версии и почему мы не выдаём их за факты.`,
   content: versionsPage, active: 'versions',
+  breadcrumb: [['/', 'Главная'], [null, 'Версии']],
 }));
 await writePage('about.html', layout({
   title: 'О проекте', description: 'Принципы работы проекта: проверка фактов, права на тексты и изображения, партнёрские ссылки и обновления.',
   content: aboutPage, active: '',
+  breadcrumb: [['/', 'Главная'], [null, 'О проекте']],
 }));
 await writePage('404.html', layout({
   title: 'Страница не найдена', description: 'Страница не найдена. Вернитесь на главную или воспользуйтесь поиском по произведениям, людям и разделам сайта.', content: notFound,
   active: '', noindex: true,
 }));
+
+// ---------- дополнительные разделы ----------
+
+for (const p of extra.pages) {
+  await writePage(p.rel, layout({
+    title: p.title,
+    description: p.description,
+    content: p.content,
+    active: p.active || '',
+    ogType: p.ogType || 'website',
+    jsonLd: p.jsonLd || [],
+    breadcrumb: p.breadcrumb || [],
+  }));
+}
 
 // ---------- assets ----------
 
@@ -1125,15 +1281,24 @@ const searchItems = [
   { t: 'Источники', u: '/sources.html', g: 'Раздел', k: 'Реестр', s: 'Уровни достоверности' },
   { t: 'Версии', u: '/versions.html', g: 'Раздел', k: 'Спорные вопросы', s: 'Что установлено, а что — версия' },
   { t: 'О проекте', u: '/about.html', g: 'Раздел', k: 'Права и принципы', s: 'Лицензии, партнёрские ссылки, обновления' },
+  ...extra.search,
 ];
 
-await writeFile(join(DIST, 'search.json'), JSON.stringify(searchItems), 'utf8');
+const seenSearch = new Set();
+const uniqueSearch = searchItems.filter((x) => {
+  if (!x.u || seenSearch.has(x.u + '|' + x.t)) return false;
+  seenSearch.add(x.u + '|' + x.t);
+  return true;
+});
+
+await writeFile(join(DIST, 'search.json'), JSON.stringify(uniqueSearch), 'utf8');
 
 // ---------- sitemap ----------
 
 const urls = [
-  '/', '/biography/', '/people/', '/life/', '/works/', '/books/', '/research/',
-  '/versions.html', '/sources.html', '/about.html',
+  '/', '/biography/', '/people/', '/life/', '/works/', '/books/', '/research/', '/places/', '/legacy/', '/topics/',
+  '/versions.html', '/sources.html', '/about.html', '/faq.html', '/glossary.html',
+  ...extra.urls,
   ...articles.map((a) => `/biography/${a.slug}.html`),
   ...Object.keys(categories).filter((k) => people.some((p) => p.category === k)).map((k) => `/people/${k}.html`),
   ...people.map((p) => `/people/${p.id}.html`),
@@ -1141,12 +1306,51 @@ const urls = [
   ...works.map(workUrl),
 ];
 
+const uniqueUrls = [...new Set(urls)];
+
 const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${urls.map((u) => `  <url><loc>${encodeURI(SITE + u)}</loc><lastmod>${UPDATED}</lastmod></url>`).join('\n')}
+${uniqueUrls.map((u) => `  <url><loc>${encodeURI(SITE + u)}</loc><lastmod>${UPDATED}</lastmod><priority>${u === '/' ? '1.0' : u.endsWith('/') ? '0.8' : '0.6'}</priority></url>`).join('\n')}
 </urlset>`;
 await writeFile(join(DIST, 'sitemap.xml'), sitemap, 'utf8');
 await writeFile(join(DIST, 'robots.txt'), `User-agent: *\nAllow: /\nDisallow: /404.html\nSitemap: ${SITE}/sitemap.xml\n`, 'utf8');
+
+// llms.txt — краткая карта сайта для ИИ-поиска (AEO/GEO)
+await writeFile(join(DIST, 'llms.txt'), `# ${A.name} — ${A.shortDescription.toLowerCase()}
+
+> ${A.lead}
+
+Проект: просветительский сайт о ${A.prepositional} (${A.years}): проверенная биография, люди,
+полные тексты произведений в общественном достоянии, книги, научная литература, музеи и памятные места.
+
+## Основное
+- Биография: ${SITE}/biography/
+- Люди вокруг поэта: ${SITE}/people/
+- Хронология: ${SITE}/life/timeline.html
+- Библиотека текстов: ${SITE}/works/
+- Алфавитный указатель: ${SITE}/works/az.html
+- Стихи по темам: ${SITE}/topics/
+- Словарь диалектов и архаизмов: ${SITE}/glossary.html
+- Частые вопросы: ${SITE}/faq.html
+
+## Наследие
+- Гибель поэта: ${SITE}/legacy/gibel.html
+- Музеи и памятники: ${SITE}/legacy/memory.html
+- Есенин в музыке: ${SITE}/legacy/music.html
+- Есенин на экране: ${SITE}/legacy/cinema.html
+- Переводы: ${SITE}/legacy/translations.html
+
+## Справочное
+- Есенинские места: ${SITE}/places/
+- Книги: ${SITE}/books/
+- Научные работы: ${SITE}/research/
+- Источники: ${SITE}/sources.html
+- Версии и спорные вопросы: ${SITE}/versions.html
+
+## Права
+Тексты произведений — общественное достояние. Тексты разделов написаны для проекта.
+Фотографии — Wikimedia Commons (PD). Библиографические описания — в информационных целях.
+`, 'utf8');
 
 // ---------- deploy artifacts ----------
 
@@ -1183,7 +1387,7 @@ await writeFile(join(DIST, '.nojekyll'), '', 'utf8');
 
 // ---------- report ----------
 
-const pageCount = urls.length + 1;
+const pageCount = uniqueUrls.length + 1;
 console.log('built pages:', pageCount);
 console.log('works:', works.length, 'people:', people.length, 'books:', books.length, 'research:', research.length);
 if (/\.example\b|example\.(org|com)/.test(SITE)) console.warn('WARN: siteUrl is still a placeholder — set the production domain in site.config.json');

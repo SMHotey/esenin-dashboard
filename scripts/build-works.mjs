@@ -41,6 +41,18 @@ for (const [title, raw] of Object.entries(cache)) {
 
 const seen = new Set();
 const unique = works.filter((w) => { if (seen.has(w.slug)) return false; seen.add(w.slug); return true; });
+
+// Дополнительные тексты, которых нет в вики-кэше (например, автобиографии 1916—1925 годов).
+// Файл необязательный: без него сборка работает как раньше.
+if (existsSync('data/extra-works.json')) {
+  const extra = JSON.parse(await readFile('data/extra-works.json', 'utf8'));
+  for (const e of extra) {
+    if (!e.slug || !e.text) continue;
+    if (unique.some((w) => w.slug === e.slug)) continue;
+    unique.push({ ...e, chars: e.text.length });
+  }
+}
+
 unique.sort((a, b) => (a.year || 9999) - (b.year || 9999) || a.title.localeCompare(b.title, 'ru'));
 
 await mkdir('data', { recursive: true });
