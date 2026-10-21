@@ -8,6 +8,13 @@
     "isbn": "978-5-4224-1685-1",
     "annotation": "Пятитомник для тех, кому нужен не один сборник избранного, а корпус: лирика, поэмы, проза и статьи в комплекте. Бумажное издание — вариант, когда текст хочется держать в руках и читать без экрана.",
     "highlight": true,
+    "cover": "/img/books/sobranie-sochineniy-5-tomov.jpg",
+    "coverWebp": "/img/books/sobranie-sochineniy-5-tomov.webp",
+    "coverWidth": 700,
+    "coverHeight": 962,
+    "coverAlt": "Собрание сочинений Сергея Есенина в пяти томах — комплект из пяти книг, обложка",
+    "coverCredit": "Фото: Читай-город",
+    "stores": ["chitai-gorod"],
     "links": [
       {
         "store": "chitai-gorod",

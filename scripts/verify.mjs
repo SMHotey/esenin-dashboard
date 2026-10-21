@@ -132,6 +132,21 @@ if (config.affiliate?.enabled && books.length && !Object.values(config.affiliate
 const booksHtml = await readFile(join(DIST, 'books/index.html'), 'utf8');
 if (books.length && !booksHtml.includes('rel="sponsored')) errors.push('books: у ссылок нет rel="sponsored"');
 if (books.length && !booksHtml.includes('ad-mark')) errors.push('books: нет пометки «реклама»');
+// Маркировка рекламы обязана быть в заданной форме: «Реклама. Рекламодатель … , ОГРН …»
+const adv = config.affiliate?.advertiser || {};
+if (books.length && adv.name) {
+  const required = `Реклама. Рекламодатель ${adv.name}${adv.ogrn ? `, ОГРН ${adv.ogrn}` : ''}.`;
+  if (!booksHtml.includes(required)) errors.push(`books: нет обязательной маркировки «${required}»`);
+}
+// Обложки книг должны попадать в сборку
+for (const b of books) {
+  for (const key of ['cover', 'coverWebp']) {
+    if (!b[key]) continue;
+    const f = join(DIST, b[key].replace(/^\//, ''));
+    if (!existsSync(f)) errors.push(`books: ${b.id} — файл обложки ${b[key]} не попал в dist/`);
+    else if ((await stat(f)).size < 1024) errors.push(`books: ${b.id} — обложка ${b[key]} подозрительно мала`);
+  }
+}
 // Проверяем маркировку интернет-рекламы: если в ссылке есть erid, он должен быть виден на странице.
 for (const b of books) {
   for (const l of b.links || []) {

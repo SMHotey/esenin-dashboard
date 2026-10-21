@@ -405,15 +405,26 @@ function affiliateUrl(url, store) {
 
 const stores = config.affiliate?.stores || {};
 
+// Маркировка интернет-рекламы: форма записи задана рекламодателем и должна выводиться
+// мелким шрифтом рядом с рекламной ссылкой (ст. 18.1 ФЗ «О рекламе»).
+const advertiser = config.affiliate?.advertiser || {};
+const adSentence = advertiser.name
+  ? `Реклама. Рекламодатель ${advertiser.name}${advertiser.ogrn ? `, ОГРН ${advertiser.ogrn}` : ''}.`
+  : 'Реклама.';
+
 function bookStoreLinks(b) {
   const links = [];
+  // Если у книги задан список stores — показываем только эти магазины.
+  const allow = Array.isArray(b.stores) && b.stores.length ? new Set(b.stores) : null;
   for (const l of b.links || []) {
     const store = stores[l.store];
     if (!store || !l.url) continue;
+    if (allow && !allow.has(l.store)) continue;
     links.push({ key: l.store, label: store.label || l.store, url: affiliateUrl(l.url, store) });
   }
   for (const [key, store] of Object.entries(stores)) {
     if (!store.search) continue;
+    if (allow && !allow.has(key)) continue;
     if ((b.links || []).some((l) => l.store === key)) continue;
     const q = b.searchQuery || `${A.lastName} ${b.title}`;
     links.push({ key, label: store.label || key, url: affiliateUrl(store.search.replace('{q}', encodeURIComponent(q)), store) });
@@ -438,19 +449,29 @@ function bookCard(b, index) {
     const label = `Купить в ${esc(l.label)} (открывается в новой вкладке${erid ? ', реклама' : ''})`;
     return `<span class="book-buy">
       <a class="book-link${i === 0 ? ' is-primary' : ''}" href="${esc(l.url)}" target="_blank" rel="sponsored nofollow noopener" aria-label="${label}">${esc(l.label)} <span class="arr" aria-hidden="true">↗</span></a>
-      ${erid ? `<span class="book-erid">реклама · erid: ${esc(erid)}</span>` : ''}
+      ${erid ? `<span class="book-ad">${esc(adSentence)}</span><span class="book-erid">erid: ${esc(erid)}</span>` : ''}
     </span>`;
   }).join('');
   const tags = (b.tags || []).slice(0, 3).map((t) => `<span class="tag">${esc(t)}</span>`).join('');
-
-  return `<article class="book-card">
-    <div class="book-cover" data-tone="${tone}" aria-hidden="true">
+  // Обложка: если задана картинка, показываем её вместо типографской заглушки.
+  const cover = b.cover
+    ? `<div class="book-cover has-image" data-tone="${tone}">
+        <picture>
+          ${b.coverWebp ? `<source type="image/webp" srcset="${esc(b.coverWebp)}">` : ''}
+          <img src="${esc(b.cover)}" alt="${esc(b.coverAlt || `${b.title} — обложка`)}"${b.coverWidth ? ` width="${Number(b.coverWidth)}"` : ''}${b.coverHeight ? ` height="${Number(b.coverHeight)}"` : ''} loading="lazy" decoding="async">
+        </picture>
+        ${b.coverCredit ? `<span class="book-credit">${esc(b.coverCredit)}</span>` : ''}
+      </div>`
+    : `<div class="book-cover" data-tone="${tone}" aria-hidden="true">
       <span class="bc-author">${esc(A.lastName)}</span>
       <span class="bc-format">${isAudio ? 'аудио' : isPaper ? 'бумажная' : 'эл. книга'}</span>
       <span class="bc-rule"></span>
       <span class="bc-title">${esc(b.title)}</span>
       ${b.series ? `<span class="bc-series">${esc(b.series)}</span>` : ''}
-    </div>
+    </div>`;
+
+  return `<article class="book-card">
+    ${cover}
     <div class="book-body">
       <h3>${esc(b.title)}</h3>
       ${b.subtitle ? `<div class="book-sub">${esc(b.subtitle)}</div>` : ''}
@@ -944,10 +965,10 @@ ${crumbs([['/', 'Главная'], [null, 'Книги']])}
 </div>
 <div class="wrap" style="padding-bottom:40px">
   ${books.length ? `
-  <div class="disclosure"><span class="ad-mark">реклама</span>${esc(config.affiliate?.disclosure || '')}</div>
+  <div class="disclosure"><span class="ad-mark">реклама</span><span class="ad-legal">${esc(adSentence)}</span> <span class="ad-note">${esc(config.affiliate?.disclosure || '')}</span></div>
   <div class="books-grid">${books.map(bookCard).join('')}</div>
   <div class="books-foot">
-    <div class="note">Цены, наличие и формат указаны на стороне магазина и могут меняться. Ссылки ведут в «ЛитРес», Ozon и «Лабиринт»; проект не хранит данные о покупках.</div>
+    <div class="note">Цены, наличие и формат указаны на стороне магазина и могут меняться. Проект не хранит данные о покупках. Ссылка ведёт в «Читай-город».</div>
     <a class="btn btn-ghost" href="/works/">Читать бесплатно в библиотеке</a>
   </div>` : `<div class="note">Раздел готовится: здесь появятся издания ${esc(A.genitive)} с партнёрскими ссылками. Пока полные тексты доступны в <a href="/works/">библиотеке</a>.</div>`}
 </div>`;
@@ -1129,7 +1150,18 @@ async function emptyDir(dir) {
   let entries = [];
   try { entries = await readdir(dir); } catch { return; }
   for (const entry of entries) {
-    await rm(join(dir, entry), { recursive: true, force: true, maxRetries: 3 });
+    const target = join(dir, entry);
+    try {
+      await rm(target, { recursive: true, force: true, maxRetries: 3 });
+    } catch (err) {
+      // Windows: файл может быть занят (браузер, редактор, индексатор) и не удаляться.
+      // Не роняем сборку: обнуляем содержимое, дальше файл перезапишется как обычно.
+      if (['EBUSY', 'EPERM', 'EACCES'].includes(err?.code)) {
+        try { await writeFile(target, '', 'utf8'); } catch { /* оставляем как есть */ }
+        continue;
+      }
+      throw err;
+    }
   }
 }
 
@@ -1326,10 +1358,12 @@ for (const p of extra.pages) {
 
 // ---------- assets ----------
 
-await cp('src/styles.css', join(DIST, 'styles.css'));
-await cp('src/app.js', join(DIST, 'app.js'));
-await cp('src/theme.js', join(DIST, 'theme.js'));
-await cp('public/img', join(DIST, 'img'), { recursive: true });
+// Копируем ассеты чтением/записью, а не fs.cp: на Windows fs.cp сначала удаляет
+// приёмник и падает с EBUSY, если файл занят браузером или редактором.
+await writeFile(join(DIST, 'styles.css'), await readFile('src/styles.css'));
+await writeFile(join(DIST, 'app.js'), await readFile('src/app.js'));
+await writeFile(join(DIST, 'theme.js'), await readFile('src/theme.js'));
+await cp('public/img', join(DIST, 'img'), { recursive: true, force: true });
 
 await writeFile(join(DIST, 'favicon.svg'), `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="12" fill="#7b2f2f"/><text x="32" y="45" font-family="Georgia,serif" font-size="38" fill="#f7f2e8" text-anchor="middle">${esc(String(A.lastName || A.name)[0])}</text></svg>`, 'utf8');
 
