@@ -1,6 +1,6 @@
-/* Тема до первой отрисовки: без вспышки светлого фона у тёмной темы. */
+/* Тема до первой отрисовки: по умолчанию тёмная, светлая — только если её выбрал читатель.
+   Скрипт стоит в <head>, поэтому вспышки чужой темы не бывает. */
 try {
   var saved = localStorage.getItem('site-theme');
-  var dark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-  document.documentElement.dataset.theme = saved || (dark ? 'dark' : 'light');
+  document.documentElement.dataset.theme = saved === 'light' ? 'light' : 'dark';
 } catch (e) {}

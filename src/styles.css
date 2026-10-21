@@ -81,6 +81,11 @@ html {
 }
 
 [data-theme="dark"] { color-scheme: dark; }
+/* В тёмной теме границы по --line почти растворяются: поднимаем их контраст
+   для кнопок и иконочных кнопок, чтобы элементы были различимы (доступность). */
+[data-theme="dark"] .btn-ghost,
+[data-theme="dark"] .icon-btn { border-color: #4a4438; }
+[data-theme="dark"] .btn-ghost:hover { border-color: var(--muted); }
 
 ::-webkit-scrollbar { width: 12px; height: 12px; }
 ::-webkit-scrollbar-track { background: var(--paper); }

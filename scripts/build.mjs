@@ -271,7 +271,7 @@ function layout({ title, description, content, active = '', bodyClass = '', json
   if (jsonLd) graph.push(...(Array.isArray(jsonLd) ? jsonLd : [jsonLd]));
 
   return `<!doctype html>
-<html lang="${esc(LANG)}" data-theme="light">
+<html lang="${esc(LANG)}" data-theme="dark">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -292,8 +292,7 @@ ${ogImage ? `<meta property="og:image" content="${SITE}${esc(ogImage)}">${ogDims
 <meta name="twitter:title" content="${esc(fullTitle)}">
 <meta name="twitter:description" content="${esc(description)}">
 ${ogImage ? `<meta name="twitter:image" content="${SITE}${esc(ogImage)}">` : ''}
-<meta name="theme-color" content="#f7f2e8" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#141311" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#141311">
 <script type="application/ld+json">${JSON.stringify({ '@context': 'https://schema.org', '@graph': graph })}</script>
 <script src="/theme.js?v=${assetVersion}"></script>
 </head>
@@ -305,7 +304,7 @@ ${ogImage ? `<meta name="twitter:image" content="${SITE}${esc(ogImage)}">` : ''}
     <nav class="main-nav" aria-label="Основная навигация">${navHtml}</nav>
     <div class="header-tools">
       <button class="icon-btn" data-search-open aria-label="Поиск по сайту" title="Поиск (Ctrl+K)" aria-haspopup="dialog" aria-controls="site-search">⌕</button>
-      <button class="icon-btn" data-theme-toggle aria-label="Переключить тему" title="Тема">☾</button>
+      <button class="icon-btn" data-theme-toggle aria-label="Включить светлую тему" title="Включить светлую тему">☀</button>
       <button class="icon-btn nav-toggle" data-nav-toggle aria-label="Меню" aria-expanded="false">☰</button>
     </div>
   </div>

@@ -10,11 +10,14 @@
       btn.setAttribute('aria-label', theme === 'dark' ? 'Включить светлую тему' : 'Включить тёмную тему');
       btn.setAttribute('title', btn.getAttribute('aria-label'));
     }
+    // Цвет интерфейса браузера (адресная строка, полосы прокрутки) под текущую тему
+    const meta = document.querySelector('meta[name="theme-color"]');
+    if (meta) meta.setAttribute('content', theme === 'dark' ? '#141311' : '#f7f2e8');
   }
 
+  // Тема по умолчанию — тёмная; светлая включается только выбором читателя.
   const saved = localStorage.getItem(THEME_KEY);
-  const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-  applyTheme(saved || (prefersDark ? 'dark' : 'light'));
+  applyTheme(saved === 'light' ? 'light' : 'dark');
 
   document.addEventListener('click', (e) => {
     const t = e.target.closest('[data-theme-toggle]');
