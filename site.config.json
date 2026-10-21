@@ -1,5 +1,5 @@
 {
-  "siteUrl": "https://esenin.example",
+  "siteUrl": "https://poet-esenin.ru",
   "updated": "2026-10-21",
   "ogImage": "/img/og.jpg",
   "textsPublicDomain": true,
@@ -67,7 +67,7 @@
     }
   },
   "analytics": {
-    "yandexMetrika": "",
+    "yandexMetrika": "113725113",
     "googleAnalytics": ""
   }
 }

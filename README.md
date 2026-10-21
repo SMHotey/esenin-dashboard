@@ -60,6 +60,7 @@ npm run verify:strict   # то же, но предупреждения = оши�
 | `/versions.html` | 4 спорных сюжета |
 | `/sources.html` | реестр источников с уровнями A–D |
 | `/about.html` | принципы, права, партнёрские ссылки |
+| `/privacy.html` | политика конфиденциальности: статистика «Яндекс.Метрики», cookie, отказ от учёта |
 | `/404.html` | тематическая страница ошибки с иллюстрацией стола и чернильницы |
 
 ---
@@ -150,7 +151,7 @@ DEPLOY.md          деплой и продакшен-чеклист
 
 Что уже делает сборка:
 
-- уникальные `title` и `description` на каждой из 499 страниц, один `h1`, canonical;
+- уникальные `title` и `description` на каждой из 500 страниц, один `h1`, canonical;
 - JSON-LD: `Person`, `WebSite` (+ `SearchAction`), `WebPage` с `dateModified`,
   `BreadcrumbList` на всех страницах, `CreativeWork` для текстов, `ItemList`, `FAQPage`, `Place`;
 - `robots` с `max-image-preview:large`, `sitemap.xml` с `lastmod` и `priority`, `robots.txt`;

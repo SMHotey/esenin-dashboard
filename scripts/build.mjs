@@ -176,7 +176,19 @@ function analyticsHtml() {
   const ga = config.analytics?.googleAnalytics;
   let out = '';
   if (ym) {
-    out += `<script>(function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};m[i].l=1*new Date();for(var j=0;j<document.scripts.length;j++){if(document.scripts[j].src===r){return}}k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})(window,document,"script","https://mc.yandex.ru/metrika/tag.js","ym");ym(${JSON.stringify(String(ym))},"init",{clickmap:true,trackLinks:true,accurateTrackBounce:true});</script><noscript><div><img src="https://mc.yandex.ru/watch/${esc(ym)}" style="position:absolute;left:-9999px" alt=""></div></noscript>`;
+    out += `<!-- Yandex.Metrika counter -->
+<script type="text/javascript">
+    (function(m,e,t,r,i,k,a){
+        m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+        m[i].l=1*new Date();
+        for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+        k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)
+    })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=${encodeURIComponent(ym)}', 'ym');
+
+    ym(${JSON.stringify(String(ym))}, 'init', {ssr:true, webvisor:true, clickmap:true, ecommerce:"dataLayer", referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
+</script>
+<noscript><div><img src="https://mc.yandex.ru/watch/${esc(ym)}" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+<!-- /Yandex.Metrika counter -->`;
   }
   if (ga) {
     out += `<script async src="https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(ga)}"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag("js",new Date());gtag("config",${JSON.stringify(String(ga))});</script>`;
@@ -324,6 +336,7 @@ ${content}
           <li><a href="/sources.html">Источники</a></li>
           <li><a href="/versions.html">Версии</a></li>
           <li><a href="/about.html">О проекте и правах</a></li>
+          <li><a href="/privacy.html">Политика конфиденциальности</a></li>
           <li><a href="/sitemap.xml">Карта сайта</a></li>
           <li><a href="/search.json">Индекс поиска</a></li>
         </ul>
@@ -1019,6 +1032,42 @@ ${crumbs([['/', 'Главная'], [null, 'О проекте']])}
   </aside>
 </div>`;
 
+// ---------- политика конфиденциальности ----------
+
+const privacyPage = `
+${crumbs([['/', 'Главная'], [null, 'Политика конфиденциальности']])}
+<div class="wrap article-layout" style="padding-bottom:60px">
+  <article class="prose">
+    <h1 style="font-size:clamp(28px,4.2vw,40px)">Политика конфиденциальности</h1>
+    <p>Сайт ${esc(new URL(SITE).host)} — некоммерческий просветительский проект о ${esc(A.prepositional)}. Мы не собираем имена, телефоны, адреса и адреса электронной почты: на сайте нет форм регистрации, подписки и оплаты. Ниже описано, какие технические данные обрабатываются при просмотре страниц.</p>
+    <h2>Какие данные обрабатываются</h2>
+    <p>Для статистики посещаемости используется «Яндекс.Метрика» (счётчик № ${esc(config.analytics?.yandexMetrika || '')}). Сервис получает: адрес просмотренной страницы, адрес предыдущей страницы, тип устройства и браузера, разрешение экрана, приблизительный регион (по IP), время визита, а также обезличенные данные о кликах и прокрутке (карта кликов, Вебвизор). Эти данные обрабатываются в обезличенном виде и не позволяют идентифицировать конкретного человека без дополнительной информации.</p>
+    <h2>Зачем</h2>
+    <p>Только чтобы понимать, какие разделы и тексты востребованы, находить технические ошибки и улучшать навигацию. Данные не используются для рекламных рассылок, не продаются и не передаются третьим лицам, кроме обработки в «Яндекс.Метрике» согласно её условиям.</p>
+    <h2>Cookie</h2>
+    <p>Cookie — небольшие файлы, которые браузер сохраняет на устройстве. Они нужны счётчику, чтобы отличать визиты, и используются для запоминания выбранной темы оформления (светлая или тёмная). Вы можете удалить cookie в настройках браузера или запретить их — сайт продолжит работать, но статистика по вашему визиту не будет учтена.</p>
+    <h2>Отказ от учёта</h2>
+    <p>Отключить сбор статистики «Яндекс.Метрикой» для своего браузера можно с помощью официального блокировщика: <a href="https://yandex.ru/support/metrica/general/opt-out.html" rel="nofollow noopener" target="_blank">yandex.ru/support/metrica/general/opt-out.html</a>. Достаточно установить его — на работу сайта это не влияет.</p>
+    <h2>Внешние ссылки</h2>
+    <p>В разделах «Книги» и «Наследие» есть ссылки на сторонние сайты (магазины, музеи, Викитека). После перехода на них действуют политики этих сайтов; мы не отвечаем за их содержание и обработку данных.</p>
+    <h2>Изменения</h2>
+    <p>Политика может обновляться при изменении состава сервисов. Дата последнего обновления — ${esc(UPDATED_LABEL)}.</p>
+  </article>
+  <aside>
+    <div class="aside-card">
+      <h4>Коротко</h4>
+      <p>Никаких форм и аккаунтов. Только обезличенная статистика «Яндекс.Метрики» (счётчик № ${esc(config.analytics?.yandexMetrika || '')}) и cookie темы оформления.</p>
+      <h4 style="margin-top:16px">Права</h4>
+      <p>${esc(A.licenseNote)}</p>
+      <h4 style="margin-top:16px">Связанное</h4>
+      <ul>
+        <li><a href="/about.html">О проекте и правах</a></li>
+        <li><a href="/sources.html">Источники</a></li>
+      </ul>
+    </div>
+  </aside>
+</div>`;
+
 // ---------- 404 ----------
 
 const deskArt = existsSync(join(ROOT, 'src/art/desk-404.svg'))
@@ -1235,6 +1284,11 @@ await writePage('about.html', layout({
   content: aboutPage, active: '',
   breadcrumb: [['/', 'Главная'], [null, 'О проекте']],
 }));
+await writePage('privacy.html', layout({
+  title: 'Политика конфиденциальности', description: `Какие данные обрабатываются на сайте о ${A.prepositional}: обезличенная статистика «Яндекс.Метрики», cookie темы, отказ от учёта.`,
+  content: privacyPage, active: '',
+  breadcrumb: [['/', 'Главная'], [null, 'Политика конфиденциальности']],
+}));
 await writePage('404.html', layout({
   title: 'Страница не найдена', description: 'Страница не найдена. Вернитесь на главную или воспользуйтесь поиском по произведениям, людям и разделам сайта.', content: notFound,
   active: '', noindex: true,
@@ -1297,7 +1351,7 @@ await writeFile(join(DIST, 'search.json'), JSON.stringify(uniqueSearch), 'utf8')
 
 const urls = [
   '/', '/biography/', '/people/', '/life/', '/works/', '/books/', '/research/', '/places/', '/legacy/', '/topics/',
-  '/versions.html', '/sources.html', '/about.html', '/faq.html', '/glossary.html',
+  '/versions.html', '/sources.html', '/about.html', '/faq.html', '/glossary.html', '/privacy.html',
   ...extra.urls,
   ...articles.map((a) => `/biography/${a.slug}.html`),
   ...Object.keys(categories).filter((k) => people.some((p) => p.category === k)).map((k) => `/people/${k}.html`),
@@ -1359,7 +1413,10 @@ const ga = config.analytics?.googleAnalytics;
 const scriptSrc = ["'self'", ...(ym ? ["'unsafe-inline'", 'https://mc.yandex.ru'] : []), ...(ga ? ["'unsafe-inline'", 'https://www.googletagmanager.com'] : [])].join(' ');
 const imgSrc = ["'self'", 'data:', ...(ym ? ['https://mc.yandex.ru'] : [])].join(' ');
 const connectSrc = ["'self'", ...(ym ? ['https://mc.yandex.ru'] : []), ...(ga ? ['https://www.googletagmanager.com', 'https://www.google-analytics.com'] : [])].join(' ');
-const csp = `default-src 'self'; img-src ${imgSrc}; style-src 'self' 'unsafe-inline'; script-src ${scriptSrc}; connect-src ${connectSrc}; font-src 'self' data:; frame-ancestors 'none'; base-uri 'self'; form-action 'self'`;
+const csp = `default-src 'self'; img-src ${imgSrc}; style-src 'self' 'unsafe-inline'; script-src ${scriptSrc}; connect-src ${connectSrc}; font-src 'self' data:; frame-src ${ym ? "'self' https://mc.yandex.ru" : "'self'"}; frame-ancestors 'none'; base-uri 'self'; form-action 'self'`;
+// Внешний тег Метрики (mc.yandex.ru/metrika/tag.js) отдаётся динамически и не имеет
+// публикуемого SRI-хеша, поэтому integrity для него не указывается: счётчик иначе не загрузится.
+// Скрипт подключается только при заполненном analytics.yandexMetrika и разрешён в CSP выше.
 
 await writeFile(join(DIST, '_headers'), `# Заголовки для Netlify / Cloudflare Pages (файл читается хостингом, не браузером)
 /*
@@ -1382,8 +1439,20 @@ await writeFile(join(DIST, '_headers'), `# Заголовки для Netlify / C
   Cache-Control: public, max-age=0, must-revalidate
 `, 'utf8');
 
-await writeFile(join(DIST, '_redirects'), '/*  /404.html  404\n', 'utf8');
+// Редиректы: второй домен и www ведут на основной, остальное — на 404.
+const redirects = [
+  '# Второй домен и www → основной (правило доменного уровня, работает на Netlify/Cloudflare Pages)',
+  'https://poet-esenin.online/*  https://poet-esenin.ru/:splat  301!',
+  'https://www.poet-esenin.online/*  https://poet-esenin.ru/:splat  301!',
+  'https://www.poet-esenin.ru/*  https://poet-esenin.ru/:splat  301!',
+  '',
+  '/*  /404.html  404',
+  '',
+].join('\n');
+await writeFile(join(DIST, '_redirects'), redirects, 'utf8');
 await writeFile(join(DIST, '.nojekyll'), '', 'utf8');
+// CNAME нужен GitHub Pages для кастомного домена; Netlify/Vercel файл игнорируют.
+await writeFile(join(DIST, 'CNAME'), `${new URL(SITE).host}\n`, 'utf8');
 
 // ---------- report ----------
 
