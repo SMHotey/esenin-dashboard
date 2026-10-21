@@ -415,6 +415,10 @@ function affiliateUrl(url, store) {
 
 const stores = config.affiliate?.stores || {};
 
+// Цену на страницах показываем только если это явно разрешено в конфиге:
+// сбор данных (sync:prices) работает всегда, публикация — по флагу affiliate.showPrice.
+const showPrice = config.affiliate?.showPrice === true;
+
 // Маркировка интернет-рекламы: форма записи задана рекламодателем и должна выводиться
 // мелким шрифтом рядом с рекламной ссылкой (ст. 18.1 ФЗ «О рекламе»).
 const advertiser = config.affiliate?.advertiser || {};
@@ -487,7 +491,7 @@ function bookCard(b, index) {
       ${b.subtitle ? `<div class="book-sub">${esc(b.subtitle)}</div>` : ''}
       <div class="book-meta"><span class="book-format">${esc(b.format)}</span>${meta ? ' · ' + meta : ''}</div>
       <p class="book-annotation">${esc(b.annotation)}</p>
-      ${b.price ? `<div class="book-price">
+      ${showPrice && b.price ? `<div class="book-price">
         <span class="bp-value">${esc(priceFmt(b.price, b.priceCurrency))}</span>
         <span class="bp-note">${b.availability === 'InStock' ? 'в наличии · ' : ''}цена на ${esc(ruDate(b.priceCheckedAt))}, в магазине может отличаться</span>
       </div>` : ''}
@@ -1304,7 +1308,7 @@ await writePage('books/index.html', layout({
         ...(b.year ? { datePublished: String(b.year) } : {}),
         ...(b.pages ? { numberOfPages: b.pages } : {}),
         bookFormat: /аудио/i.test(b.format || '') ? 'https://schema.org/AudiobookFormat' : /бумаж/i.test(b.format || '') ? 'https://schema.org/Hardcover' : 'https://schema.org/EBook',
-        ...(b.price ? {
+        ...(showPrice && b.price ? {
           offers: {
             '@type': 'Offer',
             price: String(b.price),

@@ -215,12 +215,15 @@ excerpt: "Короткое описание для карточки и поис�
 
 ## Книги и партнёрские ссылки
 
-Цены обновляются скриптом `scripts/sync-prices.mjs` (`npm run sync:prices`): он идёт по партнёрской
+Цены собираются скриптом `scripts/sync-prices.mjs` (`npm run sync:prices`): он идёт по партнёрской
 ссылке на страницу товара и читает цену из JSON-LD (`Offer`), записывая в `data/books.json` поля
 `price`, `priceCurrency`, `availability`, `priceCheckedAt`, `productUrl`. Расписание — workflow
 `.github/workflows/price-sync.yml` (раз в сутки) или запуск вручную кнопкой в Actions.
-На странице цена печатается вместе с датой проверки и оговоркой «в магазине может отличаться»;
-в JSON-LD она уходит как `offers` с `availability`.
+
+**На сайте цена не публикуется**: публикация управляется флагом `affiliate.showPrice`
+(по умолчанию `false`). Выключенный флаг убирает и цену из карточки, и `offers` из JSON-LD;
+`npm run verify` падает, если цена всё-таки попала на страницу. Включить показ — правка
+одного флага в `site.config.json`.
 
 Данные — в `data/books.json`. Поля: `title`, `subtitle`, `series`, `format`, `year`, `pages`,
 `isbn`, `performer` (для аудио), `annotation`, `tags`, `highlight`, `links[]`, `searchQuery`.

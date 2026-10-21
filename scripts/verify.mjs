@@ -138,11 +138,14 @@ if (books.length && adv.name) {
   const required = `Реклама. Рекламодатель ${adv.name}${adv.ogrn ? `, ОГРН ${adv.ogrn}` : ''}.`;
   if (!booksHtml.includes(required)) errors.push(`books: нет обязательной маркировки «${required}»`);
 }
-// Цена: если она есть в данных, она обязана быть на странице вместе с датой проверки
+// Цена: собирается всегда, публикуется только при affiliate.showPrice.
+// Если публикация выключена — цены на странице быть не должно, иначе это утечка данных.
+const showPrice = config.affiliate?.showPrice === true;
 for (const b of books) {
   if (!b.price) continue;
   const expected = new Intl.NumberFormat('ru-RU', { maximumFractionDigits: 0 }).format(Number(b.price));
-  if (!booksHtml.includes(expected)) errors.push(`books: ${b.id} — цена ${expected} не выведена на странице`);
+  if (showPrice && !booksHtml.includes(expected)) errors.push(`books: ${b.id} — цена ${expected} не выведена на странице`);
+  if (!showPrice && booksHtml.includes(expected)) errors.push(`books: ${b.id} — цена ${expected} попала на страницу при выключенном affiliate.showPrice`);
   if (!b.priceCheckedAt) warnings.push(`books: ${b.id} — у цены нет даты проверки (priceCheckedAt)`);
 }
 // Обложки книг должны попадать в сборку
