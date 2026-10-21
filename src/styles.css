@@ -338,6 +338,12 @@ p { margin: 0 0 1em; }
   padding: 14px 0; margin-bottom: 22px;
 }
 .toolbar-row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+.catalog-controls { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-top: 12px; }
+.catalog-controls .results-line { margin: 0; }
+.visually-hidden {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
 .search-field { flex: 1 1 260px; position: relative; }
 .search-field input {
   width: 100%; padding: 12px 40px 12px 14px; border-radius: 10px;

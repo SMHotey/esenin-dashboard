@@ -1,19 +1,1684 @@
 [
   {
-    "id": "sobranie-sochineniy-v-pyati-tomah",
-    "title": "Собрание сочинений в пяти томах",
-    "subtitle": "Комплект из 5 книг",
+    "id": "v-etom-mire-ya-tolko-prohozhiy-stihotvoreniya-i-poemy-7927379",
+    "productId": "7927379",
+    "title": "\"В этом мире я только прохожий...\". Стихотворения и поэмы",
+    "format": "Бумажная книга",
+    "publisher": "Детская литература",
+    "isbn": "978-5-08-006891-1",
+    "pages": 265,
+    "coverType": "Твердая обложка",
+    "productUrl": "https://www.chitai-gorod.ru/product/v-etom-mire-ya-tolko-prohozhiy-stihotvoreniya-i-poemy-7927379",
+    "stores": [
+      "chitai-gorod"
+    ],
+    "links": [
+      {
+        "store": "chitai-gorod",
+        "url": "https://www.chitai-gorod.ru/r/qhpdX?erid=2W5zFK1UGQy"
+      }
+    ],
+    "category": "Стихотворения и поэмы",
+    "tags": [
+      "Твердая обложка",
+      "Стихотворения и поэмы",
+      "Детская литература"
+    ],
+    "searchQuery": "Есенин \"В этом мире я только прохожий...\". Стихотворения и поэмы",
+    "cover": "/img/books/v-etom-mire-ya-tolko-prohozhiy-stihotvoreniya-i-poemy-7927379.jpg",
+    "coverWebp": "/img/books/v-etom-mire-ya-tolko-prohozhiy-stihotvoreniya-i-poemy-7927379.webp",
+    "coverAlt": "\"В этом мире я только прохожий...\". Стихотворения и поэмы — обложка издания",
+    "coverCredit": "Фото: Читай-город",
+    "price": 318.0,
+    "priceCurrency": "RUB",
+    "availability": "InStock",
+    "priceCheckedAt": "2026-10-21",
+    "annotation": "И лирика, и крупные вещи в одном томе — от «Черёмухи» до «Чёрного человека». 265 с., твёрдый переплёт, Детская литература.",
+    "coverWidth": 400,
+    "coverHeight": 634
+  },
+  {
+    "id": "o-lyubvi-v-slovah-ne-govoryat-izbrannoe-2839065",
+    "productId": "2839065",
+    "title": "\"О любви в словах не говорят…\". Избранное",
+    "format": "Бумажная книга",
+    "publisher": "РИПОЛ классик",
+    "isbn": "978-5-386-13960-5",
+    "pages": 514,
+    "coverType": "Мягкая обложка",
+    "productUrl": "https://www.chitai-gorod.ru/product/o-lyubvi-v-slovah-ne-govoryat-izbrannoe-2839065",
+    "stores": [
+      "chitai-gorod"
+    ],
+    "links": [
+      {
+        "store": "chitai-gorod",
+        "url": "https://www.chitai-gorod.ru/r/kdqiM?erid=2W5zFK2xFhK"
+      }
+    ],
+    "category": "Избранное",
+    "tags": [
+      "Мягкая обложка",
+      "Избранное",
+      "РИПОЛ классик"
+    ],
+    "searchQuery": "Есенин \"О любви в словах не говорят…\". Избранное",
+    "cover": "/img/books/o-lyubvi-v-slovah-ne-govoryat-izbrannoe-2839065.jpg",
+    "coverWebp": "/img/books/o-lyubvi-v-slovah-ne-govoryat-izbrannoe-2839065.webp",
+    "coverAlt": "\"О любви в словах не говорят…\". Избранное — обложка издания",
+    "coverCredit": "Фото: Читай-город",
+    "price": 1099.0,
+    "priceCurrency": "RUB",
+    "availability": "InStock",
+    "priceCheckedAt": "2026-10-21",
+    "annotation": "Отобранное лучшее: стихи, которые перечитывают, без малоизвестного балласта. 514 с., мягкая обложка, РИПОЛ классик.",
+    "coverWidth": 400,
+    "coverHeight": 612
+  },
+  {
+    "id": "ya-inomu-pokorilsya-carstvu-stihotvoreniya-poemy-2342415",
+    "productId": "2342415",
+    "title": "\"Я иному покорился царству…\" Стихотворения. Поэмы",
+    "format": "Бумажная книга",
+    "publisher": "БММ",
+    "isbn": "978-5-88-353506-1, 978-5-88353-506-1",
+    "pages": 192,
+    "coverType": "Мягкая обложка",
+    "productUrl": "https://www.chitai-gorod.ru/product/ya-inomu-pokorilsya-carstvu-stihotvoreniya-poemy-2342415",
+    "stores": [
+      "chitai-gorod"
+    ],
+    "links": [
+      {
+        "store": "chitai-gorod",
+        "url": "https://www.chitai-gorod.ru/r/Usxke?erid=2W5zFK4SEyf"
+      }
+    ],
+    "category": "Стихотворения и поэмы",
+    "tags": [
+      "Мягкая обложка",
+      "Стихотворения и поэмы",
+      "БММ"
+    ],
+    "searchQuery": "Есенин \"Я иному покорился царству…\" Стихотворения. Поэмы",
+    "cover": "/img/books/ya-inomu-pokorilsya-carstvu-stihotvoreniya-poemy-2342415.jpg",
+    "coverWebp": "/img/books/ya-inomu-pokorilsya-carstvu-stihotvoreniya-poemy-2342415.webp",
+    "coverAlt": "\"Я иному покорился царству…\" Стихотворения. Поэмы — обложка издания",
+    "coverCredit": "Фото: Читай-город",
+    "price": 219.0,
+    "priceCurrency": "RUB",
+    "availability": "InStock",
+    "priceCheckedAt": "2026-10-21",
+    "annotation": "Стихи и поэмы вместе: обычный набор издания для «Есенина на всю жизнь». 192 с., мягкая обложка, БММ.",
+    "coverWidth": 400,
+    "coverHeight": 634
+  },
+  {
+    "id": "spasa-krotkogo-pechal-izbrannaya-pravoslavnaya-lirika-7982094",
+    "productId": "7982094",
+    "title": "&quot Спаса кроткого печаль...&quot Избранная православная лирика",
+    "format": "Бумажная книга",
+    "publisher": "Лира",
+    "isbn": "978-5-6049588-6-5",
+    "pages": 208,
+    "coverType": "Твердая обложка",
+    "productUrl": "https://www.chitai-gorod.ru/product/spasa-krotkogo-pechal-izbrannaya-pravoslavnaya-lirika-7982094",
+    "stores": [
+      "chitai-gorod"
+    ],
+    "links": [
+      {
+        "store": "chitai-gorod",
+        "url": "https://www.chitai-gorod.ru/r/TzSxO?erid=2W5zFK5vEG1"
+      }
+    ],
+    "category": "Избранное",
+    "tags": [
+      "Твердая обложка",
+      "Избранное",
+      "Лира"
+    ],
+    "searchQuery": "Есенин &quot Спаса кроткого печаль...&quot Избранная православная лирика",
+    "cover": "/img/books/spasa-krotkogo-pechal-izbrannaya-pravoslavnaya-lirika-7982094.jpg",
+    "coverWebp": "/img/books/spasa-krotkogo-pechal-izbrannaya-pravoslavnaya-lirika-7982094.webp",
+    "coverAlt": "&quot Спаса кроткого печаль...&quot Избранная православная лирика — обложка издания",
+    "coverCredit": "Фото: Читай-город",
+    "price": 720.0,
+    "priceCurrency": "RUB",
+    "availability": "InStock",
+    "priceCheckedAt": "2026-10-21",
+    "annotation": "Подборка ключевых текстов: и ранние деревенские стихи, и поздние признания. 208 с., твёрдый переплёт, Лира.",
+    "coverWidth": 400,
+    "coverHeight": 563
+  },
+  {
+    "id": "a-kiss-before-drowning-selected-poems-poceluy-da-v-omut-izbrannye-stih-7805359",
+    "productId": "7805359",
+    "title": "A Kiss Before Drowning. Selected poems / Поцелуй да в омут. Избранные стихотворения",
+    "format": "Бумажная книга",
+    "publisher": "AUDITORIA",
+    "isbn": "978-5-6042967-5-2",
+    "pages": 256,
+    "coverType": "Мягкая обложка",
+    "productUrl": "https://www.chitai-gorod.ru/product/a-kiss-before-drowning-selected-poems-poceluy-da-v-omut-izbrannye-stihotvoreniya-7805359",
+    "stores": [
+      "chitai-gorod"
+    ],
+    "links": [
+      {
+        "store": "chitai-gorod",
+        "url": "https://www.chitai-gorod.ru/r/vMPTQ?erid=2W5zFK7QDYM"
+      }
+    ],
+    "category": "Двуязычное издание",
+    "tags": [
+      "Мягкая обложка",
+      "Двуязычное издание",
+      "AUDITORIA"
+    ],
+    "searchQuery": "Есенин A Kiss Before Drowning. Selected poems / Поцелуй да в омут. Избранные стихотворения",
+    "cover": "/img/books/a-kiss-before-drowning-selected-poems-poceluy-da-v-omut-izbrannye-stih-7805359.jpg",
+    "coverWebp": "/img/books/a-kiss-before-drowning-selected-poems-poceluy-da-v-omut-izbrannye-stih-7805359.webp",
+    "coverAlt": "A Kiss Before Drowning. Selected poems / Поцелуй да в омут. Избранные стихотворения — обложка издания",
+    "coverCredit": "Фото: Читай-город",
+    "price": 1080.0,
+    "priceCurrency": "RUB",
+    "availability": "InStock",
+    "priceCheckedAt": "2026-10-21",
+    "annotation": "Сборник лирики — то, что чаще всего ищут: пейзаж, деревня, любовь, поздние строки. 256 с., мягкая обложка, AUDITORIA.",
+    "coverWidth": 400,
+    "coverHeight": 616
+  },
+  {
+    "id": "mne-ostalas-odna-zabava-polnoe-sobranie-sochineniy-3007973",
+    "productId": "3007973",
+    "title": "«Мне осталась одна забава...». Полное собрание сочинений",
+    "format": "Бумажная книга",
+    "publisher": "Азбука",
+    "isbn": "978-5-389-24102-2",
+    "pages": 800,
+    "coverType": "Твердая обложка",
+    "productUrl": "https://www.chitai-gorod.ru/product/mne-ostalas-odna-zabava-polnoe-sobranie-sochineniy-3007973",
+    "stores": [
+      "chitai-gorod"
+    ],
+    "links": [
+      {
+        "store": "chitai-gorod",
+        "url": "https://www.chitai-gorod.ru/r/HYBCz?erid=2W5zFK8tCph"
+      }
+    ],
+    "category": "Собрание сочинений",
+    "tags": [
+      "Твердая обложка",
+      "Собрание сочинений",
+      "Азбука"
+    ],
+    "searchQuery": "Есенин «Мне осталась одна забава...». Полное собрание сочинений",
+    "cover": "/img/books/mne-ostalas-odna-zabava-polnoe-sobranie-sochineniy-3007973.jpg",
+    "coverWebp": "/img/books/mne-ostalas-odna-zabava-polnoe-sobranie-sochineniy-3007973.webp",
+    "coverAlt": "«Мне осталась одна забава...». Полное собрание сочинений — обложка издания",
+    "coverCredit": "Фото: Читай-город",
+    "price": 1249.0,
+    "priceCurrency": "RUB",
+    "availability": "InStock",
+    "priceCheckedAt": "2026-10-21",
+    "annotation": "Собрание под одной обложкой (или в комплекте томов): от ранних стихов до поздних поэм и прозы. 800 с., твёрдый переплёт, Азбука.",
+    "coverWidth": 400,
+    "coverHeight": 604
+  },
+  {
+    "id": "esenin-s-a-otgovorila-rosa-zolotaa-stihotvorenia-2026-3165172",
+    "productId": "3165172",
+    "title": "«Отговорила роща золотая...»: стихотворения",
+    "format": "Бумажная книга",
+    "publisher": "Русское слово-учебник",
+    "isbn": "978-5-533-03620-7",
+    "pages": 72,
+    "coverType": "Твердая обложка",
+    "productUrl": "https://www.chitai-gorod.ru/product/esenin-s-a-otgovorila-rosa-zolotaa-stihotvorenia-2026-3165172",
+    "stores": [
+      "chitai-gorod"
+    ],
+    "links": [
+      {
+        "store": "chitai-gorod",
+        "url": "https://www.chitai-gorod.ru/r/qRBOy?erid=2W5zFKANC73"
+      }
+    ],
+    "category": "Стихотворения",
+    "tags": [
+      "Твердая обложка",
+      "Стихотворения",
+      "Русское слово-учебник"
+    ],
+    "searchQuery": "Есенин «Отговорила роща золотая...»: стихотворения",
+    "cover": "/img/books/esenin-s-a-otgovorila-rosa-zolotaa-stihotvorenia-2026-3165172.jpg",
+    "coverWebp": "/img/books/esenin-s-a-otgovorila-rosa-zolotaa-stihotvorenia-2026-3165172.webp",
+    "coverAlt": "«Отговорила роща золотая...»: стихотворения — обложка издания",
+    "coverCredit": "Фото: Читай-город",
+    "price": 629.0,
+    "priceCurrency": "RUB",
+    "availability": "InStock",
+    "priceCheckedAt": "2026-10-21",
+    "annotation": "Только стихотворения: лирика разных лет, без прозы и поэм. 72 с., твёрдый переплёт, Русское слово-учебник.",
+    "coverWidth": 400,
+    "coverHeight": 569
+  },
+  {
+    "id": "anna-snegina-3094010",
+    "productId": "3094010",
+    "title": "Анна Снегина",
+    "format": "Бумажная книга",
+    "publisher": "Эксмо",
+    "isbn": "978-5-04-215292-4",
+    "pages": 320,
+    "coverType": "Твердая обложка",
+    "productUrl": "https://www.chitai-gorod.ru/product/anna-snegina-3094010",
+    "stores": [
+      "chitai-gorod"
+    ],
+    "links": [
+      {
+        "store": "chitai-gorod",
+        "url": "https://www.chitai-gorod.ru/r/irdLi?erid=2W5zFFv66oB"
+      }
+    ],
+    "category": "Стихотворения",
+    "tags": [
+      "Твердая обложка",
+      "Стихотворения",
+      "Эксмо"
+    ],
+    "searchQuery": "Есенин Анна Снегина",
+    "cover": "/img/books/anna-snegina-3094010.jpg",
+    "coverWebp": "/img/books/anna-snegina-3094010.webp",
+    "coverAlt": "Анна Снегина — обложка издания",
+    "coverCredit": "Фото: Читай-город",
+    "price": 389.0,
+    "priceCurrency": "RUB",
+    "availability": "InStock",
+    "priceCheckedAt": "2026-10-21",
+    "annotation": "Стихотворения в хронологическом порядке — видно, как меняется голос. 320 с., твёрдый переплёт, Эксмо.",
+    "coverWidth": 400,
+    "coverHeight": 629
+  },
+  {
+    "id": "anna-snegina-2788290",
+    "productId": "2788290",
+    "title": "Анна Снегина",
+    "format": "Бумажная книга",
+    "publisher": "Эксмо",
+    "isbn": "978-5-04-109905-3",
+    "pages": 224,
+    "coverType": "Твердая обложка",
+    "productUrl": "https://www.chitai-gorod.ru/product/anna-snegina-2788290",
+    "stores": [
+      "chitai-gorod"
+    ],
+    "links": [
+      {
+        "store": "chitai-gorod",
+        "url": "https://www.chitai-gorod.ru/r/LyAXY?erid=2W5zFFwa65X"
+      }
+    ],
+    "category": "Стихотворения",
+    "tags": [
+      "Твердая обложка",
+      "Стихотворения",
+      "Эксмо"
+    ],
+    "searchQuery": "Есенин Анна Снегина",
+    "cover": "/img/books/anna-snegina-2788290.jpg",
+    "coverWebp": "/img/books/anna-snegina-2788290.webp",
+    "coverAlt": "Анна Снегина — обложка издания",
+    "coverCredit": "Фото: Читай-город",
+    "price": 499.0,
+    "priceCurrency": "RUB",
+    "availability": "InStock",
+    "priceCheckedAt": "2026-10-21",
+    "annotation": "Стихотворения в хронологическом порядке — видно, как меняется голос. 224 с., твёрдый переплёт, Эксмо.",
+    "coverWidth": 400,
+    "coverHeight": 526
+  },
+  {
+    "id": "anna-snegina-poemy-7885213",
+    "productId": "7885213",
+    "title": "Анна Снегина. Поэмы",
+    "format": "Бумажная книга",
+    "publisher": "Эксмо",
+    "isbn": "978-5-04-154105-7",
+    "pages": 384,
+    "coverType": "Твердая обложка",
+    "productUrl": "https://www.chitai-gorod.ru/product/anna-snegina-poemy-7885213",
+    "stores": [
+      "chitai-gorod"
+    ],
+    "links": [
+      {
+        "store": "chitai-gorod",
+        "url": "https://www.chitai-gorod.ru/r/VauYE?erid=2W5zFFy45Ms"
+      }
+    ],
+    "category": "Поэмы",
+    "tags": [
+      "Твердая обложка",
+      "Поэмы",
+      "Эксмо"
+    ],
+    "searchQuery": "Есенин Анна Снегина. Поэмы",
+    "cover": "/img/books/anna-snegina-poemy-7885213.jpg",
+    "coverWebp": "/img/books/anna-snegina-poemy-7885213.webp",
+    "coverAlt": "Анна Снегина. Поэмы — обложка издания",
+    "coverCredit": "Фото: Читай-город",
+    "price": 330.0,
+    "priceCurrency": "RUB",
+    "availability": "InStock",
+    "priceCheckedAt": "2026-10-21",
+    "annotation": "Поэмы собраны отдельно: сюжетный, повествовательный Есенин. 384 с., твёрдый переплёт, Эксмо.",
+    "coverWidth": 400,
+    "coverHeight": 581
+  },
+  {
+    "id": "anna-snegina-poemy-proza-2875737",
+    "productId": "2875737",
+    "title": "Анна Снегина. Поэмы, проза",
+    "format": "Бумажная книга",
+    "publisher": "Белый город",
+    "isbn": "978-5-00119-196-4, 978-5-00119-269-5",
+    "pages": 408,
+    "coverType": "Твердая обложка",
+    "productUrl": "https://www.chitai-gorod.ru/product/anna-snegina-poemy-proza-2875737",
+    "stores": [
+      "chitai-gorod"
+    ],
+    "links": [
+      {
+        "store": "chitai-gorod",
+        "url": "https://www.chitai-gorod.ru/r/jMrcw?erid=2W5zFG223vZ"
+      }
+    ],
+    "category": "Проза и письма",
+    "tags": [
+      "Твердая обложка",
+      "Проза и письма",
+      "Белый город"
+    ],
+    "searchQuery": "Есенин Анна Снегина. Поэмы, проза",
+    "cover": "/img/books/anna-snegina-poemy-proza-2875737.jpg",
+    "coverWebp": "/img/books/anna-snegina-poemy-proza-2875737.webp",
+    "coverAlt": "Анна Снегина. Поэмы, проза — обложка издания",
+    "coverCredit": "Фото: Читай-город",
+    "price": 1499.0,
+    "priceCurrency": "RUB",
+    "availability": "InStock",
+    "priceCheckedAt": "2026-10-21",
+    "annotation": "Прозаические тексты и переписка: рабочий, дневниковый Есенин — материал для внимательного чтения. 408 с., твёрдый переплёт, Белый город.",
+    "coverWidth": 400,
+    "coverHeight": 639
+  },
+  {
+    "id": "vneklassnoe-chtenie-ne-zhaleyu-ne-zovu-ne-plachu-3053163",
+    "productId": "3053163",
+    "title": "Внеклассное чтение. Не жалею, не зову, не плачу….",
+    "format": "Бумажная книга",
+    "publisher": "Стрекоза",
+    "isbn": "978-5-9951-5738-0",
+    "pages": 64,
+    "coverType": "Мягкая обложка",
+    "productUrl": "https://www.chitai-gorod.ru/product/vneklassnoe-chtenie-ne-zhaleyu-ne-zovu-ne-plachu-3053163",
+    "stores": [
+      "chitai-gorod"
+    ],
+    "links": [
+      {
+        "store": "chitai-gorod",
+        "url": "https://www.chitai-gorod.ru/r/plKnG?erid=2W5zFG3W3Cu"
+      }
+    ],
+    "category": "Школьная программа",
+    "tags": [
+      "Мягкая обложка",
+      "Школьная программа",
+      "Стрекоза"
+    ],
+    "searchQuery": "Есенин Внеклассное чтение. Не жалею, не зову, не плачу….",
+    "cover": "/img/books/vneklassnoe-chtenie-ne-zhaleyu-ne-zovu-ne-plachu-3053163.jpg",
+    "coverWebp": "/img/books/vneklassnoe-chtenie-ne-zhaleyu-ne-zovu-ne-plachu-3053163.webp",
+    "coverAlt": "Внеклассное чтение. Не жалею, не зову, не плачу…. — обложка издания",
+    "coverCredit": "Фото: Читай-город",
+    "price": 169.0,
+    "priceCurrency": "RUB",
+    "availability": "InStock",
+    "priceCheckedAt": "2026-10-21",
+    "annotation": "Издание для уроков литературы — те же стихотворения и поэмы, что в программе. 64 с., мягкая обложка, Стрекоза.",
+    "coverWidth": 400,
+    "coverHeight": 628
+  },
+  {
+    "id": "gori-zvezda-moya-ne-paday-2981238",
+    "productId": "2981238",
+    "title": "Гори, звезда моя, не падай...",
+    "format": "Бумажная книга",
+    "publisher": "Эксмо",
+    "isbn": "978-5-04-185106-4",
+    "pages": 288,
+    "coverType": "Мягкая обложка",
+    "productUrl": "https://www.chitai-gorod.ru/product/gori-zvezda-moya-ne-paday-2981238",
+    "stores": [
+      "chitai-gorod"
+    ],
+    "links": [
+      {
+        "store": "chitai-gorod",
+        "url": "https://www.chitai-gorod.ru/r/LcoeH?erid=2W5zFG4z2VF"
+      }
+    ],
+    "category": "Стихотворения",
+    "tags": [
+      "Мягкая обложка",
+      "Стихотворения",
+      "Эксмо"
+    ],
+    "searchQuery": "Есенин Гори, звезда моя, не падай...",
+    "cover": "/img/books/gori-zvezda-moya-ne-paday-2981238.jpg",
+    "coverWebp": "/img/books/gori-zvezda-moya-ne-paday-2981238.webp",
+    "coverAlt": "Гори, звезда моя, не падай... — обложка издания",
+    "coverCredit": "Фото: Читай-город",
+    "price": 329.0,
+    "priceCurrency": "RUB",
+    "availability": "InStock",
+    "priceCheckedAt": "2026-10-21",
+    "annotation": "Сборник лирики — то, что чаще всего ищут: пейзаж, деревня, любовь, поздние строки. 288 с., мягкая обложка, Эксмо.",
+    "coverWidth": 400,
+    "coverHeight": 626
+  },
+  {
+    "id": "esenin-navsegda-sbornik-stihov-s-sovremennymi-illustraciami-3097434",
+    "productId": "3097434",
+    "title": "Есенин навсегда. Сборник стихов с современными иллюстрациями",
+    "format": "Бумажная книга",
+    "publisher": "Комсомольская Правда",
+    "isbn": "978-5-4470-0739-3",
+    "pages": 112,
+    "coverType": "Твердая обложка",
+    "productUrl": "https://www.chitai-gorod.ru/product/esenin-navsegda-sbornik-stihov-s-sovremennymi-illustraciami-3097434",
+    "stores": [
+      "chitai-gorod"
+    ],
+    "links": [
+      {
+        "store": "chitai-gorod",
+        "url": "https://www.chitai-gorod.ru/r/TDgfU?erid=2W5zFG6U1mb"
+      }
+    ],
+    "category": "Стихотворения",
+    "tags": [
+      "Твердая обложка",
+      "Стихотворения",
+      "Комсомольская Правда"
+    ],
+    "searchQuery": "Есенин Есенин навсегда. Сборник стихов с современными иллюстрациями",
+    "cover": "/img/books/esenin-navsegda-sbornik-stihov-s-sovremennymi-illustraciami-3097434.jpg",
+    "coverWebp": "/img/books/esenin-navsegda-sbornik-stihov-s-sovremennymi-illustraciami-3097434.webp",
+    "coverAlt": "Есенин навсегда. Сборник стихов с современными иллюстрациями — обложка издания",
+    "coverCredit": "Фото: Читай-город",
+    "price": 979.0,
+    "priceCurrency": "RUB",
+    "availability": "InStock",
+    "priceCheckedAt": "2026-10-21",
+    "annotation": "Сборник лирики — то, что чаще всего ищут: пейзаж, деревня, любовь, поздние строки. 112 с., твёрдый переплёт, Комсомольская Правда.",
+    "coverWidth": 400,
+    "coverHeight": 625
+  },
+  {
+    "id": "esenin-s-a-sobranie-socinenij-v-dvuh-tomah-komplekt-3093068",
+    "productId": "3093068",
+    "title": "Есенин С. А. Собрание сочинений в двух томах",
+    "format": "Бумажная книга",
+    "publisher": "Омега-Л",
+    "isbn": "978-5-370-05587-4",
+    "pages": "",
+    "coverType": "Твердая обложка",
+    "productUrl": "https://www.chitai-gorod.ru/product/esenin-s-a-sobranie-socinenij-v-dvuh-tomah-komplekt-3093068",
+    "stores": [
+      "chitai-gorod"
+    ],
+    "links": [
+      {
+        "store": "chitai-gorod",
+        "url": "https://www.chitai-gorod.ru/r/gwXti?erid=2W5zFG7x13w"
+      }
+    ],
+    "category": "Собрание сочинений",
+    "tags": [
+      "Твердая обложка",
+      "Собрание сочинений",
+      "Омега-Л"
+    ],
+    "searchQuery": "Есенин Есенин С. А. Собрание сочинений в двух томах",
+    "cover": "/img/books/esenin-s-a-sobranie-socinenij-v-dvuh-tomah-komplekt-3093068.jpg",
+    "coverWebp": "/img/books/esenin-s-a-sobranie-socinenij-v-dvuh-tomah-komplekt-3093068.webp",
+    "coverAlt": "Есенин С. А. Собрание сочинений в двух томах — обложка издания",
+    "coverCredit": "Фото: Читай-город",
+    "price": 2099.0,
+    "priceCurrency": "RUB",
+    "availability": "InStock",
+    "priceCheckedAt": "2026-10-21",
+    "annotation": "Собрание под одной обложкой (или в комплекте томов): от ранних стихов до поздних поэм и прозы. твёрдый переплёт, Омега-Л.",
+    "coverWidth": 400,
+    "coverHeight": 552
+  },
+  {
+    "id": "esenin-izbrannaya-lirika-s-illyustraciyami-3058523",
+    "productId": "3058523",
+    "title": "Есенин. Избранная лирика с иллюстрациями",
+    "format": "Бумажная книга",
+    "publisher": "АСТ",
+    "isbn": "978-5-17-168107-4",
+    "pages": 128,
+    "coverType": "Твердая обложка",
+    "productUrl": "https://www.chitai-gorod.ru/product/esenin-izbrannaya-lirika-s-illyustraciyami-3058523",
+    "stores": [
+      "chitai-gorod"
+    ],
+    "links": [
+      {
+        "store": "chitai-gorod",
+        "url": "https://www.chitai-gorod.ru/r/jGvgl?erid=2W5zFGCPxty"
+      }
+    ],
+    "category": "Избранное",
+    "tags": [
+      "Твердая обложка",
+      "Избранное",
+      "АСТ"
+    ],
+    "searchQuery": "Есенин Есенин. Избранная лирика с иллюстрациями",
+    "cover": "/img/books/esenin-izbrannaya-lirika-s-illyustraciyami-3058523.jpg",
+    "coverWebp": "/img/books/esenin-izbrannaya-lirika-s-illyustraciyami-3058523.webp",
+    "coverAlt": "Есенин. Избранная лирика с иллюстрациями — обложка издания",
+    "coverCredit": "Фото: Читай-город",
+    "price": 679.0,
+    "priceCurrency": "RUB",
+    "availability": "InStock",
+    "priceCheckedAt": "2026-10-21",
+    "annotation": "Подборка ключевых текстов: и ранние деревенские стихи, и поздние признания. 128 с., твёрдый переплёт, АСТ.",
+    "coverWidth": 400,
+    "coverHeight": 526
+  },
+  {
+    "id": "esenin-izbrannoe-7261905",
+    "productId": "7261905",
+    "title": "Есенин. Избранное",
+    "format": "Бумажная книга",
+    "publisher": "Дом Славянской Книги",
+    "isbn": "978-5-91503-147-9",
+    "pages": 320,
+    "coverType": "",
+    "productUrl": "https://www.chitai-gorod.ru/product/esenin-izbrannoe-7261905",
+    "stores": [
+      "chitai-gorod"
+    ],
+    "links": [
+      {
+        "store": "chitai-gorod",
+        "url": "https://www.chitai-gorod.ru/r/zpdCs?erid=2W5zFGDsxBK"
+      }
+    ],
+    "category": "Избранное",
+    "tags": [
+      "Избранное",
+      "Дом Славянской Книги"
+    ],
+    "searchQuery": "Есенин Есенин. Избранное",
+    "cover": "/img/books/esenin-izbrannoe-7261905.jpg",
+    "coverWebp": "/img/books/esenin-izbrannoe-7261905.webp",
+    "coverAlt": "Есенин. Избранное — обложка издания",
+    "coverCredit": "Фото: Читай-город",
+    "price": 192.0,
+    "priceCurrency": "RUB",
+    "availability": "InStock",
+    "priceCheckedAt": "2026-10-21",
+    "annotation": "Отобранное лучшее: стихи, которые перечитывают, без малоизвестного балласта. 320 с., Дом Славянской Книги.",
+    "coverWidth": 400,
+    "coverHeight": 525
+  },
+  {
+    "id": "esenin-sobranie-socinenij-8122398",
+    "productId": "8122398",
+    "title": "Есенин. Собрание сочинений",
+    "format": "Бумажная книга",
+    "publisher": "АСТ",
+    "isbn": "978-5-17-166413-8",
+    "pages": 512,
+    "coverType": "Твердая обложка",
+    "productUrl": "https://www.chitai-gorod.ru/product/esenin-sobranie-socinenij-8122398",
+    "stores": [
+      "chitai-gorod"
+    ],
+    "links": [
+      {
+        "store": "chitai-gorod",
+        "url": "https://www.chitai-gorod.ru/r/ttMNp?erid=2W5zFGFMwTf"
+      }
+    ],
+    "category": "Собрание сочинений",
+    "tags": [
+      "Твердая обложка",
+      "Собрание сочинений",
+      "АСТ"
+    ],
+    "searchQuery": "Есенин Есенин. Собрание сочинений",
+    "cover": "/img/books/esenin-sobranie-socinenij-8122398.jpg",
+    "coverWebp": "/img/books/esenin-sobranie-socinenij-8122398.webp",
+    "coverAlt": "Есенин. Собрание сочинений — обложка издания",
+    "coverCredit": "Фото: Читай-город",
+    "price": 1380.0,
+    "priceCurrency": "RUB",
+    "availability": "InStock",
+    "priceCheckedAt": "2026-10-21",
+    "annotation": "Издание для чтения вдоль и поперёк: весь путь поэта, собранный в одном комплекте. 512 с., твёрдый переплёт, АСТ.",
+    "coverWidth": 400,
+    "coverHeight": 570
+  },
+  {
+    "id": "zametalsa-pozar-goluboj-3122271",
+    "productId": "3122271",
+    "title": "Заметался пожар голубой",
+    "format": "Бумажная книга",
+    "publisher": "АСТ",
+    "isbn": "978-5-17-176017-5",
+    "pages": 224,
+    "coverType": "Твердая обложка",
+    "productUrl": "https://www.chitai-gorod.ru/product/zametalsa-pozar-goluboj-3122271",
+    "stores": [
+      "chitai-gorod"
+    ],
+    "links": [
+      {
+        "store": "chitai-gorod",
+        "url": "https://www.chitai-gorod.ru/r/tVSsF?erid=2W5zFGJKv2M"
+      }
+    ],
+    "category": "Стихотворения",
+    "tags": [
+      "Твердая обложка",
+      "Стихотворения",
+      "АСТ"
+    ],
+    "searchQuery": "Есенин Заметался пожар голубой",
+    "cover": "/img/books/zametalsa-pozar-goluboj-3122271.jpg",
+    "coverWebp": "/img/books/zametalsa-pozar-goluboj-3122271.webp",
+    "coverAlt": "Заметался пожар голубой — обложка издания",
+    "coverCredit": "Фото: Читай-город",
+    "price": 529.0,
+    "priceCurrency": "RUB",
+    "availability": "InStock",
+    "priceCheckedAt": "2026-10-21",
+    "annotation": "Только стихотворения: лирика разных лет, без прозы и поэм. 224 с., твёрдый переплёт, АСТ.",
+    "coverWidth": 400,
+    "coverHeight": 531
+  },
+  {
+    "id": "zametalsa-pozar-goluboj-3116325",
+    "productId": "3116325",
+    "title": "Заметался пожар голубой. Стихотворения",
+    "format": "Бумажная книга",
+    "publisher": "Эксмо",
+    "isbn": "978-5-04-221587-2",
+    "pages": 384,
+    "coverType": "Твердая обложка",
+    "productUrl": "https://www.chitai-gorod.ru/product/zametalsa-pozar-goluboj-3116325",
+    "stores": [
+      "chitai-gorod"
+    ],
+    "links": [
+      {
+        "store": "chitai-gorod",
+        "url": "https://www.chitai-gorod.ru/r/gUWsL?erid=2W5zFGKouJh"
+      }
+    ],
+    "category": "Стихотворения",
+    "tags": [
+      "Твердая обложка",
+      "Стихотворения",
+      "Эксмо"
+    ],
+    "searchQuery": "Есенин Заметался пожар голубой. Стихотворения",
+    "cover": "/img/books/zametalsa-pozar-goluboj-3116325.jpg",
+    "coverWebp": "/img/books/zametalsa-pozar-goluboj-3116325.webp",
+    "coverAlt": "Заметался пожар голубой. Стихотворения — обложка издания",
+    "coverCredit": "Фото: Читай-город",
+    "price": 1049.0,
+    "priceCurrency": "RUB",
+    "availability": "InStock",
+    "priceCheckedAt": "2026-10-21",
+    "annotation": "Стихотворения в хронологическом порядке — видно, как меняется голос. 384 с., твёрдый переплёт, Эксмо.",
+    "coverWidth": 400,
+    "coverHeight": 629
+  },
+  {
+    "id": "izbrannoe-7959041",
+    "productId": "7959041",
+    "title": "Избранное",
+    "format": "Бумажная книга",
+    "publisher": "Интеллект-Книга",
+    "isbn": "978-5-6047869-7-0",
+    "pages": 256,
+    "coverType": "Твердая обложка",
+    "productUrl": "https://www.chitai-gorod.ru/product/izbrannoe-7959041",
+    "stores": [
+      "chitai-gorod"
+    ],
+    "links": [
+      {
+        "store": "chitai-gorod",
+        "url": "https://www.chitai-gorod.ru/r/kSmgW?erid=2W5zFGMHtb3"
+      }
+    ],
+    "category": "Избранное",
+    "tags": [
+      "Твердая обложка",
+      "Избранное",
+      "Интеллект-Книга"
+    ],
+    "searchQuery": "Есенин Избранное",
+    "cover": "/img/books/izbrannoe-7959041.jpg",
+    "coverWebp": "/img/books/izbrannoe-7959041.webp",
+    "coverAlt": "Избранное — обложка издания",
+    "coverCredit": "Фото: Читай-город",
+    "price": 204.0,
+    "priceCurrency": "RUB",
+    "availability": "InStock",
+    "priceCheckedAt": "2026-10-21",
+    "annotation": "Избранное — компактный вход в лирику, если нужен один том на полке. 256 с., твёрдый переплёт, Интеллект-Книга.",
+    "coverWidth": 400,
+    "coverHeight": 585
+  },
+  {
+    "id": "izbrannye-stihi-i-poemy-2756686",
+    "productId": "2756686",
+    "title": "Избранные стихи и поэмы",
+    "format": "Бумажная книга",
+    "publisher": "Детская литература",
+    "isbn": "978-5-08-006209-4",
+    "pages": 144,
+    "coverType": "Твердая обложка",
+    "productUrl": "https://www.chitai-gorod.ru/product/izbrannye-stihi-i-poemy-2756686",
+    "stores": [
+      "chitai-gorod"
+    ],
+    "links": [
+      {
+        "store": "chitai-gorod",
+        "url": "https://www.chitai-gorod.ru/r/yApEg?erid=2W5zFGUhpzm"
+      }
+    ],
+    "category": "Стихотворения и поэмы",
+    "tags": [
+      "Твердая обложка",
+      "Стихотворения и поэмы",
+      "Детская литература"
+    ],
+    "searchQuery": "Есенин Избранные стихи и поэмы",
+    "cover": "/img/books/izbrannye-stihi-i-poemy-2756686.jpg",
+    "coverWebp": "/img/books/izbrannye-stihi-i-poemy-2756686.webp",
+    "coverAlt": "Избранные стихи и поэмы — обложка издания",
+    "coverCredit": "Фото: Читай-город",
+    "price": 429.0,
+    "priceCurrency": "RUB",
+    "availability": "InStock",
+    "priceCheckedAt": "2026-10-21",
+    "annotation": "И лирика, и крупные вещи в одном томе — от «Черёмухи» до «Чёрного человека». 144 с., твёрдый переплёт, Детская литература.",
+    "coverWidth": 400,
+    "coverHeight": 630
+  },
+  {
+    "id": "ispoved-huligana-2676510",
+    "productId": "2676510",
+    "title": "Исповедь хулигана",
+    "format": "Бумажная книга",
+    "publisher": "Азбука",
+    "isbn": "978-5-389-15175-8",
+    "pages": 320,
+    "coverType": "Твердая обложка",
+    "productUrl": "https://www.chitai-gorod.ru/product/ispoved-huligana-2676510",
+    "stores": [
+      "chitai-gorod"
+    ],
+    "links": [
+      {
+        "store": "chitai-gorod",
+        "url": "https://www.chitai-gorod.ru/r/UFiiE?erid=2W5zFGXfoZT"
+      }
+    ],
+    "category": "Стихотворения",
+    "tags": [
+      "Твердая обложка",
+      "Стихотворения",
+      "Азбука"
+    ],
+    "searchQuery": "Есенин Исповедь хулигана",
+    "cover": "/img/books/ispoved-huligana-2676510.jpg",
+    "coverWebp": "/img/books/ispoved-huligana-2676510.webp",
+    "coverAlt": "Исповедь хулигана — обложка издания",
+    "coverCredit": "Фото: Читай-город",
+    "price": 799.0,
+    "priceCurrency": "RUB",
+    "availability": "InStock",
+    "priceCheckedAt": "2026-10-21",
+    "annotation": "Стихотворения в хронологическом порядке — видно, как меняется голос. 320 с., твёрдый переплёт, Азбука.",
+    "coverWidth": 400,
+    "coverHeight": 571
+  },
+  {
+    "id": "ispoved-huligana-2478833",
+    "productId": "2478833",
+    "title": "Исповедь хулигана",
+    "format": "Бумажная книга",
+    "publisher": "Азбука",
+    "isbn": "978-5-389-10209-5",
+    "pages": 320,
+    "coverType": "Твердая обложка",
+    "productUrl": "https://www.chitai-gorod.ru/product/ispoved-huligana-2478833",
+    "stores": [
+      "chitai-gorod"
+    ],
+    "links": [
+      {
+        "store": "chitai-gorod",
+        "url": "https://www.chitai-gorod.ru/r/OgAmD?erid=2W5zFGZ9nqo"
+      }
+    ],
+    "category": "Стихотворения",
+    "tags": [
+      "Твердая обложка",
+      "Стихотворения",
+      "Азбука"
+    ],
+    "searchQuery": "Есенин Исповедь хулигана",
+    "cover": "/img/books/ispoved-huligana-2478833.jpg",
+    "coverWebp": "/img/books/ispoved-huligana-2478833.webp",
+    "coverAlt": "Исповедь хулигана — обложка издания",
+    "coverCredit": "Фото: Читай-город",
+    "price": 329.0,
+    "priceCurrency": "RUB",
+    "availability": "InStock",
+    "priceCheckedAt": "2026-10-21",
+    "annotation": "Только стихотворения: лирика разных лет, без прозы и поэм. 320 с., твёрдый переплёт, Азбука.",
+    "coverWidth": 400,
+    "coverHeight": 644
+  },
+  {
+    "id": "kak-umeet-lyubit-huligan-2765152",
+    "productId": "2765152",
+    "title": "Как умеет любить хулиган…",
+    "format": "Бумажная книга",
+    "publisher": "Центрполиграф",
+    "isbn": "978-5-227-08758-4, 978-5-227-09530-5, 978-5-227-10340-6",
+    "pages": 191,
+    "coverType": "Твердая обложка",
+    "productUrl": "https://www.chitai-gorod.ru/product/kak-umeet-lyubit-huligan-2765152",
+    "stores": [
+      "chitai-gorod"
+    ],
+    "links": [
+      {
+        "store": "chitai-gorod",
+        "url": "https://www.chitai-gorod.ru/r/TZdkU?erid=2W5zFGc7mQV"
+      }
+    ],
+    "category": "Стихотворения",
+    "tags": [
+      "Твердая обложка",
+      "Стихотворения",
+      "Центрполиграф"
+    ],
+    "searchQuery": "Есенин Как умеет любить хулиган…",
+    "cover": "/img/books/kak-umeet-lyubit-huligan-2765152.jpg",
+    "coverWebp": "/img/books/kak-umeet-lyubit-huligan-2765152.webp",
+    "coverAlt": "Как умеет любить хулиган… — обложка издания",
+    "coverCredit": "Фото: Читай-город",
+    "price": 479.0,
+    "priceCurrency": "RUB",
+    "availability": "InStock",
+    "priceCheckedAt": "2026-10-21",
+    "annotation": "Сборник лирики — то, что чаще всего ищут: пейзаж, деревня, любовь, поздние строки. 191 с., твёрдый переплёт, Центрполиграф.",
+    "coverWidth": 400,
+    "coverHeight": 621
+  },
+  {
+    "id": "klen-ty-moy-opavshiy-2495746",
+    "productId": "2495746",
+    "title": "Клен ты мой опавший...",
+    "format": "Бумажная книга",
+    "publisher": "АСТ",
+    "isbn": "978-5-17-093270-2",
+    "pages": 416,
+    "coverType": "Мягкая обложка",
+    "productUrl": "https://www.chitai-gorod.ru/product/klen-ty-moy-opavshiy-2495746",
+    "stores": [
+      "chitai-gorod"
+    ],
+    "links": [
+      {
+        "store": "chitai-gorod",
+        "url": "https://www.chitai-gorod.ru/r/desjr?erid=2W5zFJuYKHb"
+      }
+    ],
+    "category": "Стихотворения",
+    "tags": [
+      "Мягкая обложка",
+      "Стихотворения",
+      "АСТ"
+    ],
+    "searchQuery": "Есенин Клен ты мой опавший...",
+    "cover": "/img/books/klen-ty-moy-opavshiy-2495746.jpg",
+    "coverWebp": "/img/books/klen-ty-moy-opavshiy-2495746.webp",
+    "coverAlt": "Клен ты мой опавший... — обложка издания",
+    "coverCredit": "Фото: Читай-город",
+    "price": 329.0,
+    "priceCurrency": "RUB",
+    "availability": "InStock",
+    "priceCheckedAt": "2026-10-21",
+    "annotation": "Сборник лирики — то, что чаще всего ищут: пейзаж, деревня, любовь, поздние строки. 416 с., мягкая обложка, АСТ.",
+    "coverWidth": 400,
+    "coverHeight": 626
+  },
+  {
+    "id": "klen-ty-moy-opavshiy-7869573",
+    "productId": "7869573",
+    "title": "Клен ты мой опавший...",
+    "format": "Бумажная книга",
+    "publisher": "АСТ",
+    "isbn": "978-5-17-135744-3",
+    "pages": 416,
+    "coverType": "Твердая обложка",
+    "productUrl": "https://www.chitai-gorod.ru/product/klen-ty-moy-opavshiy-7869573",
+    "stores": [
+      "chitai-gorod"
+    ],
+    "links": [
+      {
+        "store": "chitai-gorod",
+        "url": "https://www.chitai-gorod.ru/r/zXzrb?erid=2W5zFGf5jyB"
+      }
+    ],
+    "category": "Стихотворения",
+    "tags": [
+      "Твердая обложка",
+      "Стихотворения",
+      "АСТ"
+    ],
+    "searchQuery": "Есенин Клен ты мой опавший...",
+    "cover": "/img/books/klen-ty-moy-opavshiy-7869573.jpg",
+    "coverWebp": "/img/books/klen-ty-moy-opavshiy-7869573.webp",
+    "coverAlt": "Клен ты мой опавший... — обложка издания",
+    "coverCredit": "Фото: Читай-город",
+    "price": 270.0,
+    "priceCurrency": "RUB",
+    "availability": "InStock",
+    "priceCheckedAt": "2026-10-21",
+    "annotation": "Только стихотворения: лирика разных лет, без прозы и поэм. 416 с., твёрдый переплёт, АСТ.",
+    "coverWidth": 400,
+    "coverHeight": 615
+  },
+  {
+    "id": "kluci-marii-proza-stat-i-ocerki-3107144",
+    "productId": "3107144",
+    "title": "Ключи Марии. Проза, статьи, очерки",
+    "format": "Бумажная книга",
+    "publisher": "Эксмо",
+    "isbn": "978-5-04-217804-7",
+    "pages": 288,
+    "coverType": "Твердая обложка",
+    "productUrl": "https://www.chitai-gorod.ru/product/kluci-marii-proza-stat-i-ocerki-3107144",
+    "stores": [
+      "chitai-gorod"
+    ],
+    "links": [
+      {
+        "store": "chitai-gorod",
+        "url": "https://www.chitai-gorod.ru/r/TVkkv?erid=2W5zFGgZjFX"
+      }
+    ],
+    "category": "Проза и письма",
+    "tags": [
+      "Твердая обложка",
+      "Проза и письма",
+      "Эксмо"
+    ],
+    "searchQuery": "Есенин Ключи Марии. Проза, статьи, очерки",
+    "cover": "/img/books/kluci-marii-proza-stat-i-ocerki-3107144.jpg",
+    "coverWebp": "/img/books/kluci-marii-proza-stat-i-ocerki-3107144.webp",
+    "coverAlt": "Ключи Марии. Проза, статьи, очерки — обложка издания",
+    "coverCredit": "Фото: Читай-город",
+    "price": 479.0,
+    "priceCurrency": "RUB",
+    "availability": "InStock",
+    "priceCheckedAt": "2026-10-21",
+    "annotation": "Издание для тех, кто уже прошёл лирику и хочет услышать голос поэта в письмах и заметках. 288 с., твёрдый переплёт, Эксмо.",
+    "coverWidth": 400,
+    "coverHeight": 629
+  },
+  {
+    "id": "komplekt-poezia-i-proza-esenina-iz-2-h-knig-stihotvorenia-kluci-marii--3144246",
+    "productId": "3144246",
+    "title": "Комплект Поэзия и проза Есенина (из 2-х книг: Стихотворения. Ключи Марии. Проза, статьи, очерки)",
+    "format": "Бумажная книга",
+    "publisher": "Эксмо",
+    "isbn": "978-5-04-239647-2",
+    "pages": 288,
+    "coverType": "Твердая обложка",
+    "productUrl": "https://www.chitai-gorod.ru/product/komplekt-poezia-i-proza-esenina-iz-2-h-knig-stihotvorenia-kluci-marii-proza-stat-i-ocerki-3144246",
+    "stores": [
+      "chitai-gorod"
+    ],
+    "links": [
+      {
+        "store": "chitai-gorod",
+        "url": "https://www.chitai-gorod.ru/r/Kxwch?erid=2W5zFGi3iXs"
+      }
+    ],
+    "category": "Проза и письма",
+    "tags": [
+      "Твердая обложка",
+      "Проза и письма",
+      "Эксмо"
+    ],
+    "searchQuery": "Есенин Комплект Поэзия и проза Есенина (из 2-х книг: Стихотворения. Ключи Марии. Проза, статьи, очерки)",
+    "cover": "/img/books/komplekt-poezia-i-proza-esenina-iz-2-h-knig-stihotvorenia-kluci-marii--3144246.jpg",
+    "coverWebp": "/img/books/komplekt-poezia-i-proza-esenina-iz-2-h-knig-stihotvorenia-kluci-marii--3144246.webp",
+    "coverAlt": "Комплект Поэзия и проза Есенина (из 2-х книг: Стихотворения. Ключи Марии. Проза, статьи, очерки) — обложка издания",
+    "coverCredit": "Фото: Читай-город",
+    "price": 779.0,
+    "priceCurrency": "RUB",
+    "availability": "InStock",
+    "priceCheckedAt": "2026-10-21",
+    "annotation": "Прозаические тексты и переписка: рабочий, дневниковый Есенин — материал для внимательного чтения. 288 с., твёрдый переплёт, Эксмо.",
+    "coverWidth": 400,
+    "coverHeight": 533
+  },
+  {
+    "id": "komplekt-poezia-sergea-esenina-iz-2-h-knig-cernyj-celovek-poemy-proza--3144247",
+    "productId": "3144247",
+    "title": "Комплект Поэзия Сергея Есенина (из 2-х книг Черный человек. Поэмы, проза. Анна Снегина )",
+    "format": "Бумажная книга",
+    "publisher": "Эксмо",
+    "isbn": "978-5-04-239649-6",
+    "pages": 672,
+    "coverType": "Твердая обложка",
+    "productUrl": "https://www.chitai-gorod.ru/product/komplekt-poezia-sergea-esenina-iz-2-h-knig-cernyj-celovek-poemy-proza-anna-snegina-3144247",
+    "stores": [
+      "chitai-gorod"
+    ],
+    "links": [
+      {
+        "store": "chitai-gorod",
+        "url": "https://www.chitai-gorod.ru/r/shdFZ?erid=2W5zFGjXhpD"
+      }
+    ],
+    "category": "Проза и письма",
+    "tags": [
+      "Твердая обложка",
+      "Проза и письма",
+      "Эксмо"
+    ],
+    "searchQuery": "Есенин Комплект Поэзия Сергея Есенина (из 2-х книг Черный человек. Поэмы, проза. Анна Снегина )",
+    "cover": "/img/books/komplekt-poezia-sergea-esenina-iz-2-h-knig-cernyj-celovek-poemy-proza--3144247.jpg",
+    "coverWebp": "/img/books/komplekt-poezia-sergea-esenina-iz-2-h-knig-cernyj-celovek-poemy-proza--3144247.webp",
+    "coverAlt": "Комплект Поэзия Сергея Есенина (из 2-х книг Черный человек. Поэмы, проза. Анна Снегина ) — обложка издания",
+    "coverCredit": "Фото: Читай-город",
+    "price": 779.0,
+    "priceCurrency": "RUB",
+    "availability": "InStock",
+    "priceCheckedAt": "2026-10-21",
+    "annotation": "Прозаические тексты и переписка: рабочий, дневниковый Есенин — материал для внимательного чтения. 672 с., твёрдый переплёт, Эксмо.",
+    "coverWidth": 400,
+    "coverHeight": 533
+  },
+  {
+    "id": "lirika-sergey-esenin-2957879",
+    "productId": "2957879",
+    "title": "Лирика. Сергей Есенин",
+    "format": "Бумажная книга",
+    "publisher": "Стрекоза",
+    "isbn": "978-5-9951-5376-4",
+    "pages": 288,
+    "coverType": "Твердая обложка",
+    "productUrl": "https://www.chitai-gorod.ru/product/lirika-sergey-esenin-2957879",
+    "stores": [
+      "chitai-gorod"
+    ],
+    "links": [
+      {
+        "store": "chitai-gorod",
+        "url": "https://www.chitai-gorod.ru/r/dbSkl?erid=2W5zFGm1h6Z"
+      }
+    ],
+    "category": "Стихотворения",
+    "tags": [
+      "Твердая обложка",
+      "Стихотворения",
+      "Стрекоза"
+    ],
+    "searchQuery": "Есенин Лирика. Сергей Есенин",
+    "cover": "/img/books/lirika-sergey-esenin-2957879.jpg",
+    "coverWebp": "/img/books/lirika-sergey-esenin-2957879.webp",
+    "coverAlt": "Лирика. Сергей Есенин — обложка издания",
+    "coverCredit": "Фото: Читай-город",
+    "price": 379.0,
+    "priceCurrency": "RUB",
+    "availability": "InStock",
+    "priceCheckedAt": "2026-10-21",
+    "annotation": "Только стихотворения: лирика разных лет, без прозы и поэм. 288 с., твёрдый переплёт, Стрекоза.",
+    "coverWidth": 400,
+    "coverHeight": 630
+  },
+  {
+    "id": "maloe-sobranie-sochineniy-2332527",
+    "productId": "2332527",
+    "title": "Малое собрание сочинений",
+    "format": "Бумажная книга",
+    "publisher": "Азбука",
+    "isbn": "978-5-389-04577-4",
+    "pages": 640,
+    "coverType": "Твердая обложка",
+    "productUrl": "https://www.chitai-gorod.ru/product/maloe-sobranie-sochineniy-2332527",
+    "stores": [
+      "chitai-gorod"
+    ],
+    "links": [
+      {
+        "store": "chitai-gorod",
+        "url": "https://www.chitai-gorod.ru/r/MXEsE?erid=2W5zFGoyffF"
+      }
+    ],
+    "category": "Собрание сочинений",
+    "tags": [
+      "Твердая обложка",
+      "Собрание сочинений",
+      "Азбука"
+    ],
+    "searchQuery": "Есенин Малое собрание сочинений",
+    "cover": "/img/books/maloe-sobranie-sochineniy-2332527.jpg",
+    "coverWebp": "/img/books/maloe-sobranie-sochineniy-2332527.webp",
+    "coverAlt": "Малое собрание сочинений — обложка издания",
+    "coverCredit": "Фото: Читай-город",
+    "price": 779.0,
+    "priceCurrency": "RUB",
+    "availability": "InStock",
+    "priceCheckedAt": "2026-10-21",
+    "annotation": "Полный или многотомный свод: лирика, поэмы, проза и статьи в одном издании. Для тех, кому нужен корпус, а не выбранные строки. 640 с., твёрдый переплёт, Азбука.",
+    "coverWidth": 400,
+    "coverHeight": 633
+  },
+  {
+    "id": "ne-zaleu-ne-zovu-ne-placu-izbrannye-stihotvorenia-m-prospekt-2026-3166123",
+    "productId": "3166123",
+    "title": "Не жалею, не зову, не плачу. Избранные стихотворения",
+    "format": "Бумажная книга",
+    "publisher": "Проспект",
+    "isbn": "978-5-392-46115-8",
+    "pages": 256,
+    "coverType": "",
+    "productUrl": "https://www.chitai-gorod.ru/product/ne-zaleu-ne-zovu-ne-placu-izbrannye-stihotvorenia-m-prospekt-2026-3166123",
+    "stores": [
+      "chitai-gorod"
+    ],
+    "links": [
+      {
+        "store": "chitai-gorod",
+        "url": "https://www.chitai-gorod.ru/r/evQUN?erid=2W5zFGqTewb"
+      }
+    ],
+    "category": "Избранное",
+    "tags": [
+      "Избранное",
+      "Проспект"
+    ],
+    "searchQuery": "Есенин Не жалею, не зову, не плачу. Избранные стихотворения",
+    "cover": "/img/books/ne-zaleu-ne-zovu-ne-placu-izbrannye-stihotvorenia-m-prospekt-2026-3166123.jpg",
+    "coverWebp": "/img/books/ne-zaleu-ne-zovu-ne-placu-izbrannye-stihotvorenia-m-prospekt-2026-3166123.webp",
+    "coverAlt": "Не жалею, не зову, не плачу. Избранные стихотворения — обложка издания",
+    "coverCredit": "Фото: Читай-город",
+    "price": 209.0,
+    "priceCurrency": "RUB",
+    "availability": "InStock",
+    "priceCheckedAt": "2026-10-21",
+    "annotation": "Избранное — компактный вход в лирику, если нужен один том на полке. 256 с., Проспект.",
+    "coverWidth": 400,
+    "coverHeight": 598
+  },
+  {
+    "id": "ne-zhaleyu-ne-zovu-ne-plachu-2948108",
+    "productId": "2948108",
+    "title": "Не жалею, не зову, не плачу...",
+    "format": "Бумажная книга",
+    "publisher": "АСТ",
+    "isbn": "978-5-17-145192-9",
+    "pages": 224,
+    "coverType": "Твердая обложка",
+    "productUrl": "https://www.chitai-gorod.ru/product/ne-zhaleyu-ne-zovu-ne-plachu-2948108",
+    "stores": [
+      "chitai-gorod"
+    ],
+    "links": [
+      {
+        "store": "chitai-gorod",
+        "url": "https://www.chitai-gorod.ru/r/dGoRK?erid=2W5zFGrweDw"
+      }
+    ],
+    "category": "Стихотворения",
+    "tags": [
+      "Твердая обложка",
+      "Стихотворения",
+      "АСТ"
+    ],
+    "searchQuery": "Есенин Не жалею, не зову, не плачу...",
+    "cover": "/img/books/ne-zhaleyu-ne-zovu-ne-plachu-2948108.jpg",
+    "coverWebp": "/img/books/ne-zhaleyu-ne-zovu-ne-plachu-2948108.webp",
+    "coverAlt": "Не жалею, не зову, не плачу... — обложка издания",
+    "coverCredit": "Фото: Читай-город",
+    "price": 369.0,
+    "priceCurrency": "RUB",
+    "availability": "InStock",
+    "priceCheckedAt": "2026-10-21",
+    "annotation": "Сборник лирики — то, что чаще всего ищут: пейзаж, деревня, любовь, поздние строки. 224 с., твёрдый переплёт, АСТ.",
+    "coverWidth": 400,
+    "coverHeight": 551
+  },
+  {
+    "id": "ne-zhaleyu-ne-zovu-ne-plachu-3001259",
+    "productId": "3001259",
+    "title": "Не жалею, не зову, не плачу...",
+    "format": "Бумажная книга",
+    "publisher": "АСТ",
+    "isbn": "978-5-17-159613-2",
+    "pages": 256,
+    "coverType": "Мягкая обложка",
+    "productUrl": "https://www.chitai-gorod.ru/product/ne-zhaleyu-ne-zovu-ne-plachu-3001259",
+    "stores": [
+      "chitai-gorod"
+    ],
+    "links": [
+      {
+        "store": "chitai-gorod",
+        "url": "https://www.chitai-gorod.ru/r/XMOns?erid=2W5zFGtRdWH"
+      }
+    ],
+    "category": "Стихотворения",
+    "tags": [
+      "Мягкая обложка",
+      "Стихотворения",
+      "АСТ"
+    ],
+    "searchQuery": "Есенин Не жалею, не зову, не плачу...",
+    "cover": "/img/books/ne-zhaleyu-ne-zovu-ne-plachu-3001259.jpg",
+    "coverWebp": "/img/books/ne-zhaleyu-ne-zovu-ne-plachu-3001259.webp",
+    "coverAlt": "Не жалею, не зову, не плачу... — обложка издания",
+    "coverCredit": "Фото: Читай-город",
+    "price": 520.0,
+    "priceCurrency": "RUB",
+    "availability": "InStock",
+    "priceCheckedAt": "2026-10-21",
+    "annotation": "Только стихотворения: лирика разных лет, без прозы и поэм. 256 с., мягкая обложка, АСТ.",
+    "coverWidth": 400,
+    "coverHeight": 634
+  },
+  {
+    "id": "ne-zhaleyu-ne-zovu-ne-plachu-stihotvoreniya-poemy-1289878",
+    "productId": "1289878",
+    "title": "Не жалею, не зову, не плачу: стихотворения, поэмы",
+    "format": "Бумажная книга",
+    "publisher": "Эксмо",
+    "isbn": "978-5-699-60748-8",
+    "pages": 384,
+    "coverType": "Твердая обложка",
+    "productUrl": "https://www.chitai-gorod.ru/product/ne-zhaleyu-ne-zovu-ne-plachu-stihotvoreniya-poemy-1289878",
+    "stores": [
+      "chitai-gorod"
+    ],
+    "links": [
+      {
+        "store": "chitai-gorod",
+        "url": "https://www.chitai-gorod.ru/r/mxHBe?erid=2W5zFGuucnd"
+      }
+    ],
+    "category": "Поэмы",
+    "tags": [
+      "Твердая обложка",
+      "Поэмы",
+      "Эксмо"
+    ],
+    "searchQuery": "Есенин Не жалею, не зову, не плачу: стихотворения, поэмы",
+    "cover": "/img/books/ne-zhaleyu-ne-zovu-ne-plachu-stihotvoreniya-poemy-1289878.jpg",
+    "coverWebp": "/img/books/ne-zhaleyu-ne-zovu-ne-plachu-stihotvoreniya-poemy-1289878.webp",
+    "coverAlt": "Не жалею, не зову, не плачу: стихотворения, поэмы — обложка издания",
+    "coverCredit": "Фото: Читай-город",
+    "price": 309.0,
+    "priceCurrency": "RUB",
+    "availability": "InStock",
+    "priceCheckedAt": "2026-10-21",
+    "annotation": "Только поэмы — крупная форма: от «Пугачёва» и «Страны негодяев» до «Анны Снегиной». 384 с., твёрдый переплёт, Эксмо.",
+    "coverWidth": 400,
+    "coverHeight": 564
+  },
+  {
+    "id": "pismo-k-zhenshchine-poemy-2316130",
+    "productId": "2316130",
+    "title": "Письмо к женщине",
+    "format": "Бумажная книга",
+    "publisher": "Азбука",
+    "isbn": "978-5-389-03264-4",
+    "pages": 320,
+    "coverType": "Мягкая обложка",
+    "productUrl": "https://www.chitai-gorod.ru/product/pismo-k-zhenshchine-poemy-2316130",
+    "stores": [
+      "chitai-gorod"
+    ],
+    "links": [
+      {
+        "store": "chitai-gorod",
+        "url": "https://www.chitai-gorod.ru/r/AFMwe?erid=2W5zFH1qZv1"
+      }
+    ],
+    "category": "Стихотворения",
+    "tags": [
+      "Мягкая обложка",
+      "Стихотворения",
+      "Азбука"
+    ],
+    "searchQuery": "Есенин Письмо к женщине",
+    "cover": "/img/books/pismo-k-zhenshchine-poemy-2316130.jpg",
+    "coverWebp": "/img/books/pismo-k-zhenshchine-poemy-2316130.webp",
+    "coverAlt": "Письмо к женщине — обложка издания",
+    "coverCredit": "Фото: Читай-город",
+    "price": 269.0,
+    "priceCurrency": "RUB",
+    "availability": "InStock",
+    "priceCheckedAt": "2026-10-21",
+    "annotation": "Только стихотворения: лирика разных лет, без прозы и поэм. 320 с., мягкая обложка, Азбука.",
+    "coverWidth": 400,
+    "coverHeight": 628
+  },
+  {
+    "id": "pismo-k-zhenshchine-stihi-o-lyubvi-2964349",
+    "productId": "2964349",
+    "title": "Письмо к женщине. Стихи о любви",
+    "format": "Бумажная книга",
+    "publisher": "Эксмо",
+    "isbn": "978-5-04-178003-6",
+    "pages": 256,
+    "coverType": "Твердая обложка",
+    "productUrl": "https://www.chitai-gorod.ru/product/pismo-k-zhenshchine-stihi-o-lyubvi-2964349",
+    "stores": [
+      "chitai-gorod"
+    ],
+    "links": [
+      {
+        "store": "chitai-gorod",
+        "url": "https://www.chitai-gorod.ru/r/qhZEQ?erid=2W5zFH3KZCM"
+      }
+    ],
+    "category": "Стихотворения",
+    "tags": [
+      "Твердая обложка",
+      "Стихотворения",
+      "Эксмо"
+    ],
+    "searchQuery": "Есенин Письмо к женщине. Стихи о любви",
+    "cover": "/img/books/pismo-k-zhenshchine-stihi-o-lyubvi-2964349.jpg",
+    "coverWebp": "/img/books/pismo-k-zhenshchine-stihi-o-lyubvi-2964349.webp",
+    "coverAlt": "Письмо к женщине. Стихи о любви — обложка издания",
+    "coverCredit": "Фото: Читай-город",
+    "price": 468.0,
+    "priceCurrency": "RUB",
+    "availability": "InStock",
+    "priceCheckedAt": "2026-10-21",
+    "annotation": "Сборник лирики — то, что чаще всего ищут: пейзаж, деревня, любовь, поздние строки. 256 с., твёрдый переплёт, Эксмо.",
+    "coverWidth": 400,
+    "coverHeight": 627
+  },
+  {
+    "id": "pismo-k-zhenshchine-stihotvoreniya-3047184",
+    "productId": "3047184",
+    "title": "Письмо к женщине. Стихотворения",
+    "format": "Бумажная книга",
+    "publisher": "Эксмо",
+    "isbn": "978-5-04-201022-4",
+    "pages": 288,
+    "coverType": "Мягкая обложка",
+    "productUrl": "https://www.chitai-gorod.ru/product/pismo-k-zhenshchine-stihotvoreniya-3047184",
+    "stores": [
+      "chitai-gorod"
+    ],
+    "links": [
+      {
+        "store": "chitai-gorod",
+        "url": "https://www.chitai-gorod.ru/r/ftyGY?erid=2W5zFH4oYUh"
+      }
+    ],
+    "category": "Стихотворения",
+    "tags": [
+      "Мягкая обложка",
+      "Стихотворения",
+      "Эксмо"
+    ],
+    "searchQuery": "Есенин Письмо к женщине. Стихотворения",
+    "cover": "/img/books/pismo-k-zhenshchine-stihotvoreniya-3047184.jpg",
+    "coverWebp": "/img/books/pismo-k-zhenshchine-stihotvoreniya-3047184.webp",
+    "coverAlt": "Письмо к женщине. Стихотворения — обложка издания",
+    "coverCredit": "Фото: Читай-город",
+    "price": 329.0,
+    "priceCurrency": "RUB",
+    "availability": "InStock",
+    "priceCheckedAt": "2026-10-21",
+    "annotation": "Только стихотворения: лирика разных лет, без прозы и поэм. 288 с., мягкая обложка, Эксмо.",
+    "coverWidth": 400,
+    "coverHeight": 626
+  },
+  {
+    "id": "sergey-esenin-polnoe-sobranie-liriki-v-odnom-tome-2957207",
+    "productId": "2957207",
+    "title": "Полное собрание лирики в одном томе",
+    "format": "Бумажная книга",
+    "publisher": "Эксмо",
+    "isbn": "978-5-04-176926-0",
+    "pages": 768,
+    "coverType": "Твердая обложка",
+    "productUrl": "https://www.chitai-gorod.ru/product/sergey-esenin-polnoe-sobranie-liriki-v-odnom-tome-2957207",
+    "stores": [
+      "chitai-gorod"
+    ],
+    "links": [
+      {
+        "store": "chitai-gorod",
+        "url": "https://www.chitai-gorod.ru/r/NUyJS?erid=2W5zFH6HXm3"
+      }
+    ],
+    "category": "Собрание сочинений",
+    "tags": [
+      "Твердая обложка",
+      "Собрание сочинений",
+      "Эксмо"
+    ],
+    "searchQuery": "Есенин Полное собрание лирики в одном томе",
+    "cover": "/img/books/sergey-esenin-polnoe-sobranie-liriki-v-odnom-tome-2957207.jpg",
+    "coverWebp": "/img/books/sergey-esenin-polnoe-sobranie-liriki-v-odnom-tome-2957207.webp",
+    "coverAlt": "Полное собрание лирики в одном томе — обложка издания",
+    "coverCredit": "Фото: Читай-город",
+    "price": 1249.0,
+    "priceCurrency": "RUB",
+    "availability": "InStock",
+    "priceCheckedAt": "2026-10-21",
+    "annotation": "Собрание под одной обложкой (или в комплекте томов): от ранних стихов до поздних поэм и прозы. 768 с., твёрдый переплёт, Эксмо.",
+    "coverWidth": 400,
+    "coverHeight": 605
+  },
+  {
+    "id": "radunica-izbrannaya-lirika-2875738",
+    "productId": "2875738",
+    "title": "Радуница. Избранная лирика",
+    "format": "Бумажная книга",
+    "publisher": "Белый город",
+    "isbn": "978-5-00119-074-5",
+    "pages": 448,
+    "coverType": "Твердая обложка",
+    "productUrl": "https://www.chitai-gorod.ru/product/radunica-izbrannaya-lirika-2875738",
+    "stores": [
+      "chitai-gorod"
+    ],
+    "links": [
+      {
+        "store": "chitai-gorod",
+        "url": "https://www.chitai-gorod.ru/r/amGtK?erid=2W5zFHCDUtR"
+      }
+    ],
+    "category": "Избранное",
+    "tags": [
+      "Твердая обложка",
+      "Избранное",
+      "Белый город"
+    ],
+    "searchQuery": "Есенин Радуница. Избранная лирика",
+    "cover": "/img/books/radunica-izbrannaya-lirika-2875738.jpg",
+    "coverWebp": "/img/books/radunica-izbrannaya-lirika-2875738.webp",
+    "coverAlt": "Радуница. Избранная лирика — обложка издания",
+    "coverCredit": "Фото: Читай-город",
+    "price": 1349.0,
+    "priceCurrency": "RUB",
+    "availability": "InStock",
+    "priceCheckedAt": "2026-10-21",
+    "annotation": "Отобранное лучшее: стихи, которые перечитывают, без малоизвестного балласта. 448 с., твёрдый переплёт, Белый город.",
+    "coverWidth": 400,
+    "coverHeight": 653
+  },
+  {
+    "id": "ryabinovyy-koster-7640623",
+    "productId": "7640623",
+    "title": "Рябиновый костёр",
+    "format": "Бумажная книга",
+    "publisher": "Искатель",
+    "isbn": "978-5-906998-46-0",
+    "pages": 96,
+    "coverType": "Твердая обложка",
+    "productUrl": "https://www.chitai-gorod.ru/product/ryabinovyy-koster-7640623",
+    "stores": [
+      "chitai-gorod"
+    ],
+    "links": [
+      {
+        "store": "chitai-gorod",
+        "url": "https://www.chitai-gorod.ru/r/NblYs?erid=2W5zFHGfSjT"
+      }
+    ],
+    "category": "Стихотворения",
+    "tags": [
+      "Твердая обложка",
+      "Стихотворения",
+      "Искатель"
+    ],
+    "searchQuery": "Есенин Рябиновый костёр",
+    "cover": "/img/books/ryabinovyy-koster-7640623.jpg",
+    "coverWebp": "/img/books/ryabinovyy-koster-7640623.webp",
+    "coverAlt": "Рябиновый костёр — обложка издания",
+    "coverCredit": "Фото: Читай-город",
+    "price": 140.0,
+    "priceCurrency": "RUB",
+    "availability": "InStock",
+    "priceCheckedAt": "2026-10-21",
+    "annotation": "Сборник лирики — то, что чаще всего ищут: пейзаж, деревня, любовь, поздние строки. 96 с., твёрдый переплёт, Искатель.",
+    "coverWidth": 400,
+    "coverHeight": 642
+  },
+  {
+    "id": "s-a-esenin-izbrannoe-3173984",
+    "productId": "3173984",
+    "title": "С.А. Есенин. Избранное",
+    "format": "Бумажная книга",
+    "publisher": "АСТ",
+    "isbn": "978-5-17-185167-5",
+    "pages": 256,
+    "coverType": "Твердая обложка",
+    "productUrl": "https://www.chitai-gorod.ru/product/s-a-esenin-izbrannoe-3173984",
+    "stores": [
+      "chitai-gorod"
+    ],
+    "links": [
+      {
+        "store": "chitai-gorod",
+        "url": "https://www.chitai-gorod.ru/r/jgadx?erid=2W5zFHJ9S1o"
+      }
+    ],
+    "category": "Избранное",
+    "tags": [
+      "Твердая обложка",
+      "Избранное",
+      "АСТ"
+    ],
+    "searchQuery": "Есенин С.А. Есенин. Избранное",
+    "cover": "/img/books/s-a-esenin-izbrannoe-3173984.jpg",
+    "coverWebp": "/img/books/s-a-esenin-izbrannoe-3173984.webp",
+    "coverAlt": "С.А. Есенин. Избранное — обложка издания",
+    "coverCredit": "Фото: Читай-город",
+    "price": 1259.0,
+    "priceCurrency": "RUB",
+    "availability": "InStock",
+    "priceCheckedAt": "2026-10-21",
+    "annotation": "Избранное — компактный вход в лирику, если нужен один том на полке. 256 с., твёрдый переплёт, АСТ.",
+    "coverWidth": 400,
+    "coverHeight": 593
+  },
+  {
+    "id": "sergej-esenin-poezia-huligan-3131515",
+    "productId": "3131515",
+    "title": "Сергей Есенин. Поэзия. Хулиган",
+    "format": "Бумажная книга",
+    "publisher": "Эксмо",
+    "isbn": "978-5-04-208265-8",
+    "pages": 128,
+    "coverType": "Твердая обложка",
+    "productUrl": "https://www.chitai-gorod.ru/product/sergej-esenin-poezia-huligan-3131515",
+    "stores": [
+      "chitai-gorod"
+    ],
+    "links": [
+      {
+        "store": "chitai-gorod",
+        "url": "https://www.chitai-gorod.ru/r/KQPOY?erid=2W5zFHNbPrq"
+      }
+    ],
+    "category": "Стихотворения",
+    "tags": [
+      "Твердая обложка",
+      "Стихотворения",
+      "Эксмо"
+    ],
+    "searchQuery": "Есенин Сергей Есенин. Поэзия. Хулиган",
+    "cover": "/img/books/sergej-esenin-poezia-huligan-3131515.jpg",
+    "coverWebp": "/img/books/sergej-esenin-poezia-huligan-3131515.webp",
+    "coverAlt": "Сергей Есенин. Поэзия. Хулиган — обложка издания",
+    "coverCredit": "Фото: Читай-город",
+    "price": 949.0,
+    "priceCurrency": "RUB",
+    "availability": "InStock",
+    "priceCheckedAt": "2026-10-21",
+    "annotation": "Стихотворения в хронологическом порядке — видно, как меняется голос. 128 с., твёрдый переплёт, Эксмо.",
+    "coverWidth": 400,
+    "coverHeight": 542
+  },
+  {
+    "id": "sergey-esenin-sobranie-sochineniy-v-pyati-tomah-komplekt-iz-5-knig-2846177",
+    "productId": "2846177",
+    "title": "Сергей Есенин. Собрание сочинений в пяти томах (комплект из 5 книг)",
     "format": "Бумажная книга",
     "publisher": "Терра",
-    "isbn": "978-5-4224-1685-1",
-    "annotation": "Пятитомник для тех, кому нужен не один сборник избранного, а корпус: лирика, поэмы, проза и статьи в комплекте. Бумажное издание — вариант, когда текст хочется держать в руках и читать без экрана.",
-    "highlight": true,
-    "cover": "/img/books/sobranie-sochineniy-5-tomov.jpg",
-    "coverWebp": "/img/books/sobranie-sochineniy-5-tomov.webp",
-    "coverWidth": 700,
-    "coverHeight": 962,
-    "coverAlt": "Собрание сочинений Сергея Есенина в пяти томах — комплект из пяти книг, обложка",
-    "coverCredit": "Фото: Читай-город",
+    "isbn": "978-5-4224-1685-1, 9785422416905, 9785422416899, 9785422416882, 9785422416875",
+    "pages": 384,
+    "coverType": "Твердая обложка",
+    "productUrl": "https://www.chitai-gorod.ru/product/sergey-esenin-sobranie-sochineniy-v-pyati-tomah-komplekt-iz-5-knig-2846177",
     "stores": [
       "chitai-gorod"
     ],
@@ -23,15 +1688,1125 @@
         "url": "https://www.chitai-gorod.ru/r/eOxUG?erid=2W5zFGDrGmf"
       }
     ],
-    "searchQuery": "Есенин собрание сочинений в пяти томах",
+    "category": "Собрание сочинений",
     "tags": [
-      "собрание сочинений",
-      "бумажное издание"
+      "Твердая обложка",
+      "Собрание сочинений",
+      "Терра"
     ],
-    "price": 8299,
+    "searchQuery": "Есенин Сергей Есенин. Собрание сочинений в пяти томах (комплект из 5 книг)",
+    "cover": "/img/books/sergey-esenin-sobranie-sochineniy-v-pyati-tomah-komplekt-iz-5-knig-2846177.jpg",
+    "coverWebp": "/img/books/sergey-esenin-sobranie-sochineniy-v-pyati-tomah-komplekt-iz-5-knig-2846177.webp",
+    "coverAlt": "Сергей Есенин. Собрание сочинений в пяти томах (комплект из 5 книг) — обложка издания",
+    "coverCredit": "Фото: Читай-город",
+    "price": 8299.0,
     "priceCurrency": "RUB",
-    "priceCheckedAt": "2026-10-21",
     "availability": "InStock",
-    "productUrl": "https://www.chitai-gorod.ru/product/sergey-esenin-sobranie-sochineniy-v-pyati-tomah-komplekt-iz-5-knig-2846177"
+    "priceCheckedAt": "2026-10-21",
+    "annotation": "Собрание под одной обложкой (или в комплекте томов): от ранних стихов до поздних поэм и прозы. 384 с., твёрдый переплёт, Терра.",
+    "coverWidth": 400,
+    "coverHeight": 550
+  },
+  {
+    "id": "sergej-esenin-dym-s-belyh-ablon-izbrannoe-vecnye-istorii-3164835",
+    "productId": "3164835",
+    "title": "Сергей Есенин: С белых яблонь дым. Избранное. Вечные истории",
+    "format": "Бумажная книга",
+    "publisher": "Манн, Иванов и Фербер",
+    "isbn": "978-5-00281-166-3",
+    "pages": 256,
+    "coverType": "Твердая обложка",
+    "productUrl": "https://www.chitai-gorod.ru/product/sergej-esenin-dym-s-belyh-ablon-izbrannoe-vecnye-istorii-3164835",
+    "stores": [
+      "chitai-gorod"
+    ],
+    "links": [
+      {
+        "store": "chitai-gorod",
+        "url": "https://www.chitai-gorod.ru/r/mlRFR?erid=2W5zFJ39Qfj"
+      }
+    ],
+    "category": "Избранное",
+    "tags": [
+      "Твердая обложка",
+      "Избранное",
+      "Манн, Иванов и Фербер"
+    ],
+    "searchQuery": "Есенин Сергей Есенин: С белых яблонь дым. Избранное. Вечные истории",
+    "cover": "/img/books/sergej-esenin-dym-s-belyh-ablon-izbrannoe-vecnye-istorii-3164835.jpg",
+    "coverWebp": "/img/books/sergej-esenin-dym-s-belyh-ablon-izbrannoe-vecnye-istorii-3164835.webp",
+    "coverAlt": "Сергей Есенин: С белых яблонь дым. Избранное. Вечные истории — обложка издания",
+    "coverCredit": "Фото: Читай-город",
+    "price": 649.0,
+    "priceCurrency": "RUB",
+    "availability": "InStock",
+    "priceCheckedAt": "2026-10-21",
+    "annotation": "Подборка ключевых текстов: и ранние деревенские стихи, и поздние признания. 256 с., твёрдый переплёт, Манн, Иванов и Фербер.",
+    "coverWidth": 400,
+    "coverHeight": 675
+  },
+  {
+    "id": "sobranie-socinenij-v-3-t-t-1-3107573",
+    "productId": "3107573",
+    "title": "Собрание сочинений: В 3 томах. Том. 1",
+    "format": "Бумажная книга",
+    "publisher": "RUGRAM_Пальмира",
+    "isbn": "978-5-517-12705-1",
+    "pages": 301,
+    "coverType": "Твердая обложка",
+    "productUrl": "https://www.chitai-gorod.ru/product/sobranie-socinenij-v-3-t-t-1-3107573",
+    "stores": [
+      "chitai-gorod"
+    ],
+    "links": [
+      {
+        "store": "chitai-gorod",
+        "url": "https://www.chitai-gorod.ru/r/wwYDy?erid=2W5zFHW1LGZ"
+      }
+    ],
+    "category": "Собрание сочинений",
+    "tags": [
+      "Твердая обложка",
+      "Собрание сочинений",
+      "RUGRAM_Пальмира"
+    ],
+    "searchQuery": "Есенин Собрание сочинений: В 3 томах. Том. 1",
+    "cover": "/img/books/sobranie-socinenij-v-3-t-t-1-3107573.jpg",
+    "coverWebp": "/img/books/sobranie-socinenij-v-3-t-t-1-3107573.webp",
+    "coverAlt": "Собрание сочинений: В 3 томах. Том. 1 — обложка издания",
+    "coverCredit": "Фото: Читай-город",
+    "price": 1349.0,
+    "priceCurrency": "RUB",
+    "availability": "InStock",
+    "priceCheckedAt": "2026-10-21",
+    "annotation": "Издание для чтения вдоль и поперёк: весь путь поэта, собранный в одном комплекте. 301 с., твёрдый переплёт, RUGRAM_Пальмира.",
+    "coverWidth": 400,
+    "coverHeight": 580
+  },
+  {
+    "id": "sobranie-socinenij-v-3-t-t-2-3107572",
+    "productId": "3107572",
+    "title": "Собрание сочинений: В 3 томах. Том. 2",
+    "format": "Бумажная книга",
+    "publisher": "RUGRAM_Пальмира",
+    "isbn": "978-5-517-12706-8",
+    "pages": 318,
+    "coverType": "Твердая обложка",
+    "productUrl": "https://www.chitai-gorod.ru/product/sobranie-socinenij-v-3-t-t-2-3107572",
+    "stores": [
+      "chitai-gorod"
+    ],
+    "links": [
+      {
+        "store": "chitai-gorod",
+        "url": "https://www.chitai-gorod.ru/r/WPxia?erid=2W5zFHXVKYu"
+      }
+    ],
+    "category": "Собрание сочинений",
+    "tags": [
+      "Твердая обложка",
+      "Собрание сочинений",
+      "RUGRAM_Пальмира"
+    ],
+    "searchQuery": "Есенин Собрание сочинений: В 3 томах. Том. 2",
+    "cover": "/img/books/sobranie-socinenij-v-3-t-t-2-3107572.jpg",
+    "coverWebp": "/img/books/sobranie-socinenij-v-3-t-t-2-3107572.webp",
+    "coverAlt": "Собрание сочинений: В 3 томах. Том. 2 — обложка издания",
+    "coverCredit": "Фото: Читай-город",
+    "price": 1399.0,
+    "priceCurrency": "RUB",
+    "availability": "InStock",
+    "priceCheckedAt": "2026-10-21",
+    "annotation": "Издание для чтения вдоль и поперёк: весь путь поэта, собранный в одном комплекте. 318 с., твёрдый переплёт, RUGRAM_Пальмира.",
+    "coverWidth": 400,
+    "coverHeight": 577
+  },
+  {
+    "id": "sobranie-socinenij-v-3-t-t-3-3107574",
+    "productId": "3107574",
+    "title": "Собрание сочинений: В 3 томах. Том. 3",
+    "format": "Бумажная книга",
+    "publisher": "RUGRAM_Пальмира",
+    "isbn": "978-5-517-12707-5",
+    "pages": 187,
+    "coverType": "Твердая обложка",
+    "productUrl": "https://www.chitai-gorod.ru/product/sobranie-socinenij-v-3-t-t-3-3107574",
+    "stores": [
+      "chitai-gorod"
+    ],
+    "links": [
+      {
+        "store": "chitai-gorod",
+        "url": "https://www.chitai-gorod.ru/r/cAdWX?erid=2W5zFHYyJqF"
+      }
+    ],
+    "category": "Собрание сочинений",
+    "tags": [
+      "Твердая обложка",
+      "Собрание сочинений",
+      "RUGRAM_Пальмира"
+    ],
+    "searchQuery": "Есенин Собрание сочинений: В 3 томах. Том. 3",
+    "cover": "/img/books/sobranie-socinenij-v-3-t-t-3-3107574.jpg",
+    "coverWebp": "/img/books/sobranie-socinenij-v-3-t-t-3-3107574.webp",
+    "coverAlt": "Собрание сочинений: В 3 томах. Том. 3 — обложка издания",
+    "coverCredit": "Фото: Читай-город",
+    "price": 1099.0,
+    "priceCurrency": "RUB",
+    "availability": "InStock",
+    "priceCheckedAt": "2026-10-21",
+    "annotation": "Собрание под одной обложкой (или в комплекте томов): от ранних стихов до поздних поэм и прозы. 187 с., твёрдый переплёт, RUGRAM_Пальмира.",
+    "coverWidth": 400,
+    "coverHeight": 582
+  },
+  {
+    "id": "stihi-8051177",
+    "productId": "8051177",
+    "title": "Стихи",
+    "format": "Бумажная книга",
+    "publisher": "АСТ",
+    "isbn": "978-5-17-165964-6",
+    "pages": 144,
+    "coverType": "Твердая обложка",
+    "productUrl": "https://www.chitai-gorod.ru/product/stihi-8051177",
+    "stores": [
+      "chitai-gorod"
+    ],
+    "links": [
+      {
+        "store": "chitai-gorod",
+        "url": "https://www.chitai-gorod.ru/r/OjJUw?erid=2W5zFHaTJ7b"
+      }
+    ],
+    "category": "Стихотворения",
+    "tags": [
+      "Твердая обложка",
+      "Стихотворения",
+      "АСТ"
+    ],
+    "searchQuery": "Есенин Стихи",
+    "cover": "/img/books/stihi-8051177.jpg",
+    "coverWebp": "/img/books/stihi-8051177.webp",
+    "coverAlt": "Стихи — обложка издания",
+    "coverCredit": "Фото: Читай-город",
+    "price": 204.0,
+    "priceCurrency": "RUB",
+    "availability": "InStock",
+    "priceCheckedAt": "2026-10-21",
+    "annotation": "Сборник лирики — то, что чаще всего ищут: пейзаж, деревня, любовь, поздние строки. 144 с., твёрдый переплёт, АСТ.",
+    "coverWidth": 400,
+    "coverHeight": 637
+  },
+  {
+    "id": "stihi-detyam-2454549",
+    "productId": "2454549",
+    "title": "Стихи детям",
+    "format": "Бумажная книга",
+    "publisher": "Эксмо",
+    "isbn": "978-5-699-71404-9",
+    "pages": 136,
+    "coverType": "Твердая обложка",
+    "productUrl": "https://www.chitai-gorod.ru/product/stihi-detyam-2454549",
+    "stores": [
+      "chitai-gorod"
+    ],
+    "links": [
+      {
+        "store": "chitai-gorod",
+        "url": "https://www.chitai-gorod.ru/r/XgnqK?erid=2W5zFHbwHPw"
+      }
+    ],
+    "category": "Детям",
+    "tags": [
+      "Твердая обложка",
+      "Детям",
+      "Эксмо"
+    ],
+    "searchQuery": "Есенин Стихи детям",
+    "cover": "/img/books/stihi-detyam-2454549.jpg",
+    "coverWebp": "/img/books/stihi-detyam-2454549.webp",
+    "coverAlt": "Стихи детям — обложка издания",
+    "coverCredit": "Фото: Читай-город",
+    "price": 779.0,
+    "priceCurrency": "RUB",
+    "availability": "InStock",
+    "priceCheckedAt": "2026-10-21",
+    "annotation": "Детская подборка: времена года, зверьё, деревенский день. 136 с., твёрдый переплёт, Эксмо.",
+    "coverWidth": 400,
+    "coverHeight": 516
+  },
+  {
+    "id": "stihi-miniatyura-2414746",
+    "productId": "2414746",
+    "title": "Стихи, миниатюра",
+    "format": "Бумажная книга",
+    "publisher": "ТомСувенир",
+    "isbn": "978-5-904302-22-1",
+    "pages": 256,
+    "coverType": "Твердая обложка",
+    "productUrl": "https://www.chitai-gorod.ru/product/stihi-miniatyura-2414746",
+    "stores": [
+      "chitai-gorod"
+    ],
+    "links": [
+      {
+        "store": "chitai-gorod",
+        "url": "https://www.chitai-gorod.ru/r/qZAZV?erid=2W5zFHdRGgH"
+      }
+    ],
+    "category": "Стихотворения",
+    "tags": [
+      "Твердая обложка",
+      "Стихотворения",
+      "ТомСувенир"
+    ],
+    "searchQuery": "Есенин Стихи, миниатюра",
+    "cover": "/img/books/stihi-miniatyura-2414746.jpg",
+    "coverWebp": "/img/books/stihi-miniatyura-2414746.webp",
+    "coverAlt": "Стихи, миниатюра — обложка издания",
+    "coverCredit": "Фото: Читай-город",
+    "price": 371.0,
+    "priceCurrency": "RUB",
+    "availability": "InStock",
+    "priceCheckedAt": "2026-10-21",
+    "annotation": "Сборник лирики — то, что чаще всего ищут: пейзаж, деревня, любовь, поздние строки. 256 с., твёрдый переплёт, ТомСувенир.",
+    "coverWidth": 400,
+    "coverHeight": 550
+  },
+  {
+    "id": "stihotvoreniya-2736601",
+    "productId": "2736601",
+    "title": "Стихотворения",
+    "format": "Бумажная книга",
+    "publisher": "Эксмо",
+    "isbn": "978-5-04-101177-2",
+    "pages": 352,
+    "coverType": "Твердая обложка",
+    "productUrl": "https://www.chitai-gorod.ru/product/stihotvoreniya-2736601",
+    "stores": [
+      "chitai-gorod"
+    ],
+    "links": [
+      {
+        "store": "chitai-gorod",
+        "url": "https://www.chitai-gorod.ru/r/zqnbt?erid=2W5zFHeuFxd"
+      }
+    ],
+    "category": "Стихотворения",
+    "tags": [
+      "Твердая обложка",
+      "Стихотворения",
+      "Эксмо"
+    ],
+    "searchQuery": "Есенин Стихотворения",
+    "cover": "/img/books/stihotvoreniya-2736601.jpg",
+    "coverWebp": "/img/books/stihotvoreniya-2736601.webp",
+    "coverAlt": "Стихотворения — обложка издания",
+    "coverCredit": "Фото: Читай-город",
+    "price": 629.0,
+    "priceCurrency": "RUB",
+    "availability": "InStock",
+    "priceCheckedAt": "2026-10-21",
+    "annotation": "Только стихотворения: лирика разных лет, без прозы и поэм. 352 с., твёрдый переплёт, Эксмо.",
+    "coverWidth": 400,
+    "coverHeight": 551
+  },
+  {
+    "id": "stihotvorenia-3156164",
+    "productId": "3156164",
+    "title": "Стихотворения",
+    "format": "Бумажная книга",
+    "publisher": "Эксмо",
+    "isbn": "978-5-04-235987-3",
+    "pages": 352,
+    "coverType": "Твердая обложка",
+    "productUrl": "https://www.chitai-gorod.ru/product/stihotvorenia-3156164",
+    "stores": [
+      "chitai-gorod"
+    ],
+    "links": [
+      {
+        "store": "chitai-gorod",
+        "url": "https://www.chitai-gorod.ru/r/JNmSG?erid=2W5zFHgPFEy"
+      }
+    ],
+    "category": "Стихотворения",
+    "tags": [
+      "Твердая обложка",
+      "Стихотворения",
+      "Эксмо"
+    ],
+    "searchQuery": "Есенин Стихотворения",
+    "cover": "/img/books/stihotvorenia-3156164.jpg",
+    "coverWebp": "/img/books/stihotvorenia-3156164.webp",
+    "coverAlt": "Стихотворения — обложка издания",
+    "coverCredit": "Фото: Читай-город",
+    "price": 499.0,
+    "priceCurrency": "RUB",
+    "availability": "InStock",
+    "priceCheckedAt": "2026-10-21",
+    "annotation": "Стихотворения в хронологическом порядке — видно, как меняется голос. 352 с., твёрдый переплёт, Эксмо.",
+    "coverWidth": 400,
+    "coverHeight": 551
+  },
+  {
+    "id": "stihotvoreniya-2600566",
+    "productId": "2600566",
+    "title": "Стихотворения",
+    "format": "Бумажная книга",
+    "publisher": "Эксмо",
+    "isbn": "978-5-699-98495-4",
+    "pages": 352,
+    "coverType": "Твердая обложка",
+    "productUrl": "https://www.chitai-gorod.ru/product/stihotvoreniya-2600566",
+    "stores": [
+      "chitai-gorod"
+    ],
+    "links": [
+      {
+        "store": "chitai-gorod",
+        "url": "https://www.chitai-gorod.ru/r/oJXyv?erid=2W5zFHhsEXK"
+      }
+    ],
+    "category": "Стихотворения",
+    "tags": [
+      "Твердая обложка",
+      "Стихотворения",
+      "Эксмо"
+    ],
+    "searchQuery": "Есенин Стихотворения",
+    "cover": "/img/books/stihotvoreniya-2600566.jpg",
+    "coverWebp": "/img/books/stihotvoreniya-2600566.webp",
+    "coverAlt": "Стихотворения — обложка издания",
+    "coverCredit": "Фото: Читай-город",
+    "price": 499.0,
+    "priceCurrency": "RUB",
+    "availability": "InStock",
+    "priceCheckedAt": "2026-10-21",
+    "annotation": "Сборник лирики — то, что чаще всего ищут: пейзаж, деревня, любовь, поздние строки. 352 с., твёрдый переплёт, Эксмо.",
+    "coverWidth": 400,
+    "coverHeight": 526
+  },
+  {
+    "id": "stihotvoreniya-2834646",
+    "productId": "2834646",
+    "title": "Стихотворения",
+    "format": "Бумажная книга",
+    "publisher": "Эксмо",
+    "isbn": "978-5-04-117896-3",
+    "pages": 288,
+    "coverType": "Твердая обложка",
+    "productUrl": "https://www.chitai-gorod.ru/product/stihotvoreniya-2834646",
+    "stores": [
+      "chitai-gorod"
+    ],
+    "links": [
+      {
+        "store": "chitai-gorod",
+        "url": "https://www.chitai-gorod.ru/r/zwzVJ?erid=2W5zFHjMDof"
+      }
+    ],
+    "category": "Стихотворения",
+    "tags": [
+      "Твердая обложка",
+      "Стихотворения",
+      "Эксмо"
+    ],
+    "searchQuery": "Есенин Стихотворения",
+    "cover": "/img/books/stihotvoreniya-2834646.jpg",
+    "coverWebp": "/img/books/stihotvoreniya-2834646.webp",
+    "coverAlt": "Стихотворения — обложка издания",
+    "coverCredit": "Фото: Читай-город",
+    "price": 389.0,
+    "priceCurrency": "RUB",
+    "availability": "InStock",
+    "priceCheckedAt": "2026-10-21",
+    "annotation": "Стихотворения в хронологическом порядке — видно, как меняется голос. 288 с., твёрдый переплёт, Эксмо.",
+    "coverWidth": 400,
+    "coverHeight": 629
+  },
+  {
+    "id": "stihotvoreniya-3005254",
+    "productId": "3005254",
+    "title": "Стихотворения",
+    "format": "Бумажная книга",
+    "publisher": "Русское слово",
+    "isbn": "978-5-533-02945-2",
+    "pages": 72,
+    "coverType": "Твердая обложка",
+    "productUrl": "https://www.chitai-gorod.ru/product/stihotvoreniya-3005254",
+    "stores": [
+      "chitai-gorod"
+    ],
+    "links": [
+      {
+        "store": "chitai-gorod",
+        "url": "https://www.chitai-gorod.ru/r/odSmU?erid=2W5zFHkqD61"
+      }
+    ],
+    "category": "Стихотворения",
+    "tags": [
+      "Твердая обложка",
+      "Стихотворения",
+      "Русское слово"
+    ],
+    "searchQuery": "Есенин Стихотворения",
+    "cover": "/img/books/stihotvoreniya-3005254.jpg",
+    "coverWebp": "/img/books/stihotvoreniya-3005254.webp",
+    "coverAlt": "Стихотворения — обложка издания",
+    "coverCredit": "Фото: Читай-город",
+    "price": 499.0,
+    "priceCurrency": "RUB",
+    "availability": "InStock",
+    "priceCheckedAt": "2026-10-21",
+    "annotation": "Сборник лирики — то, что чаще всего ищут: пейзаж, деревня, любовь, поздние строки. 72 с., твёрдый переплёт, Русское слово.",
+    "coverWidth": 400,
+    "coverHeight": 579
+  },
+  {
+    "id": "stihotvoreniya-7896736",
+    "productId": "7896736",
+    "title": "Стихотворения",
+    "format": "Бумажная книга",
+    "publisher": "Эксмо",
+    "isbn": "978-5-04-160933-7",
+    "pages": 288,
+    "coverType": "Твердая обложка",
+    "productUrl": "https://www.chitai-gorod.ru/product/stihotvoreniya-7896736",
+    "stores": [
+      "chitai-gorod"
+    ],
+    "links": [
+      {
+        "store": "chitai-gorod",
+        "url": "https://www.chitai-gorod.ru/r/Gzrpn?erid=2W5zFHnKCNM"
+      }
+    ],
+    "category": "Стихотворения",
+    "tags": [
+      "Твердая обложка",
+      "Стихотворения",
+      "Эксмо"
+    ],
+    "searchQuery": "Есенин Стихотворения",
+    "cover": "/img/books/stihotvoreniya-7896736.jpg",
+    "coverWebp": "/img/books/stihotvoreniya-7896736.webp",
+    "coverAlt": "Стихотворения — обложка издания",
+    "coverCredit": "Фото: Читай-город",
+    "price": 360.0,
+    "priceCurrency": "RUB",
+    "availability": "InStock",
+    "priceCheckedAt": "2026-10-21",
+    "annotation": "Только стихотворения: лирика разных лет, без прозы и поэм. 288 с., твёрдый переплёт, Эксмо.",
+    "coverWidth": 400,
+    "coverHeight": 629
+  },
+  {
+    "id": "stihotvoreniya-i-poemy-2922562",
+    "productId": "2922562",
+    "title": "Стихотворения и поэмы",
+    "format": "Бумажная книга",
+    "publisher": "АСТ",
+    "isbn": "978-5-17-148836-9",
+    "pages": 192,
+    "coverType": "Твердая обложка",
+    "productUrl": "https://www.chitai-gorod.ru/product/stihotvoreniya-i-poemy-2922562",
+    "stores": [
+      "chitai-gorod"
+    ],
+    "links": [
+      {
+        "store": "chitai-gorod",
+        "url": "https://www.chitai-gorod.ru/r/VjiTw?erid=2W5zFHooBeh"
+      }
+    ],
+    "category": "Стихотворения и поэмы",
+    "tags": [
+      "Твердая обложка",
+      "Стихотворения и поэмы",
+      "АСТ"
+    ],
+    "searchQuery": "Есенин Стихотворения и поэмы",
+    "cover": "/img/books/stihotvoreniya-i-poemy-2922562.jpg",
+    "coverWebp": "/img/books/stihotvoreniya-i-poemy-2922562.webp",
+    "coverAlt": "Стихотворения и поэмы — обложка издания",
+    "coverCredit": "Фото: Читай-город",
+    "price": 389.0,
+    "priceCurrency": "RUB",
+    "availability": "InStock",
+    "priceCheckedAt": "2026-10-21",
+    "annotation": "Классический состав: стихотворения и поэмы разных лет. 192 с., твёрдый переплёт, АСТ.",
+    "coverWidth": 400,
+    "coverHeight": 629
+  },
+  {
+    "id": "stihotvoreniya-i-poemy-7652468",
+    "productId": "7652468",
+    "title": "Стихотворения и поэмы",
+    "format": "Бумажная книга",
+    "publisher": "АСТ",
+    "isbn": "978-5-17-108964-1",
+    "pages": 192,
+    "coverType": "Твердая обложка",
+    "productUrl": "https://www.chitai-gorod.ru/product/stihotvoreniya-i-poemy-7652468",
+    "stores": [
+      "chitai-gorod"
+    ],
+    "links": [
+      {
+        "store": "chitai-gorod",
+        "url": "https://www.chitai-gorod.ru/r/QxiJk?erid=2W5zFHqHAw3"
+      }
+    ],
+    "category": "Стихотворения и поэмы",
+    "tags": [
+      "Твердая обложка",
+      "Стихотворения и поэмы",
+      "АСТ"
+    ],
+    "searchQuery": "Есенин Стихотворения и поэмы",
+    "cover": "/img/books/stihotvoreniya-i-poemy-7652468.jpg",
+    "coverWebp": "/img/books/stihotvoreniya-i-poemy-7652468.webp",
+    "coverAlt": "Стихотворения и поэмы — обложка издания",
+    "coverCredit": "Фото: Читай-город",
+    "price": 186.0,
+    "priceCurrency": "RUB",
+    "availability": "InStock",
+    "priceCheckedAt": "2026-10-21",
+    "annotation": "Стихи и поэмы вместе: обычный набор издания для «Есенина на всю жизнь». 192 с., твёрдый переплёт, АСТ.",
+    "coverWidth": 400,
+    "coverHeight": 629
+  },
+  {
+    "id": "stihotvoreniya-i-poemy-2275722",
+    "productId": "2275722",
+    "title": "Стихотворения и поэмы",
+    "format": "Бумажная книга",
+    "publisher": "Эксмо",
+    "isbn": "978-5-699-69660-4",
+    "pages": 288,
+    "coverType": "Твердая обложка",
+    "productUrl": "https://www.chitai-gorod.ru/product/stihotvoreniya-i-poemy-2275722",
+    "stores": [
+      "chitai-gorod"
+    ],
+    "links": [
+      {
+        "store": "chitai-gorod",
+        "url": "https://www.chitai-gorod.ru/r/VfVAe?erid=2W5zFHrmADP"
+      }
+    ],
+    "category": "Стихотворения и поэмы",
+    "tags": [
+      "Твердая обложка",
+      "Стихотворения и поэмы",
+      "Эксмо"
+    ],
+    "searchQuery": "Есенин Стихотворения и поэмы",
+    "cover": "/img/books/stihotvoreniya-i-poemy-2275722.jpg",
+    "coverWebp": "/img/books/stihotvoreniya-i-poemy-2275722.webp",
+    "coverAlt": "Стихотворения и поэмы — обложка издания",
+    "coverCredit": "Фото: Читай-город",
+    "price": 209.0,
+    "priceCurrency": "RUB",
+    "availability": "InStock",
+    "priceCheckedAt": "2026-10-21",
+    "annotation": "Стихи и поэмы вместе: обычный набор издания для «Есенина на всю жизнь». 288 с., твёрдый переплёт, Эксмо.",
+    "coverWidth": 150,
+    "coverHeight": 235
+  },
+  {
+    "id": "stihotvoreniya-i-poemy-bis-hh-esenin-7329241",
+    "productId": "7329241",
+    "title": "Стихотворения и поэмы (БИС ХХ) Есенин",
+    "format": "Бумажная книга",
+    "publisher": "Звонница",
+    "isbn": "9785880934928",
+    "pages": 350,
+    "coverType": "Твердая обложка",
+    "productUrl": "https://www.chitai-gorod.ru/product/stihotvoreniya-i-poemy-bis-hh-esenin-7329241",
+    "stores": [
+      "chitai-gorod"
+    ],
+    "links": [
+      {
+        "store": "chitai-gorod",
+        "url": "https://www.chitai-gorod.ru/r/TUyjX?erid=2W5zFHwD84R"
+      }
+    ],
+    "category": "Стихотворения и поэмы",
+    "tags": [
+      "Твердая обложка",
+      "Стихотворения и поэмы",
+      "Звонница"
+    ],
+    "searchQuery": "Есенин Стихотворения и поэмы (БИС ХХ) Есенин",
+    "cover": "/img/books/stihotvoreniya-i-poemy-bis-hh-esenin-7329241.jpg",
+    "coverWebp": "/img/books/stihotvoreniya-i-poemy-bis-hh-esenin-7329241.webp",
+    "coverAlt": "Стихотворения и поэмы (БИС ХХ) Есенин — обложка издания",
+    "coverCredit": "Фото: Читай-город",
+    "price": 510.0,
+    "priceCurrency": "RUB",
+    "availability": "InStock",
+    "priceCheckedAt": "2026-10-21",
+    "annotation": "И лирика, и крупные вещи в одном томе — от «Черёмухи» до «Чёрного человека». 350 с., твёрдый переплёт, Звонница.",
+    "coverWidth": 400,
+    "coverHeight": 522
+  },
+  {
+    "id": "stihotvoreniya-poemy-7981114",
+    "productId": "7981114",
+    "title": "Стихотворения. Поэмы",
+    "format": "Бумажная книга",
+    "publisher": "Эксмо",
+    "isbn": "978-5-04-185788-2",
+    "pages": 368,
+    "coverType": "Твердая обложка",
+    "productUrl": "https://www.chitai-gorod.ru/product/stihotvoreniya-poemy-7981114",
+    "stores": [
+      "chitai-gorod"
+    ],
+    "links": [
+      {
+        "store": "chitai-gorod",
+        "url": "https://www.chitai-gorod.ru/r/AVjkV?erid=2W5zFFy4Qqo"
+      }
+    ],
+    "category": "Стихотворения и поэмы",
+    "tags": [
+      "Твердая обложка",
+      "Стихотворения и поэмы",
+      "Эксмо"
+    ],
+    "searchQuery": "Есенин Стихотворения. Поэмы",
+    "cover": "/img/books/stihotvoreniya-poemy-7981114.jpg",
+    "coverWebp": "/img/books/stihotvoreniya-poemy-7981114.webp",
+    "coverAlt": "Стихотворения. Поэмы — обложка издания",
+    "coverCredit": "Фото: Читай-город",
+    "price": 498.0,
+    "priceCurrency": "RUB",
+    "availability": "InStock",
+    "priceCheckedAt": "2026-10-21",
+    "annotation": "И лирика, и крупные вещи в одном томе — от «Черёмухи» до «Чёрного человека». 368 с., твёрдый переплёт, Эксмо.",
+    "coverWidth": 400,
+    "coverHeight": 629
+  },
+  {
+    "id": "stihotvoreniya-poemy-2663119",
+    "productId": "2663119",
+    "title": "Стихотворения. Поэмы",
+    "format": "Бумажная книга",
+    "publisher": "Эксмо",
+    "isbn": "978-5-04-095567-1",
+    "pages": 640,
+    "coverType": "Твердая обложка",
+    "productUrl": "https://www.chitai-gorod.ru/product/stihotvoreniya-poemy-2663119",
+    "stores": [
+      "chitai-gorod"
+    ],
+    "links": [
+      {
+        "store": "chitai-gorod",
+        "url": "https://www.chitai-gorod.ru/r/GgJfx?erid=2W5zFFzYQ89"
+      }
+    ],
+    "category": "Стихотворения и поэмы",
+    "tags": [
+      "Твердая обложка",
+      "Стихотворения и поэмы",
+      "Эксмо"
+    ],
+    "searchQuery": "Есенин Стихотворения. Поэмы",
+    "cover": "/img/books/stihotvoreniya-poemy-2663119.jpg",
+    "coverWebp": "/img/books/stihotvoreniya-poemy-2663119.webp",
+    "coverAlt": "Стихотворения. Поэмы — обложка издания",
+    "coverCredit": "Фото: Читай-город",
+    "price": 729.0,
+    "priceCurrency": "RUB",
+    "availability": "InStock",
+    "priceCheckedAt": "2026-10-21",
+    "annotation": "Стихи и поэмы вместе: обычный набор издания для «Есенина на всю жизнь». 640 с., твёрдый переплёт, Эксмо.",
+    "coverWidth": 400,
+    "coverHeight": 629
+  },
+  {
+    "id": "strasnye-stihi-3117096",
+    "productId": "3117096",
+    "title": "Страшные стихи",
+    "format": "Бумажная книга",
+    "publisher": "Эксмо",
+    "isbn": "978-5-04-215295-5",
+    "pages": 192,
+    "coverType": "Твердая обложка",
+    "productUrl": "https://www.chitai-gorod.ru/product/strasnye-stihi-3117096",
+    "stores": [
+      "chitai-gorod"
+    ],
+    "links": [
+      {
+        "store": "chitai-gorod",
+        "url": "https://www.chitai-gorod.ru/r/WHhkp?erid=2W5zFGGrGDw"
+      }
+    ],
+    "category": "Стихотворения",
+    "tags": [
+      "Твердая обложка",
+      "Стихотворения",
+      "Эксмо"
+    ],
+    "searchQuery": "Есенин Страшные стихи",
+    "cover": "/img/books/strasnye-stihi-3117096.jpg",
+    "coverWebp": "/img/books/strasnye-stihi-3117096.webp",
+    "coverAlt": "Страшные стихи — обложка издания",
+    "coverCredit": "Фото: Читай-город",
+    "price": 479.0,
+    "priceCurrency": "RUB",
+    "availability": "InStock",
+    "priceCheckedAt": "2026-10-21",
+    "annotation": "Стихотворения в хронологическом порядке — видно, как меняется голос. 192 с., твёрдый переплёт, Эксмо.",
+    "coverWidth": 400,
+    "coverHeight": 629
+  },
+  {
+    "id": "sumasshedshee-serdce-poeta-stihotvoreniya-i-poemy-2954378",
+    "productId": "2954378",
+    "title": "Сумасшедшее сердце поэта. Стихотворения и поэмы",
+    "format": "Бумажная книга",
+    "publisher": "Азбука",
+    "isbn": "978-5-389-21869-7",
+    "pages": 352,
+    "coverType": "Твердая обложка",
+    "productUrl": "https://www.chitai-gorod.ru/product/sumasshedshee-serdce-poeta-stihotvoreniya-i-poemy-2954378",
+    "stores": [
+      "chitai-gorod"
+    ],
+    "links": [
+      {
+        "store": "chitai-gorod",
+        "url": "https://www.chitai-gorod.ru/r/UVeeP?erid=2W5zFGJLFWH"
+      }
+    ],
+    "category": "Стихотворения и поэмы",
+    "tags": [
+      "Твердая обложка",
+      "Стихотворения и поэмы",
+      "Азбука"
+    ],
+    "searchQuery": "Есенин Сумасшедшее сердце поэта. Стихотворения и поэмы",
+    "cover": "/img/books/sumasshedshee-serdce-poeta-stihotvoreniya-i-poemy-2954378.jpg",
+    "coverWebp": "/img/books/sumasshedshee-serdce-poeta-stihotvoreniya-i-poemy-2954378.webp",
+    "coverAlt": "Сумасшедшее сердце поэта. Стихотворения и поэмы — обложка издания",
+    "coverCredit": "Фото: Читай-город",
+    "price": 729.0,
+    "priceCurrency": "RUB",
+    "availability": "InStock",
+    "priceCheckedAt": "2026-10-21",
+    "annotation": "Стихи и поэмы вместе: обычный набор издания для «Есенина на всю жизнь». 352 с., твёрдый переплёт, Азбука.",
+    "coverWidth": 400,
+    "coverHeight": 571
+  },
+  {
+    "id": "u-beloy-vody-proza-esenin-s-2694394",
+    "productId": "2694394",
+    "title": "У белой воды: проза",
+    "format": "Бумажная книга",
+    "publisher": "RUGRAM",
+    "isbn": "978-5-517-00377-5",
+    "pages": 238,
+    "coverType": "Твердая обложка",
+    "productUrl": "https://www.chitai-gorod.ru/product/u-beloy-vody-proza-esenin-s-2694394",
+    "stores": [
+      "chitai-gorod"
+    ],
+    "links": [
+      {
+        "store": "chitai-gorod",
+        "url": "https://www.chitai-gorod.ru/r/YSwBz?erid=2W5zFGMJE4y"
+      }
+    ],
+    "category": "Проза и письма",
+    "tags": [
+      "Твердая обложка",
+      "Проза и письма",
+      "RUGRAM"
+    ],
+    "searchQuery": "Есенин У белой воды: проза",
+    "cover": "/img/books/u-beloy-vody-proza-esenin-s-2694394.jpg",
+    "coverWebp": "/img/books/u-beloy-vody-proza-esenin-s-2694394.webp",
+    "coverAlt": "У белой воды: проза — обложка издания",
+    "coverCredit": "Фото: Читай-город",
+    "price": 1399.0,
+    "priceCurrency": "RUB",
+    "availability": "InStock",
+    "priceCheckedAt": "2026-10-21",
+    "annotation": "Издание для тех, кто уже прошёл лирику и хочет услышать голос поэта в письмах и заметках. 238 с., твёрдый переплёт, RUGRAM.",
+    "coverWidth": 400,
+    "coverHeight": 564
+  },
+  {
+    "id": "cheremuha-stihotvoreniya-3035768",
+    "productId": "3035768",
+    "title": "Черемуха. Стихотворения",
+    "format": "Бумажная книга",
+    "publisher": "Детская литература",
+    "isbn": "978-5-08-007264-2",
+    "pages": 30,
+    "coverType": "Твердая обложка",
+    "productUrl": "https://www.chitai-gorod.ru/product/cheremuha-stihotvoreniya-3035768",
+    "stores": [
+      "chitai-gorod"
+    ],
+    "links": [
+      {
+        "store": "chitai-gorod",
+        "url": "https://www.chitai-gorod.ru/r/zslKf?erid=2W5zFGNnDMK"
+      }
+    ],
+    "category": "Стихотворения",
+    "tags": [
+      "Твердая обложка",
+      "Стихотворения",
+      "Детская литература"
+    ],
+    "searchQuery": "Есенин Черемуха. Стихотворения",
+    "cover": "/img/books/cheremuha-stihotvoreniya-3035768.jpg",
+    "coverWebp": "/img/books/cheremuha-stihotvoreniya-3035768.webp",
+    "coverAlt": "Черемуха. Стихотворения — обложка издания",
+    "coverCredit": "Фото: Читай-город",
+    "price": 579.0,
+    "priceCurrency": "RUB",
+    "availability": "InStock",
+    "priceCheckedAt": "2026-10-21",
+    "annotation": "Сборник лирики — то, что чаще всего ищут: пейзаж, деревня, любовь, поздние строки. 30 с., твёрдый переплёт, Детская литература.",
+    "coverWidth": 400,
+    "coverHeight": 565
+  },
+  {
+    "id": "cernyj-celovek-3138784",
+    "productId": "3138784",
+    "title": "Черный человек",
+    "format": "Бумажная книга",
+    "publisher": "Эксмо",
+    "isbn": "978-5-04-229815-8",
+    "pages": 304,
+    "coverType": "Мягкая обложка",
+    "productUrl": "https://www.chitai-gorod.ru/product/cernyj-celovek-3138784",
+    "stores": [
+      "chitai-gorod"
+    ],
+    "links": [
+      {
+        "store": "chitai-gorod",
+        "url": "https://www.chitai-gorod.ru/r/GPvXO?erid=2W5zFGQGCdf"
+      }
+    ],
+    "category": "Стихотворения",
+    "tags": [
+      "Мягкая обложка",
+      "Стихотворения",
+      "Эксмо"
+    ],
+    "searchQuery": "Есенин Черный человек",
+    "cover": "/img/books/cernyj-celovek-3138784.jpg",
+    "coverWebp": "/img/books/cernyj-celovek-3138784.webp",
+    "coverAlt": "Черный человек — обложка издания",
+    "coverCredit": "Фото: Читай-город",
+    "price": 449.0,
+    "priceCurrency": "RUB",
+    "availability": "InStock",
+    "priceCheckedAt": "2026-10-21",
+    "annotation": "Только стихотворения: лирика разных лет, без прозы и поэм. 304 с., мягкая обложка, Эксмо.",
+    "coverWidth": 400,
+    "coverHeight": 608
+  },
+  {
+    "id": "chernyy-chelovek-2948615",
+    "productId": "2948615",
+    "title": "Черный человек",
+    "format": "Бумажная книга",
+    "publisher": "Проспект",
+    "isbn": "978-5-9988-1465-5, 978-5-9988-1655-0, 978-5-9988-1699-4",
+    "pages": 24,
+    "coverType": "Мягкая обложка",
+    "productUrl": "https://www.chitai-gorod.ru/product/chernyy-chelovek-2948615",
+    "stores": [
+      "chitai-gorod"
+    ],
+    "links": [
+      {
+        "store": "chitai-gorod",
+        "url": "https://www.chitai-gorod.ru/r/WHCyH?erid=2W5zFGRkBv1"
+      }
+    ],
+    "category": "Стихотворения",
+    "tags": [
+      "Мягкая обложка",
+      "Стихотворения",
+      "Проспект"
+    ],
+    "searchQuery": "Есенин Черный человек",
+    "cover": "/img/books/chernyy-chelovek-2948615.jpg",
+    "coverWebp": "/img/books/chernyy-chelovek-2948615.webp",
+    "coverAlt": "Черный человек — обложка издания",
+    "coverCredit": "Фото: Читай-город",
+    "price": 379.0,
+    "priceCurrency": "RUB",
+    "availability": "InStock",
+    "priceCheckedAt": "2026-10-21",
+    "annotation": "Стихотворения в хронологическом порядке — видно, как меняется голос. 24 с., мягкая обложка, Проспект.",
+    "coverWidth": 400,
+    "coverHeight": 497
+  },
+  {
+    "id": "chernyy-chelovek-poemy-proza-3048589",
+    "productId": "3048589",
+    "title": "Черный человек. Поэмы, проза",
+    "format": "Бумажная книга",
+    "publisher": "Эксмо",
+    "isbn": "978-5-04-194670-8",
+    "pages": 352,
+    "coverType": "Твердая обложка",
+    "productUrl": "https://www.chitai-gorod.ru/product/chernyy-chelovek-poemy-proza-3048589",
+    "stores": [
+      "chitai-gorod"
+    ],
+    "links": [
+      {
+        "store": "chitai-gorod",
+        "url": "https://www.chitai-gorod.ru/r/gNTiw?erid=2W5zFGTEBCM"
+      }
+    ],
+    "category": "Проза и письма",
+    "tags": [
+      "Твердая обложка",
+      "Проза и письма",
+      "Эксмо"
+    ],
+    "searchQuery": "Есенин Черный человек. Поэмы, проза",
+    "cover": "/img/books/chernyy-chelovek-poemy-proza-3048589.jpg",
+    "coverWebp": "/img/books/chernyy-chelovek-poemy-proza-3048589.webp",
+    "coverAlt": "Черный человек. Поэмы, проза — обложка издания",
+    "coverCredit": "Фото: Читай-город",
+    "price": 479.0,
+    "priceCurrency": "RUB",
+    "availability": "InStock",
+    "priceCheckedAt": "2026-10-21",
+    "annotation": "Издание для тех, кто уже прошёл лирику и хочет услышать голос поэта в письмах и заметках. 352 с., твёрдый переплёт, Эксмо.",
+    "coverWidth": 400,
+    "coverHeight": 629
+  },
+  {
+    "id": "chernyy-chelovek-3033578",
+    "productId": "3033578",
+    "title": "Чёрный человек",
+    "format": "Бумажная книга",
+    "publisher": "Эксмо",
+    "isbn": "978-5-04-195569-4",
+    "pages": 384,
+    "coverType": "Мягкая обложка",
+    "productUrl": "https://www.chitai-gorod.ru/product/chernyy-chelovek-3033578",
+    "stores": [
+      "chitai-gorod"
+    ],
+    "links": [
+      {
+        "store": "chitai-gorod",
+        "url": "https://www.chitai-gorod.ru/r/gpcyu?erid=2W5zFGWC9m3"
+      }
+    ],
+    "category": "Стихотворения",
+    "tags": [
+      "Мягкая обложка",
+      "Стихотворения",
+      "Эксмо"
+    ],
+    "searchQuery": "Есенин Чёрный человек",
+    "cover": "/img/books/chernyy-chelovek-3033578.jpg",
+    "coverWebp": "/img/books/chernyy-chelovek-3033578.webp",
+    "coverAlt": "Чёрный человек — обложка издания",
+    "coverCredit": "Фото: Читай-город",
+    "price": 699.0,
+    "priceCurrency": "RUB",
+    "availability": "InStock",
+    "priceCheckedAt": "2026-10-21",
+    "annotation": "Стихотворения в хронологическом порядке — видно, как меняется голос. 384 с., мягкая обложка, Эксмо.",
+    "coverWidth": 400,
+    "coverHeight": 640
+  },
+  {
+    "id": "shkolnaya-biblioteka-stihi-s-esenin-96s-7667979",
+    "productId": "7667979",
+    "title": "ШКОЛЬНАЯ БИБЛИОТЕКА. СТИХИ (С. Есенин) 96с.",
+    "format": "Бумажная книга",
+    "publisher": "Проф-Пресс",
+    "isbn": "978-5-378-28084-1",
+    "pages": 96,
+    "coverType": "Твердая обложка",
+    "productUrl": "https://www.chitai-gorod.ru/product/shkolnaya-biblioteka-stihi-s-esenin-96s-7667979",
+    "stores": [
+      "chitai-gorod"
+    ],
+    "links": [
+      {
+        "store": "chitai-gorod",
+        "url": "https://www.chitai-gorod.ru/r/iEFMh?erid=2W5zFGXg93P"
+      }
+    ],
+    "category": "Школьная программа",
+    "tags": [
+      "Твердая обложка",
+      "Школьная программа",
+      "Проф-Пресс"
+    ],
+    "searchQuery": "Есенин ШКОЛЬНАЯ БИБЛИОТЕКА. СТИХИ (С. Есенин) 96с.",
+    "cover": "/img/books/shkolnaya-biblioteka-stihi-s-esenin-96s-7667979.jpg",
+    "coverWebp": "/img/books/shkolnaya-biblioteka-stihi-s-esenin-96s-7667979.webp",
+    "coverAlt": "ШКОЛЬНАЯ БИБЛИОТЕКА. СТИХИ (С. Есенин) 96с. — обложка издания",
+    "coverCredit": "Фото: Читай-город",
+    "price": 183.0,
+    "priceCurrency": "RUB",
+    "availability": "InStock",
+    "priceCheckedAt": "2026-10-21",
+    "annotation": "Школьная программа: тексты, которые разбирают на уроках, с комментариями и заданиями. 96 с., твёрдый переплёт, Проф-Пресс.",
+    "coverWidth": 400,
+    "coverHeight": 530
+  },
+  {
+    "id": "dusha-grustit-o-nebesah-stihotvoreniya-poemy-6288713",
+    "productId": "6288713",
+    "title": "“Душа грустит о небесах...” (стихотворения поэмы)",
+    "format": "Бумажная книга",
+    "publisher": "Детская литература",
+    "isbn": "9785080059421",
+    "pages": 265,
+    "coverType": "Твердая обложка",
+    "productUrl": "https://www.chitai-gorod.ru/product/dusha-grustit-o-nebesah-stihotvoreniya-poemy-6288713",
+    "stores": [
+      "chitai-gorod"
+    ],
+    "links": [
+      {
+        "store": "chitai-gorod",
+        "url": "https://www.chitai-gorod.ru/r/KfsuF?erid=2W5zFGZA8Kj"
+      }
+    ],
+    "category": "Поэмы",
+    "tags": [
+      "Твердая обложка",
+      "Поэмы",
+      "Детская литература"
+    ],
+    "searchQuery": "Есенин “Душа грустит о небесах...” (стихотворения поэмы)",
+    "cover": "/img/books/dusha-grustit-o-nebesah-stihotvoreniya-poemy-6288713.jpg",
+    "coverWebp": "/img/books/dusha-grustit-o-nebesah-stihotvoreniya-poemy-6288713.webp",
+    "coverAlt": "“Душа грустит о небесах...” (стихотворения поэмы) — обложка издания",
+    "coverCredit": "Фото: Читай-город",
+    "price": 378.0,
+    "priceCurrency": "RUB",
+    "availability": "InStock",
+    "priceCheckedAt": "2026-10-21",
+    "annotation": "Издание поэм — тех текстов, где у Есенина появляется большая форма. 265 с., твёрдый переплёт, Детская литература.",
+    "coverWidth": 400,
+    "coverHeight": 627
   }
 ]

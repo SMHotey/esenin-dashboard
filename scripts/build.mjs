@@ -483,7 +483,7 @@ function bookCard(b, index) {
       ${b.series ? `<span class="bc-series">${esc(b.series)}</span>` : ''}
     </div>`;
 
-  return `<article class="book-card">
+  return `<article class="book-card" data-title="${esc(b.title)}" data-cat="${esc(b.category || '')}" data-pub="${esc(b.publisher || '')}" data-pages="${Number(b.pages) || 0}">
     ${cover}
     <div class="book-body">
       <h3>${esc(b.title)}</h3>
@@ -974,16 +974,42 @@ function workPage(w, index) {
 
 // ---------- books ----------
 
+const booksCats = [...new Set(books.map((b) => b.category).filter(Boolean))];
+const booksPubs = [...new Set(books.map((b) => b.publisher).filter(Boolean))].sort((a, b) => a.localeCompare(b, 'ru'));
+
 const booksPage = `
 ${crumbs([['/', 'Главная'], [null, 'Книги']])}
 <div class="wrap page-head">
   <h1>Книги ${esc(A.genitive)}</h1>
-  <p>Издания, которые можно купить: электронные версии, бумажные книги и аудиокниги. Полные тексты произведений при этом остаются бесплатными в <a href="/works/">библиотеке</a>.</p>
+  <p>${books.length ? `${books.length} ${plural(books.length, ['издание', 'издания', 'изданий'])} в продаже — от школьных сборников до многотомных собраний сочинений.` : ''} Полные тексты произведений при этом остаются бесплатными в <a href="/works/">библиотеке</a>.</p>
 </div>
+${books.length ? `<div class="catalog-toolbar">
+  <div class="wrap">
+    <div class="tag-row" role="group" aria-label="Тип издания">
+      <button class="filter-chip" data-books-cat="all" aria-pressed="true">Все книги (${books.length})</button>
+      ${booksCats.map((c) => `<button class="filter-chip" data-books-cat="${esc(c)}" aria-pressed="false">${esc(c)} (${books.filter((b) => b.category === c).length})</button>`).join('')}
+    </div>
+    <div class="catalog-controls">
+      <label class="visually-hidden" for="books-pub">Издательство</label>
+      <select id="books-pub" data-books-pub>
+        <option value="all">Все издательства</option>
+        ${booksPubs.map((p) => `<option value="${esc(p)}">${esc(p)}</option>`).join('')}
+      </select>
+      <label class="visually-hidden" for="books-sort">Сортировка</label>
+      <select id="books-sort" data-books-sort>
+        <option value="title">По названию</option>
+        <option value="pub">По издательству</option>
+        <option value="pages">По числу страниц</option>
+      </select>
+      <span class="results-line">Показано: <b data-books-count>${books.length}</b></span>
+    </div>
+  </div>
+</div>` : ''}
 <div class="wrap" style="padding-bottom:40px">
   ${books.length ? `
   <div class="disclosure"><span class="ad-mark">реклама</span><span class="ad-legal">${esc(adSentence)}</span> <span class="ad-note">${esc(config.affiliate?.disclosure || '')}</span></div>
-  <div class="books-grid">${books.map(bookCard).join('')}</div>
+  <div class="books-grid" data-books-grid>${books.map(bookCard).join('')}</div>
+  <button class="load-more" data-books-more hidden>Показать ещё</button>
   <div class="books-foot">
     <div class="note">Цены, наличие и формат указаны на стороне магазина и могут меняться. Проект не хранит данные о покупках. Ссылка ведёт в «Читай-город».</div>
     <a class="btn btn-ghost" href="/works/">Читать бесплатно в библиотеке</a>

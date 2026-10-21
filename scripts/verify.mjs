@@ -139,14 +139,13 @@ if (books.length && adv.name) {
   if (!booksHtml.includes(required)) errors.push(`books: нет обязательной маркировки «${required}»`);
 }
 // Цена: собирается всегда, публикуется только при affiliate.showPrice.
-// Если публикация выключена — цены на странице быть не должно, иначе это утечка данных.
+// Проверяем структурно, а не поиском числа (число может случайно встретиться в ISBN или страницах).
 const showPrice = config.affiliate?.showPrice === true;
+const hasPriceBlock = booksHtml.includes('class="book-price"') || booksHtml.includes('bp-value');
+if (books.length && showPrice && !hasPriceBlock) errors.push('books: affiliate.showPrice включён, но цены на странице нет');
+if (books.length && !showPrice && hasPriceBlock) errors.push('books: цена попала на страницу при выключенном affiliate.showPrice');
 for (const b of books) {
-  if (!b.price) continue;
-  const expected = new Intl.NumberFormat('ru-RU', { maximumFractionDigits: 0 }).format(Number(b.price));
-  if (showPrice && !booksHtml.includes(expected)) errors.push(`books: ${b.id} — цена ${expected} не выведена на странице`);
-  if (!showPrice && booksHtml.includes(expected)) errors.push(`books: ${b.id} — цена ${expected} попала на страницу при выключенном affiliate.showPrice`);
-  if (!b.priceCheckedAt) warnings.push(`books: ${b.id} — у цены нет даты проверки (priceCheckedAt)`);
+  if (b.price && !b.priceCheckedAt) warnings.push(`books: ${b.id} — у цены нет даты проверки (priceCheckedAt)`);
 }
 // Обложки книг должны попадать в сборку
 for (const b of books) {

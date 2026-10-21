@@ -269,4 +269,65 @@
       localStorage.setItem('poem-size', String(sizeIndex));
     });
   }
+
+  // ---------- книги: фильтры по типу издания и издательству + «показать ещё» ----------
+  const booksGrid = document.querySelector('[data-books-grid]');
+  if (booksGrid) {
+    const cards = [...booksGrid.querySelectorAll('.book-card')];
+    const catChips = [...document.querySelectorAll('[data-books-cat]')];
+    const pubSelect = document.querySelector('[data-books-pub]');
+    const sortSelect = document.querySelector('[data-books-sort]');
+    const countEl = document.querySelector('[data-books-count]');
+    const more = document.querySelector('[data-books-more]');
+    const PAGE = 24;
+    const state = { cat: 'all', pub: 'all', sort: 'title', shown: PAGE };
+
+    // Порядок карточек в разметке — исходный (по названию), его и берём за базу сортировки.
+    const base = cards.slice();
+
+    function apply() {
+      let list = base.filter((c) => {
+        const catOk = state.cat === 'all' || c.dataset.cat === state.cat;
+        const pubOk = state.pub === 'all' || c.dataset.pub === state.pub;
+        return catOk && pubOk;
+      });
+      const by = {
+        title: (a, b) => a.dataset.title.localeCompare(b.dataset.title, 'ru'),
+        pub: (a, b) => (a.dataset.pub || '').localeCompare(b.dataset.pub || '', 'ru') || a.dataset.title.localeCompare(b.dataset.title, 'ru'),
+        pages: (a, b) => (+b.dataset.pages || 0) - (+a.dataset.pages || 0),
+      }[state.sort];
+      list = list.slice().sort(by);
+
+      cards.forEach((c) => c.classList.add('hidden'));
+      booksGrid.querySelectorAll('.empty').forEach((n) => n.remove());
+      list.slice(0, state.shown).forEach((c) => { c.classList.remove('hidden'); booksGrid.appendChild(c); });
+      if (countEl) countEl.textContent = list.length;
+      if (more) more.hidden = list.length <= state.shown;
+      if (!list.length) {
+        const div = document.createElement('div');
+        div.className = 'empty';
+        div.style.gridColumn = '1 / -1';
+        div.innerHTML = 'Ничего не найдено. <button class="filter-chip" data-books-reset>Сбросить фильтры</button>';
+        booksGrid.appendChild(div);
+      }
+    }
+
+    catChips.forEach((chip) => chip.addEventListener('click', () => {
+      state.cat = chip.dataset.booksCat;
+      catChips.forEach((c) => c.setAttribute('aria-pressed', String(c === chip)));
+      state.shown = PAGE;
+      apply();
+    }));
+    pubSelect?.addEventListener('change', () => { state.pub = pubSelect.value; state.shown = PAGE; apply(); });
+    sortSelect?.addEventListener('change', () => { state.sort = sortSelect.value; state.shown = PAGE; apply(); });
+    more?.addEventListener('click', () => { state.shown += PAGE; apply(); });
+    booksGrid.addEventListener('click', (e) => {
+      if (!e.target.closest('[data-books-reset]')) return;
+      state.cat = 'all'; state.pub = 'all'; state.shown = PAGE;
+      catChips.forEach((c) => c.setAttribute('aria-pressed', String(c.dataset.booksCat === 'all')));
+      if (pubSelect) pubSelect.value = 'all';
+      apply();
+    });
+    apply();
+  }
 })();
