@@ -14,7 +14,9 @@
     "coverHeight": 962,
     "coverAlt": "Собрание сочинений Сергея Есенина в пяти томах — комплект из пяти книг, обложка",
     "coverCredit": "Фото: Читай-город",
-    "stores": ["chitai-gorod"],
+    "stores": [
+      "chitai-gorod"
+    ],
     "links": [
       {
         "store": "chitai-gorod",
@@ -25,6 +27,11 @@
     "tags": [
       "собрание сочинений",
       "бумажное издание"
-    ]
+    ],
+    "price": 8299,
+    "priceCurrency": "RUB",
+    "priceCheckedAt": "2026-10-21",
+    "availability": "InStock",
+    "productUrl": "https://www.chitai-gorod.ru/product/sergey-esenin-sobranie-sochineniy-v-pyati-tomah-komplekt-iz-5-knig-2846177"
   }
 ]

@@ -59,6 +59,16 @@ function formatDate(iso) {
 }
 const UPDATED_LABEL = formatDate(UPDATED);
 
+// Цена книги: «8 299 ₽», пробелы-разделители как в магазине.
+function priceFmt(value, currency = 'RUB') {
+  const num = Number(value);
+  if (!Number.isFinite(num)) return '';
+  const formatted = new Intl.NumberFormat('ru-RU', { maximumFractionDigits: 0 }).format(num);
+  const sign = currency === 'RUB' ? '₽' : currency === 'EUR' ? '€' : currency === 'USD' ? '$' : currency;
+  return `${formatted} ${sign}`;
+}
+const ruDate = (iso) => formatDate(String(iso || '').slice(0, 10));
+
 const stylesSource = await readFile('src/styles.css');
 const appSource = await readFile('src/app.js');
 const themeSource = await readFile('src/theme.js');
@@ -477,6 +487,10 @@ function bookCard(b, index) {
       ${b.subtitle ? `<div class="book-sub">${esc(b.subtitle)}</div>` : ''}
       <div class="book-meta"><span class="book-format">${esc(b.format)}</span>${meta ? ' · ' + meta : ''}</div>
       <p class="book-annotation">${esc(b.annotation)}</p>
+      ${b.price ? `<div class="book-price">
+        <span class="bp-value">${esc(priceFmt(b.price, b.priceCurrency))}</span>
+        <span class="bp-note">${b.availability === 'InStock' ? 'в наличии · ' : ''}цена на ${esc(ruDate(b.priceCheckedAt))}, в магазине может отличаться</span>
+      </div>` : ''}
       <div class="book-tags">
         ${b.highlight ? '<span class="tag is-pick">выбор редакции</span>' : ''}
         ${tags}
@@ -1289,7 +1303,17 @@ await writePage('books/index.html', layout({
         ...(b.isbn ? { isbn: b.isbn } : {}),
         ...(b.year ? { datePublished: String(b.year) } : {}),
         ...(b.pages ? { numberOfPages: b.pages } : {}),
-        bookFormat: /аудио/i.test(b.format || '') ? 'https://schema.org/AudiobookFormat' : 'https://schema.org/EBook',
+        bookFormat: /аудио/i.test(b.format || '') ? 'https://schema.org/AudiobookFormat' : /бумаж/i.test(b.format || '') ? 'https://schema.org/Hardcover' : 'https://schema.org/EBook',
+        ...(b.price ? {
+          offers: {
+            '@type': 'Offer',
+            price: String(b.price),
+            priceCurrency: b.priceCurrency || 'RUB',
+            availability: b.availability === 'InStock' ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
+            url: (b.links || [])[0]?.url || b.productUrl,
+            seller: { '@type': 'Organization', name: stores[(b.links || [])[0]?.store]?.label || (b.links || [])[0]?.store || '' },
+          },
+        } : {}),
       },
     })),
   } : null,

@@ -617,6 +617,9 @@ select, .select {
 .book-meta { font-size: 13px; color: var(--muted); line-height: 1.55; }
 .book-meta .book-format { color: var(--ink-soft); font-weight: 600; }
 .book-annotation { font-size: 14px; color: var(--ink-soft); margin: 9px 0 0; }
+.book-price { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px; margin-top: 12px; }
+.book-price .bp-value { font-family: var(--serif); font-size: 22px; color: var(--ink); }
+.book-price .bp-note { font-size: 11px; color: var(--muted); }
 .book-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
 .book-tags .tag { font-size: 12px; padding: 3px 8px; }
 .book-tags .tag.is-pick { background: color-mix(in srgb, var(--gold) 18%, transparent); color: var(--ink-soft); }

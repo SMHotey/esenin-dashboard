@@ -1,0 +1,60 @@
+name: Обновление цен и публикация
+
+on:
+  schedule:
+    # каждый день в 05:00 UTC (08:00 МСК)
+    - cron: '0 5 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  sync-and-deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Обновить цены с сайта магазина
+        run: npm run sync:prices
+
+      - name: Проверки
+        run: npm run verify
+
+      - name: Закоммитить изменения цен
+        id: commit
+        run: |
+          if git diff --quiet -- data/books.json; then
+            echo "Цены не изменились — коммит не нужен"
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/books.json
+          git commit -m "Автоматическое обновление цен книг"
+          git pull --rebase --autostash origin master
+          git push origin master
+          echo "changed=true" >> "$GITHUB_OUTPUT"
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+      - id: deployment
+        uses: actions/deploy-pages@v4

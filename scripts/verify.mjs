@@ -138,6 +138,13 @@ if (books.length && adv.name) {
   const required = `Реклама. Рекламодатель ${adv.name}${adv.ogrn ? `, ОГРН ${adv.ogrn}` : ''}.`;
   if (!booksHtml.includes(required)) errors.push(`books: нет обязательной маркировки «${required}»`);
 }
+// Цена: если она есть в данных, она обязана быть на странице вместе с датой проверки
+for (const b of books) {
+  if (!b.price) continue;
+  const expected = new Intl.NumberFormat('ru-RU', { maximumFractionDigits: 0 }).format(Number(b.price));
+  if (!booksHtml.includes(expected)) errors.push(`books: ${b.id} — цена ${expected} не выведена на странице`);
+  if (!b.priceCheckedAt) warnings.push(`books: ${b.id} — у цены нет даты проверки (priceCheckedAt)`);
+}
 // Обложки книг должны попадать в сборку
 for (const b of books) {
   for (const key of ['cover', 'coverWebp']) {
