@@ -1276,11 +1276,27 @@ for (const key of Object.keys(categories)) {
 }
 
 for (const p of people) {
+  const yearsMatch = String(p.years || '').match(/(\d{4})\s*[–—-]\s*(\d{4})?/);
+  const personLd = {
+    '@type': 'Person',
+    '@id': `${SITE}/people/${p.id}.html#person`,
+    name: p.name,
+    jobTitle: p.role || undefined,
+    description: String(p.summary || '').slice(0, 300) || undefined,
+    ...(yearsMatch ? {
+      birthDate: yearsMatch[1],
+      ...(yearsMatch[2] ? { deathDate: yearsMatch[2] } : {}),
+    } : {}),
+    url: `${SITE}/people/${p.id}.html`,
+    ...(p.source ? { sameAs: /^https?:/i.test(p.source) ? [p.source] : undefined } : {}),
+    knowsAbout: { '@id': `${SITE}/#person` },
+  };
   await writePage(`people/${p.id}.html`, layout({
     title: p.name,
     description: `${p.name} — ${p.role}${p.years ? ', ' + p.years : ''}. ${String(p.summary || '')}`.slice(0, 200),
     content: personPage(p), active: 'people',
     breadcrumb: [['/', 'Главная'], ['/people/', 'Люди'], [null, p.name]],
+    jsonLd: personLd,
   }));
 }
 
