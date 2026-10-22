@@ -190,6 +190,7 @@ const nav = [
   ['/places/', 'Места', 'places'],
   ['/legacy/', 'Наследие', 'legacy'],
   ['/books/', 'Книги', 'books'],
+  ['/publications/', 'Журнал', 'publications'],
   ['/research/', 'Наука', 'research'],
 ];
 
@@ -732,6 +733,25 @@ for (const f of articleFiles) {
 }
 articles.sort((a, b) => (a.kind === 'overview' ? -1 : 0) - (b.kind === 'overview' ? -1 : 0) || a.order - b.order);
 
+// ---------- Публикации (журнал): content/publications/*.md с датой в frontmatter ----------
+const TODAY = new Date().toISOString().slice(0, 10);
+const PUBLISH_ALL = process.env.PUBLISH_ALL === '1';
+const pubDir = join(ROOT, 'content', 'publications');
+let pubFiles = [];
+if (existsSync(pubDir)) pubFiles = (await readdir(pubDir)).filter((f) => f.endsWith('.md')).sort();
+
+const publications = [];
+const scheduled = [];
+for (const f of pubFiles) {
+  const { meta, body } = await readArticle(`publications/${f}`);
+  const date = String(meta.date || '').trim();
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) continue; // без даты публикация не выпускается
+  const item = { ...meta, date, body, html: mdToHtml(body) };
+  if (PUBLISH_ALL || date <= TODAY) publications.push(item); else scheduled.push(item);
+}
+publications.sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : 0));
+if (scheduled.length) console.log(`  запланировано, ещё не выпущено: ${scheduled.length} (${scheduled[0].date} — ${scheduled[scheduled.length - 1].date})`);
+
 const biographyIndex = `
 ${crumbs([['/', 'Главная'], [null, 'Биография']])}
 <div class="wrap page-head">
@@ -1259,6 +1279,77 @@ for (const a of articles) {
   }));
 }
 
+// ---------- Журнал: индекс и страницы публикаций ----------
+function pubCard(p) {
+  return `<a class="work-card" href="/publications/${p.slug}.html">
+    <span class="genre">${esc(p.category || 'Публикация')} · ${esc(p.date.split('-').reverse().join('.'))}</span>
+    <span class="title">${esc(p.title)}</span>
+    <span class="preview">${esc(p.excerpt || '')}</span>
+  </a>`;
+}
+
+function pubPage(p) {
+  const dateLabel = (() => {
+    const m = String(p.date).match(/^(\d{4})-(\d{2})-(\d{2})$/);
+    return m ? `${Number(m[3])} ${MONTHS[Number(m[2]) - 1]} ${m[1]}` : p.date;
+  })();
+  const others = publications.filter((x) => x.slug !== p.slug).slice(0, 3);
+  return `${crumbs([['/', 'Главная'], ['/publications/', 'Журнал'], [null, p.title]])}
+  <div class="wrap article-layout">
+    <article>
+      <h1 style="font-size:clamp(32px,5vw,48px);margin-bottom:14px">${esc(p.title)}</h1>
+      <div class="meta-line"><span class="badge">${esc(p.category || 'Публикация')}</span><span>Опубликовано ${esc(dateLabel)}</span></div>
+      <div class="prose">${p.html}</div>
+      <div class="source-box"><b>Источники.</b> ${esc(p.sources || 'Даты, имена и обстоятельства сверены с академическими изданиями; перечень — в разделе «Источники».')} <a href="/sources.html">Смотреть «Источники»</a>.</div>
+    </article>
+    <aside>
+      ${others.length ? `<div class="panel"><h3>Читайте дальше</h3><ul>${others.map((x) => `<li><a href="/publications/${x.slug}.html">${esc(x.title)}</a></li>`).join('')}</ul></div>` : ''}
+      <div class="panel"><h3>Разделы</h3><ul>
+        <li><a href="/biography/">Биография</a></li>
+        <li><a href="/works/">Библиотека</a></li>
+        <li><a href="/topics/">Темы</a></li>
+        <li><a href="/faq.html">Частые вопросы</a></li>
+      </ul></div>
+    </aside>
+  </div>`;
+}
+
+await writePage('publications/index.html', layout({
+  title: `Журнал ${A.genitive}`,
+  description: `Новые публикации о ${A.prepositional}: разборы произведений, биографические находки и ответы на частые вопросы. По одной в день.`,
+  content: `${crumbs([['/', 'Главная'], [null, 'Журнал']])}
+<div class="wrap page-head">
+  <h1>Журнал</h1>
+  <p>По одной публикации в день: разборы стихотворений и поэм, обстоятельства написания, биографические находки и ответы на вопросы читателей. Факты сверены с академическими изданиями, формулировки — наши.</p>
+</div>
+<div class="wrap" style="padding-bottom:50px">
+  ${publications.length ? `<div class="works-grid">${publications.map(pubCard).join('')}</div>` : '<div class="note">Первые публикации уже запланированы.</div>'}
+</div>`,
+  active: 'publications',
+  breadcrumb: [['/', 'Главная'], [null, 'Журнал']],
+}));
+
+for (const p of publications) {
+  await writePage(`publications/${p.slug}.html`, layout({
+    title: p.title,
+    description: p.excerpt || '',
+    content: pubPage(p),
+    active: 'publications',
+    ogType: 'article',
+    jsonLd: {
+      '@type': 'Article',
+      headline: p.title,
+      description: String(p.excerpt || '').slice(0, 300) || undefined,
+      datePublished: p.date,
+      dateModified: p.date,
+      inLanguage: LANG,
+      author: { '@id': `${SITE}/#person` },
+      mainEntityOfPage: { '@type': 'WebPage', '@id': `${SITE}/publications/${p.slug}.html` },
+    },
+    breadcrumb: [['/', 'Главная'], ['/publications/', 'Журнал'], [null, p.title]],
+  }));
+}
+
 await writePage('people/index.html', layout({
   title: `Люди вокруг ${A.genitive}`, description: `Семья, друзья и современники ${A.genitive}: ${people.length} карточек с ролями, годами жизни и источниками сведений.`,
   content: peopleIndex, active: 'people',
@@ -1483,6 +1574,7 @@ const searchItems = [
   { t: 'Версии', u: '/versions.html', g: 'Раздел', k: 'Спорные вопросы', s: 'Что установлено, а что — версия' },
   { t: 'О проекте', u: '/about.html', g: 'Раздел', k: 'Права и принципы', s: 'Лицензии, партнёрские ссылки, обновления' },
   ...extra.search,
+  ...publications.map((p) => ({ t: p.title, u: `/publications/${p.slug}.html`, g: 'Журнал', k: p.category || 'Публикация', s: p.excerpt || '' })),
 ];
 
 const seenSearch = new Set();
@@ -1504,6 +1596,8 @@ const urls = [
   ...Object.keys(categories).filter((k) => people.some((p) => p.category === k)).map((k) => `/people/${k}.html`),
   ...people.map((p) => `/people/${p.id}.html`),
   '/life/studies.html', '/life/passions.html', '/life/timeline.html',
+  '/publications/',
+  ...publications.map((p) => `/publications/${p.slug}.html`),
   ...works.map(workUrl),
 ];
 
@@ -1531,6 +1625,12 @@ await writeFile(join(DIST, 'sitemap.xml'), sitemap, 'utf8');
 // ---------- RSS-лента ----------
 const feedDate = (iso) => new Date(`${iso}T09:00:00+03:00`).toUTCString();
 const feedItems = [
+  ...publications.slice(0, 30).map((p) => ({
+    title: p.title,
+    link: `${SITE}/publications/${p.slug}.html`,
+    pub: p.date,
+    desc: String(p.excerpt || '').slice(0, 200),
+  })),
   ...works.filter((w) => w.text).slice(0, 60).map((w) => ({
     title: w.year ? `${w.title} (${w.year})` : w.title,
     link: SITE + workUrl(w),

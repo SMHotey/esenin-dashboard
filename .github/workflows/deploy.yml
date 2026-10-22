@@ -3,6 +3,9 @@ name: Deploy to GitHub Pages
 on:
   push:
     branches: [master, main]
+  schedule:
+    # Ежедневный пересбор и деплой в 06:30 МСК: публикации с датой «сегодня» выходят сами
+    - cron: '30 3 * * *'
   workflow_dispatch:
 
 permissions:
