@@ -281,7 +281,6 @@ p { margin: 0 0 1em; }
   transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease;
 }
 .tile:hover { transform: translateY(-3px); border-color: var(--accent-soft); box-shadow: var(--shadow); text-decoration: none; }
-.tile-kicker { font-size: 11px; letter-spacing: .16em; text-transform: uppercase; color: var(--gold); }
 .tile-title { font-family: var(--serif); font-size: 21px; line-height: 1.2; }
 .tile-count { margin-top: auto; font-size: 12px; color: var(--muted); }
 
@@ -465,11 +464,27 @@ select, .select {
 }
 .person-card:hover { border-color: var(--accent-soft); text-decoration: none; }
 .person-card .role { font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--gold); }
+.person-card-photo {
+  width: 64px; height: 64px; object-fit: cover; border-radius: 50%;
+  border: 1px solid var(--line); background: var(--paper-2); margin-bottom: 6px;
+  filter: grayscale(1);
+}
+[data-theme="light"] .person-card-photo { filter: none; }
 .person-card .name { font-family: var(--serif); font-size: 20px; color: var(--ink); line-height: 1.2; }
 .person-card .years { font-size: 12px; color: var(--muted); }
 .person-card .sum { font-size: 13px; color: var(--muted); display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
 
 .person-hero { display: grid; grid-template-columns: 1fr 2fr; gap: 40px; padding: 30px 0 40px; align-items: start; }
+.person-photo { margin: 0; }
+.person-photo img {
+  width: 100%; max-width: 260px; height: auto; display: block;
+  border: 1px solid var(--line); border-radius: 10px; background: var(--paper-2);
+  filter: grayscale(1) contrast(1.02);
+}
+[data-theme="light"] .person-photo img { filter: none; }
+.person-photo figcaption { margin-top: 8px; max-width: 260px; font-size: 12px; line-height: 1.45; color: var(--muted); }
+.person-photo figcaption a { color: var(--muted); }
+
 .person-mono {
   font-family: var(--serif); font-size: 80px; line-height: 1; color: var(--gold);
   border: 1px solid var(--line); border-radius: 50%; width: 160px; height: 160px;

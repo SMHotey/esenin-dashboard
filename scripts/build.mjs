@@ -431,7 +431,8 @@ function workCard(w) {
 }
 
 function personCard(p) {
-  return `<a class="person-card" href="/people/${p.id}.html">
+  return `<a class="person-card${p.photo ? ' has-photo' : ''}" href="/people/${p.id}.html">
+    ${p.photo ? `<img class="person-card-photo" src="${esc(p.photo)}" alt="${esc(p.photoAlt || p.name)}" width="${Number(p.photoW) || 400}" height="${Number(p.photoH) || 500}" loading="lazy" decoding="async">` : ''}
     <span class="role">${esc(p.role)}</span>
     <span class="name">${esc(p.name)}</span>
     <span class="years">${esc(p.years)}</span>
@@ -625,7 +626,7 @@ const home = `
       <div><h2>Разделы проекта</h2><p>Всё содержание собрано в связанные разделы — от биографии и людей до библиотеки и книжных изданий.</p></div>
     </div>
     <div class="tiles">
-      ${tiles.map(([href, kicker, title, count]) => `<a class="tile" href="${href}"><span class="tile-kicker">${kicker}</span><span class="tile-title">${esc(title)}</span><span class="tile-count">${esc(count)}</span></a>`).join('')}
+      ${tiles.map(([href, , title, count]) => `<a class="tile" href="${href}"><span class="tile-title">${esc(title)}</span><span class="tile-count">${esc(count)}</span></a>`).join('')}
     </div>
   </div>
 </section>
@@ -674,11 +675,11 @@ const home = `
       <a class="section-link" href="/legacy/">Весь раздел →</a>
     </div>
     <div class="tiles">
-      <a class="tile" href="/legacy/gibel.html"><span class="tile-kicker">01</span><span class="tile-title">Гибель поэта</span><span class="tile-count">Документы и версии</span></a>
-      <a class="tile" href="/legacy/memory.html"><span class="tile-kicker">02</span><span class="tile-title">Музеи и памятники</span><span class="tile-count">${museums.length + monuments.length} адресов</span></a>
-      <a class="tile" href="/legacy/music.html"><span class="tile-kicker">03</span><span class="tile-title">Есенин в музыке</span><span class="tile-count">Песни и романсы</span></a>
-      <a class="tile" href="/legacy/cinema.html"><span class="tile-kicker">04</span><span class="tile-title">Есенин на экране</span><span class="tile-count">Фильмы и сериалы</span></a>
-      <a class="tile" href="/legacy/translations.html"><span class="tile-kicker">05</span><span class="tile-title">Переводы</span><span class="tile-count">${(languages.languages || []).length} языков</span></a>
+      <a class="tile" href="/legacy/gibel.html"><span class="tile-title">Гибель поэта</span><span class="tile-count">Документы и версии</span></a>
+      <a class="tile" href="/legacy/memory.html"><span class="tile-title">Музеи и памятники</span><span class="tile-count">${museums.length + monuments.length} адресов</span></a>
+      <a class="tile" href="/legacy/music.html"><span class="tile-title">Есенин в музыке</span><span class="tile-count">Песни и романсы</span></a>
+      <a class="tile" href="/legacy/cinema.html"><span class="tile-title">Есенин на экране</span><span class="tile-count">Фильмы и сериалы</span></a>
+      <a class="tile" href="/legacy/translations.html"><span class="tile-title">Переводы</span><span class="tile-count">${(languages.languages || []).length} языков</span></a>
     </div>
   </div>
 </section>
@@ -909,7 +910,9 @@ function personPage(p) {
   return `${crumbs([['/', 'Главная'], ['/people/', 'Люди'], [`/people/${p.category}.html`, categories[p.category] || 'Люди'], [null, p.name]])}
   <div class="wrap">
     <div class="person-hero">
-      <div class="person-mono" aria-hidden="true">${esc(String(p.name || '?')[0])}</div>
+      ${p.photo
+        ? `<figure class="person-photo"><img src="${esc(p.photo)}" alt="${esc(p.photoAlt || p.name)}" width="${Number(p.photoW) || 400}" height="${Number(p.photoH) || 500}" loading="lazy" decoding="async"><figcaption>${p.photoSource ? `<a href="${esc(p.photoSource)}" rel="noopener external" target="_blank">Викисклад</a>` : 'Викисклад'}${p.photoCredit && !/unknown/i.test(p.photoCredit) ? ` · ${esc(p.photoCredit)}` : ''}${p.photoLicense ? ` · ${esc(p.photoLicense)}` : ''}</figcaption></figure>`
+        : `<div class="person-mono" aria-hidden="true">${esc(String(p.name || '?')[0])}</div>`}
       <div>
         <div class="meta-line"><span class="badge">${esc(p.role)}</span><span>${esc(p.years)}</span></div>
         <h1 style="font-size:clamp(30px,4.5vw,44px)">${esc(p.name)}</h1>
@@ -948,10 +951,10 @@ ${crumbs([['/', 'Главная'], [null, 'Жизнь']])}
 </div>
 <div class="wrap" style="padding-bottom:50px">
   <div class="tiles">
-    <a class="tile" href="/life/studies.html"><span class="tile-kicker">01</span><span class="tile-title">Учёба</span><span class="tile-count">${studies.length ? 'Школа, училище, университет' : 'Раздел готовится'}</span></a>
-    <a class="tile" href="/life/passions.html"><span class="tile-kicker">02</span><span class="tile-title">Увлечения</span><span class="tile-count">${passions.length ? 'Темы, круги, путешествия' : 'Раздел готовится'}</span></a>
-    <a class="tile" href="/life/timeline.html"><span class="tile-kicker">03</span><span class="tile-title">Хронология</span><span class="tile-count">${timeline.length} ${plural(timeline.length, ['событие', 'события', 'событий'])}</span></a>
-    <a class="tile" href="/biography/"><span class="tile-kicker">04</span><span class="tile-title">Биография</span><span class="tile-count">Обзор и статьи</span></a>
+    <a class="tile" href="/life/studies.html"><span class="tile-title">Учёба</span><span class="tile-count">${studies.length ? 'Школа, училище, университет' : 'Раздел готовится'}</span></a>
+    <a class="tile" href="/life/passions.html"><span class="tile-title">Увлечения</span><span class="tile-count">${passions.length ? 'Темы, круги, путешествия' : 'Раздел готовится'}</span></a>
+    <a class="tile" href="/life/timeline.html"><span class="tile-title">Хронология</span><span class="tile-count">${timeline.length} ${plural(timeline.length, ['событие', 'события', 'событий'])}</span></a>
+    <a class="tile" href="/biography/"><span class="tile-title">Биография</span><span class="tile-count">Обзор и статьи</span></a>
   </div>
 </div>`;
 

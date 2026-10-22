@@ -219,7 +219,7 @@ export function buildSectionPages(ctx) {
 </div>
 <div class="wrap" style="padding-bottom:30px">
   <div class="tiles">
-    ${legacyCards.map(([href, k, t, c]) => `<a class="tile" href="${href}"><span class="tile-kicker">${k}</span><span class="tile-title">${esc(t)}</span><span class="tile-count">${esc(c)}</span></a>`).join('')}
+    ${legacyCards.map(([href, k, t, c]) => `<a class="tile" href="${href}"><span class="tile-title">${esc(t)}</span><span class="tile-count">${esc(c)}</span></a>`).join('')}
   </div>
 </div>
 <div class="wrap" style="padding-bottom:50px">

@@ -24,6 +24,22 @@ if (!SITE) errors.push('site.config.json: не задан siteUrl');
 if (/\.example\b|example\.(org|com)/.test(SITE)) warnings.push('siteUrl всё ещё заглушка — укажите боевой домен');
 if (config.affiliate?.enabled === false) info.push('партнёрские ссылки отключены в конфиге');
 
+// Фотографии персон: файл на месте, лицензия свободная, подпись есть.
+const peopleData = await readJson('data/people.json', []);
+let photos = 0;
+for (const person of peopleData) {
+  if (!person.photo) continue;
+  photos += 1;
+  const rel = String(person.photo).replace(/^\//, '');
+  if (!existsSync(join(DIST, rel))) errors.push(`фото персоны ${person.id}: нет файла ${person.photo}`);
+  if (!/\.(jpe?g|png|webp)$/i.test(person.photo)) errors.push(`фото персоны ${person.id}: неожиданный формат ${person.photo}`);
+  if (!person.photoAlt) errors.push(`фото персоны ${person.id}: нет alt`);
+  if (!person.photoCredit) errors.push(`фото персоны ${person.id}: нет подписи об источнике`);
+  if (!/pd|public domain|cc0/i.test(String(person.photoLicense || ''))) errors.push(`фото персоны ${person.id}: лицензия «${person.photoLicense || 'нет'}» — нужна свободная`);
+  if (!person.photoSource) errors.push(`фото персоны ${person.id}: нет ссылки на страницу файла`);
+}
+if (photos) info.push(`фото персон: ${photos} из ${peopleData.length}`);
+
 // Досье персон: каждое утверждение должно нести ссылку на источник.
 // Досье без ссылок хуже, чем его отсутствие: это выглядит как проверенный факт.
 if (existsSync('data/dossiers.json')) {

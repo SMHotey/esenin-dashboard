@@ -169,7 +169,15 @@
       "Сардановская"
     ],
     "summary": "Дочь священника, знакомая Есенина с константиновских лет. По воспоминаниям сестры поэта, он «чуть не женился» на ней. Отношения длились с перерывами в 1906–1912 годах, переписка — до 1917 года. Считается одним из прототипов образа Анны Снегиной.",
-    "source": "ru.wikipedia"
+    "source": "ru.wikipedia",
+    "photo": "/img/people/anna-sardanovskaya.jpg",
+    "photoWebp": "/img/people/anna-sardanovskaya.webp",
+    "photoAlt": "Мария Бальзамова и Анна Сардановская",
+    "photoCredit": "Unknown author",
+    "photoLicense": "Public domain",
+    "photoSource": "https://commons.wikimedia.org/wiki/File:%D0%91%D0%B0%D0%BB%D1%8C%D0%B7%D0%B0%D0%BC%D0%BE%D0%B2%D0%B0,_%D0%A1%D0%B0%D1%80%D0%B4%D0%B0%D0%BD%D0%BE%D0%B2%D1%81%D0%BA%D0%B0%D1%8F.jpg",
+    "photoW": 400,
+    "photoH": 612
   },
   {
     "id": "maria-balzamova",
@@ -181,7 +189,15 @@
       "Бальзамова"
     ],
     "summary": "Подруга Анны Сардановской, с которой Есенин переписывался в 1910-е годы. Сохранившиеся письма — важный источник для изучения его ранней биографии.",
-    "source": "ru.wikipedia"
+    "source": "ru.wikipedia",
+    "photo": "/img/people/maria-balzamova.jpg",
+    "photoWebp": "/img/people/maria-balzamova.webp",
+    "photoAlt": "Мария Бальзамова и Анна Сардановская",
+    "photoCredit": "Unknown author",
+    "photoLicense": "Public domain",
+    "photoSource": "https://commons.wikimedia.org/wiki/File:%D0%91%D0%B0%D0%BB%D1%8C%D0%B7%D0%B0%D0%BC%D0%BE%D0%B2%D0%B0,_%D0%A1%D0%B0%D1%80%D0%B4%D0%B0%D0%BD%D0%BE%D0%B2%D1%81%D0%BA%D0%B0%D1%8F.jpg",
+    "photoW": 400,
+    "photoH": 612
   },
   {
     "id": "anna-izryadnova",
@@ -193,7 +209,15 @@
       "Изряднова"
     ],
     "summary": "Корректор в типографии «Товарищества И. Д. Сытина». Сблизилась с Есениным в Москве; в 1914 году они вступили в фактический брак, 21 декабря родился сын Юрий.",
-    "source": "ru.wikipedia"
+    "source": "ru.wikipedia",
+    "photo": "/img/people/anna-izryadnova.jpg",
+    "photoWebp": "/img/people/anna-izryadnova.webp",
+    "photoAlt": "Анна Изряднова и Сергей Есенин в группе работников типографии «Товарищества И. Д. Сытина»",
+    "photoCredit": "Unknown author",
+    "photoLicense": "Public domain",
+    "photoSource": "https://commons.wikimedia.org/wiki/File:%D0%90%D0%BD%D0%BD%D0%B0_%D0%A0%D0%BE%D0%BC%D0%B0%D0%BD%D0%BE%D0%B2%D0%BD%D0%B0_%D0%98%D0%B7%D1%80%D1%8F%D0%B4%D0%BD%D0%BE%D0%B2%D0%B0_%D0%B8_%D0%A1%D0%B5%D1%80%D0%B3%D0%B5%D0%B9_%D0%95%D1%81%D0%B5%D0%BD%D0%B8%D0%BD.jpg",
+    "photoW": 400,
+    "photoH": 608
   },
   {
     "id": "zinaida-raikh",
@@ -206,7 +230,15 @@
       "Зинаида Николаевна"
     ],
     "summary": "Секретарь-машинистка в газете «Дело народа». 30 июля 1917 года обвенчалась с Есениным в селе Кирики-Улита Вологодской губернии. В браке родились дочь Татьяна и сын Константин. Развод официально оформлен в октябре 1921 года; позже Райх вышла замуж за режиссёра В. Э. Мейерхольда.",
-    "source": "ru.wikipedia"
+    "source": "ru.wikipedia",
+    "photo": "/img/people/zinaida-raikh.jpg",
+    "photoWebp": "/img/people/zinaida-raikh.webp",
+    "photoAlt": "Зинаида Николаевна Райх",
+    "photoCredit": "Unknown author",
+    "photoLicense": "Public domain",
+    "photoSource": "https://commons.wikimedia.org/wiki/File:Raih_Zinaida.jpg",
+    "photoW": 400,
+    "photoH": 571
   },
   {
     "id": "isadora-duncan",
@@ -220,7 +252,15 @@
       "Изадора"
     ],
     "summary": "Американская танцовщица, одна из основоположниц свободного танца. Познакомилась с Есениным в Москве в октябре 1921 года, брак зарегистрирован 2 мая 1922 года. Вместе гастролировали по Европе и Северной Америке; расставание произошло осенью 1923 года.",
-    "source": "ru.wikipedia"
+    "source": "ru.wikipedia",
+    "photo": "/img/people/isadora-duncan.jpg",
+    "photoWebp": "/img/people/isadora-duncan.webp",
+    "photoAlt": "Айседора Дункан",
+    "photoCredit": "Wikimedia Commons",
+    "photoLicense": "Public domain",
+    "photoSource": "https://commons.wikimedia.org/wiki/File:Isadora_Duncan_portrait_cropped.jpg",
+    "photoW": 400,
+    "photoH": 597
   },
   {
     "id": "sofia-tolstaya",
@@ -233,7 +273,15 @@
       "Соня"
     ],
     "summary": "Внучка писателя Л. Н. Толстого, в 1925 году заведовала библиотекой Союза писателей. Брак заключён 18 сентября 1925 года и продлился до смерти поэта. После 1925 года посвятила жизнь собиранию и подготовке к печати его произведений.",
-    "source": "ru.wikipedia"
+    "source": "ru.wikipedia",
+    "photo": "/img/people/sofia-tolstaya.jpg",
+    "photoWebp": "/img/people/sofia-tolstaya.webp",
+    "photoAlt": "Софья Андреевна Толстая",
+    "photoCredit": "Unknown author",
+    "photoLicense": "Public domain",
+    "photoSource": "https://commons.wikimedia.org/wiki/File:%D0%A1._%D0%90._%D0%A2%D0%BE%D0%BB%D1%81%D1%82%D0%B0%D1%8F-%D0%95%D1%81%D0%B5%D0%BD%D0%B8%D0%BD%D0%B0.jpg",
+    "photoW": 400,
+    "photoH": 617
   },
   {
     "id": "galina-benislavskaya",
@@ -246,7 +294,15 @@
       "Галина Артуровна"
     ],
     "summary": "Познакомилась с Есениным в ноябре 1920 года на литературном вечере. Занималась его издательскими делами, некоторое время он жил в её квартире. Отношения продолжались с перерывами до лета 1925 года.",
-    "source": "ru.wikipedia"
+    "source": "ru.wikipedia",
+    "photo": "/img/people/galina-benislavskaya.jpg",
+    "photoWebp": "/img/people/galina-benislavskaya.webp",
+    "photoAlt": "Галина Артуровна Бениславская",
+    "photoCredit": "Unknown author",
+    "photoLicense": "Public domain",
+    "photoSource": "https://commons.wikimedia.org/wiki/File:%D0%93%D0%B0%D0%BB%D0%B8%D0%BD%D0%B0_%D0%91%D0%B5%D0%BD%D0%B8%D1%81%D0%BB%D0%B0%D0%B2%D1%81%D0%BA%D0%B0%D1%8F.jpg",
+    "photoW": 400,
+    "photoH": 465
   },
   {
     "id": "augusta-miklashevskaya",
@@ -259,7 +315,15 @@
       "Августа Леонидовна"
     ],
     "summary": "Актриса Московского Камерного театра. Знакомство относится к 1923 году; ей посвящён цикл «Любовь хулигана». В поздних воспоминаниях Миклашевская называла отношения платоническими.",
-    "source": "ru.wikipedia"
+    "source": "ru.wikipedia",
+    "photo": "/img/people/augusta-miklashevskaya.jpg",
+    "photoWebp": "/img/people/augusta-miklashevskaya.webp",
+    "photoAlt": "Августа Миклашевская в спектакле «Король-Арлекин»",
+    "photoCredit": "Unknown author",
+    "photoLicense": "Public domain",
+    "photoSource": "https://commons.wikimedia.org/wiki/File:%D0%90%D0%B2%D0%B3%D1%83%D1%81%D1%82%D0%B0_%D0%9C%D0%B8%D0%BA%D0%BB%D0%B0%D1%88%D0%B5%D0%B2%D1%81%D0%BA%D0%B0%D1%8F_%D0%B2_%D1%81%D0%BF%D0%B5%D0%BA%D1%82%D0%B0%D0%BA%D0%BB%D0%B5_%C2%AB%D0%9A%D0%BE%D1%80%D0%BE%D0%BB%D1%8C-%D0%90%D1%80%D0%BB%D0%B5%D0%BA%D0%B8%D0%BD%C2%BB.jpg",
+    "photoW": 400,
+    "photoH": 585
   },
   {
     "id": "nadezhda-volpin",
@@ -332,7 +396,15 @@
       "Блок"
     ],
     "summary": "К Блоку Есенин пришёл в Петрограде в марте 1915 года со своими стихами; рекомендательные письма к Городецкому и Мурашёву Блок дал ему сам. Отзыв Блока о стихах — «свежие, чистые, голосистые» — и эти рекомендации во многом определили дебют поэта.",
-    "source": "ru.wikipedia"
+    "source": "ru.wikipedia",
+    "photo": "/img/people/blok.jpg",
+    "photoWebp": "/img/people/blok.webp",
+    "photoAlt": "Александр Александрович Блок",
+    "photoCredit": "Unknown author",
+    "photoLicense": "Public domain",
+    "photoSource": "https://commons.wikimedia.org/wiki/File:Alexander_Blok.jpeg",
+    "photoW": 400,
+    "photoH": 568
   },
   {
     "id": "klyuev",
@@ -344,7 +416,15 @@
       "Клюев"
     ],
     "summary": "Поэт «новокрестьянского» направления, с которым Есенин сблизился в Петрограде. Отношения были неровными: Клюев выступал и наставником, и соперником молодого поэта.",
-    "source": "ru.wikipedia"
+    "source": "ru.wikipedia",
+    "photo": "/img/people/klyuev.jpg",
+    "photoWebp": "/img/people/klyuev.webp",
+    "photoAlt": "Николай Алексеевич Клюев",
+    "photoCredit": "Unknown author",
+    "photoLicense": "Public domain",
+    "photoSource": "https://commons.wikimedia.org/wiki/File:Nikolay_Klyuev_1915-16.jpg",
+    "photoW": 400,
+    "photoH": 601
   },
   {
     "id": "gorodetsky",
@@ -356,7 +436,15 @@
       "Городецкий"
     ],
     "summary": "Один из тех, кто ввёл Есенина в петроградские литературные круги. Участвовал в судьбе его первых публикаций и сборников.",
-    "source": "ru.wikipedia"
+    "source": "ru.wikipedia",
+    "photo": "/img/people/gorodetsky.jpg",
+    "photoWebp": "/img/people/gorodetsky.webp",
+    "photoAlt": "Сергей Митрофанович Городецкий",
+    "photoCredit": "Wikimedia Commons",
+    "photoLicense": "Public domain",
+    "photoSource": "https://commons.wikimedia.org/wiki/File:Gorodetskiy_S.jpg",
+    "photoW": 400,
+    "photoH": 614
   },
   {
     "id": "mariengof",
@@ -368,7 +456,15 @@
       "Мариенгоф"
     ],
     "summary": "Один из основателей имажинизма и ближайший соратник Есенина в 1918–1923 годах. Их совместная жизнь и литературная работа описаны в мемуарах Мариенгофа «Роман без вранья».",
-    "source": "ru.wikipedia"
+    "source": "ru.wikipedia",
+    "photo": "/img/people/mariengof.jpg",
+    "photoWebp": "/img/people/mariengof.webp",
+    "photoAlt": "Анатолий Мариенгоф в своём кабинете",
+    "photoCredit": "Unknown author",
+    "photoLicense": "CC0",
+    "photoSource": "https://commons.wikimedia.org/wiki/File:%D0%9C%D0%B0%D1%80%D0%B8%D0%B5%D0%BD%D0%B3%D0%BE%D1%84_%D0%B2_%D1%81%D0%B2%D0%BE%D1%91%D0%BC_%D0%BA%D0%B0%D0%B1%D0%B8%D0%BD%D0%B5%D1%82%D0%B5.tif",
+    "photoW": 400,
+    "photoH": 543
   },
   {
     "id": "shershenevich",
@@ -380,7 +476,15 @@
       "Шершеневич"
     ],
     "summary": "Автор имажинистских манифестов, участник группы вместе с Есениным и Мариенгофом. Их творческие отношения сочетали сотрудничество и полемику.",
-    "source": "ru.wikipedia"
+    "source": "ru.wikipedia",
+    "photo": "/img/people/shershenevich.jpg",
+    "photoWebp": "/img/people/shershenevich.webp",
+    "photoAlt": "Вадим Габриэлевич Шершеневич",
+    "photoCredit": "Unknown author",
+    "photoLicense": "Public domain",
+    "photoSource": "https://commons.wikimedia.org/wiki/File:Shershenevich.jpg",
+    "photoW": 400,
+    "photoH": 596
   },
   {
     "id": "panfilov",
