@@ -140,12 +140,32 @@ function mdToHtml(md) {
     if (list) { out.push(`<${list.type}>${list.items.map((i) => `<li>${inline(i)}</li>`).join('')}</${list.type}>`); list = null; }
   };
 
-  for (const raw of lines) {
+  for (let idx = 0; idx < lines.length; idx++) {
+    const raw = lines[idx];
     const line = raw.trimEnd();
     if (!line.trim()) { flush(); continue; }
     if (line.startsWith('## ')) { flush(); out.push(`<h2>${inline(line.slice(3))}</h2>`); continue; }
     if (line.startsWith('### ')) { flush(); out.push(`<h3>${inline(line.slice(4))}</h3>`); continue; }
     if (line.startsWith('> ')) { flush(); out.push(`<blockquote>${inline(line.slice(2))}</blockquote>`); continue; }
+    // Таблицы GFM: | a | b | + строка-разделитель. Нужны для материалов T2–T3
+    // (расчёты, сравнения), которых без таблиц не написать.
+    if (/^\|/.test(line.trim())) {
+      const sep = (lines[idx + 1] || '').trim();
+      if (/^\|?[\s:|-]*-[\s:|-]*\|?$/.test(sep) && sep.includes('-')) {
+        flush();
+        const cells = (l) => l.trim().replace(/^\|/, '').replace(/\|$/, '').split('|').map((c) => c.trim());
+        const head = cells(line);
+        const rows = [];
+        idx += 2;
+        while (idx < lines.length && /^\|/.test(lines[idx].trim())) { rows.push(cells(lines[idx].trim())); idx++; }
+        idx--;
+        out.push(
+          `<div class="table-wrap"><table><thead><tr>${head.map((h) => `<th>${inline(h)}</th>`).join('')}</tr></thead>` +
+          `<tbody>${rows.map((r) => `<tr>${r.map((c) => `<td>${inline(c)}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`
+        );
+        continue;
+      }
+    }
     if (/^---+$/.test(line)) { flush(); out.push('<hr>'); continue; }
     const li = line.match(/^[-*]\s+(.*)$/);
     if (li) {

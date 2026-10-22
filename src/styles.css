@@ -845,3 +845,17 @@ select, .select {
 
 .hidden { display: none !important; }
 
+/* Таблицы в материалах журнала (расчёты, сравнения): читаемые в обеих темах */
+.table-wrap { overflow-x: auto; margin: 22px 0; border: 1px solid var(--line); border-radius: var(--radius); background: var(--card); }
+.table-wrap table { width: 100%; border-collapse: collapse; font-size: 14.5px; line-height: 1.5; }
+.table-wrap th, .table-wrap td { padding: 9px 12px; text-align: left; border-bottom: 1px solid var(--line); vertical-align: top; }
+.table-wrap thead th { font-family: var(--sans); font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); white-space: nowrap; }
+.table-wrap tbody tr:last-child td { border-bottom: 0; }
+.table-wrap td:first-child { font-variant-numeric: tabular-nums; white-space: nowrap; }
+.table-wrap tbody tr:hover { background: var(--paper-2); }
+
+@media print {
+  .table-wrap { border-color: #999; background: #fff; }
+  .table-wrap th, .table-wrap td { border-bottom: 1px solid #ccc; }
+}
+

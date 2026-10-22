@@ -112,16 +112,24 @@
 Что нужно сделать вручную (≈ 15 минут, требует доступа к reg.ru и аккаунта Cloudflare):
 
 1. Cloudflare → Add a site → `poet-esenin.ru` → тариф Free.
-2. Проверить DNS: Cloudflare подтянет записи сам, но надо убедиться, что есть:
-   `@ A 185.199.108.153` · `@ A 185.199.109.153` · `@ A 185.199.110.153` · `@ A 185.199.111.153` · `www CNAME smhotey.github.io` — все с оранжевым облаком (Proxied).
+2. Проверить DNS: `@ A 185.199.108.153` · `109.153` · `110.153` · `111.153` и `www CNAME smhotey.github.io`.
+   **Оранжевое облако (Proxied) НЕ включать** — схема проверена 22.10.2026: при проксировании у части
+   провайдеров рвутся ответы крупнее ~24 КБ, а сертификат GitHub Pages вообще не выпускается (DNS
+   указывает на Cloudflare, GitHub не может подтвердить домен). Рабочий вариант — «только DNS».
 3. Скопировать два NS, выданные Cloudflare (вида `xxx.ns.cloudflare.com`).
 4. reg.ru → управление `poet-esenin.ru` → «DNS-серверы» → изменить на выданные Cloudflare.
-   По желанию — то же самое для `poet-esenin.online`, и тогда перенаправление `.online → .ru` настраивается в Cloudflare (Redirect Rules: `poet-esenin.online/*` → `https://poet-esenin.ru/$1`, код 301), вместо сейчас нерабочих `_redirects`/`vercel.json`, которые Pages игнорирует.
+   Решение от 22.10.2026: **один домен на сайт**. `poet-esenin.online` не продлевается и не используется —
+   редирект со второго домена даёт эффект только при наличии его собственной истории и ссылок, а у нового
+   домена их нет; лишние зоны, сертификаты и продления — только расходы. Второй домен оправдан, если у него
+   есть старые входящие ссылки (тогда 301 на основной) либо для языковых версий (тогда `hreflang`, не 301).
 5. Дождаться делегирования: `nslookup poet-esenin.ru NS` должен показывать Cloudflare (обычно 5–30 минут).
-6. Cloudflare → SSL/TLS → Overview → «Full» (не Strict: у GitHub Pages сертификат для домена не выпущен). SSL/TLS → Edge Certificates → «Always Use HTTPS» включить. HSTS пока не включать.
-7. Cloudflare → Speed → Brotli: включить; Caching → Caching Level: Standard; Always Online: включить.
-8. Проверить: `https://poet-esenin.ru/` → 200; `http://poet-esenin.ru/` → 301 на https; `www` → apex.
-9. Когда GitHub выпустит свой сертификат (может занять до суток) — в GitHub Pages включить «Enforce HTTPS» и в Cloudflare перевести SSL/TLS на «Full (strict)».
+6. Сертификат: его выпускает GitHub Pages (Let's Encrypt) автоматически, как только DNS указывает на GitHub —
+   обычно минуты. Настройки SSL/TLS в Cloudflare при схеме «только DNS» не участвуют.
+7. Когда статус сертификата станет `approved`: `gh api -X PUT repos/SMHotey/esenin-dashboard/pages -F https_enforced=true`.
+8. Проверить: `https://poet-esenin.ru/` → 200 и валидный сертификат `CN=poet-esenin.ru`; `http://` → 301 на https;
+   обложки книг (`/img/books/*.webp`) приходят целиком (это и был главный симптом при проксировании).
+9. Если у провайдера всё же рвутся крупные ответы — проверить маршрут: `curl --resolve poet-esenin.ru:443:<другой IP CF>`
+   и сравнить размер; при обрыве на ~24 КБ прокси не включать.
 
 Могу сделать сам, если дадите Cloudflare API-токен (Scope: Zone:Edit, DNS:Edit) — создам зону, добавлю записи, покажу NS. Смену NS в reg.ru всё равно придётся подтвердить вручную.
 
