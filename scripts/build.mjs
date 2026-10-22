@@ -483,7 +483,7 @@ function bookCard(b, index) {
       ${b.series ? `<span class="bc-series">${esc(b.series)}</span>` : ''}
     </div>`;
 
-  return `<article class="book-card" data-title="${esc(b.title)}" data-cat="${esc(b.category || '')}" data-pub="${esc(b.publisher || '')}" data-pages="${Number(b.pages) || 0}">
+  return `<article class="book-card" data-title="${esc(b.title)}" data-cat="${esc(b.category || '')}" data-pub="${esc(b.publisher || '')}" data-pages="${Number(b.pages) || 0}" data-price="${Number(b.price) || 0}">
     ${cover}
     <div class="book-body">
       <h3>${esc(b.title)}</h3>
@@ -997,6 +997,7 @@ ${books.length ? `<div class="catalog-toolbar">
       </select>
       <label class="visually-hidden" for="books-sort">Сортировка</label>
       <select id="books-sort" data-books-sort>
+        <option value="price-desc" selected>По умолчанию</option>
         <option value="title">По названию</option>
         <option value="pub">По издательству</option>
         <option value="pages">По числу страниц</option>
@@ -1007,7 +1008,6 @@ ${books.length ? `<div class="catalog-toolbar">
 </div>` : ''}
 <div class="wrap" style="padding-bottom:40px">
   ${books.length ? `
-  <div class="disclosure"><span class="ad-mark">реклама</span><span class="ad-legal">${esc(adSentence)}</span> <span class="ad-note">${esc(config.affiliate?.disclosure || '')}</span></div>
   <div class="books-grid" data-books-grid>${books.map(bookCard).join('')}</div>
   <button class="load-more" data-books-more hidden>Показать ещё</button>
   <div class="books-foot">

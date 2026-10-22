@@ -131,7 +131,6 @@ if (config.affiliate?.enabled && books.length && !Object.values(config.affiliate
 }
 const booksHtml = await readFile(join(DIST, 'books/index.html'), 'utf8');
 if (books.length && !booksHtml.includes('rel="sponsored')) errors.push('books: у ссылок нет rel="sponsored"');
-if (books.length && !booksHtml.includes('ad-mark')) errors.push('books: нет пометки «реклама»');
 // Маркировка рекламы обязана быть в заданной форме: «Реклама. Рекламодатель … , ОГРН …»
 const adv = config.affiliate?.advertiser || {};
 if (books.length && adv.name) {

@@ -280,7 +280,7 @@
     const countEl = document.querySelector('[data-books-count]');
     const more = document.querySelector('[data-books-more]');
     const PAGE = 24;
-    const state = { cat: 'all', pub: 'all', sort: 'title', shown: PAGE };
+    const state = { cat: 'all', pub: 'all', sort: 'price-desc', shown: PAGE };
 
     // Порядок карточек в разметке — исходный (по названию), его и берём за базу сортировки.
     const base = cards.slice();
@@ -295,12 +295,18 @@
         title: (a, b) => a.dataset.title.localeCompare(b.dataset.title, 'ru'),
         pub: (a, b) => (a.dataset.pub || '').localeCompare(b.dataset.pub || '', 'ru') || a.dataset.title.localeCompare(b.dataset.title, 'ru'),
         pages: (a, b) => (+b.dataset.pages || 0) - (+a.dataset.pages || 0),
+        // Цену не показываем, но она есть в data-price — сортируем по ней.
+        'price-desc': (a, b) => (+b.dataset.price || 0) - (+a.dataset.price || 0) || a.dataset.title.localeCompare(b.dataset.title, 'ru'),
+        'price-asc': (a, b) => (+a.dataset.price || 0) - (+b.dataset.price || 0) || a.dataset.title.localeCompare(b.dataset.title, 'ru'),
       }[state.sort];
       list = list.slice().sort(by);
 
+      // Все карточки прячем, затем в отсортированном порядке переносим в конец сетки:
+      // так DOM-порядок совпадает с визуальным, а отфильтрованные остаются скрытыми.
       cards.forEach((c) => c.classList.add('hidden'));
       booksGrid.querySelectorAll('.empty').forEach((n) => n.remove());
-      list.slice(0, state.shown).forEach((c) => { c.classList.remove('hidden'); booksGrid.appendChild(c); });
+      list.forEach((c) => booksGrid.appendChild(c));
+      list.slice(0, state.shown).forEach((c) => c.classList.remove('hidden'));
       if (countEl) countEl.textContent = list.length;
       if (more) more.hidden = list.length <= state.shown;
       if (!list.length) {

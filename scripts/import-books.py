@@ -11,6 +11,7 @@
 # Запуск:  python scripts/import-books.py [--limit N] [--no-download]
 import argparse
 import hashlib
+import html
 import io
 import json
 import os
@@ -131,6 +132,23 @@ def fetch(url: str, tries: int = 3) -> bytes:
     raise RuntimeError(f"{type(last).__name__}: {last}")
 
 
+def clean_text(s: str) -> str:
+    """Названия и издательства приходят из магазина с HTML-сущностями, иногда дважды
+    экранированными («&amp;quot Спаса…»). Раскрываем и приводим кавычки к «ёлочкам»."""
+    if not s:
+        return ""
+    t = html.unescape(html.unescape(s)).replace("&quot", '"').replace("&amp;quot", '"')
+    t = re.sub(r"\s+", " ", t).strip()
+    # парные прямые кавычки → «…»
+    if t.count('"') >= 2:
+        first = t.find('"')
+        second = t.find('"', first + 1)
+        t = t[:first] + "«" + t[first + 1:second] + "»" + t[second + 1:]
+    t = re.sub(r"«\s+", "«", t)
+    t = re.sub(r"\s+»", "»", t)
+    return t
+
+
 def make_cover(image_url: str, base: str, width: int = 400) -> dict | None:
     """Скачивает обложку и кладёт рядом JPEG и WebP.
     Ширина 400 px с запасом покрывает карточку (150 px) на экранах с двойной плотностью."""
@@ -170,7 +188,7 @@ def main() -> int:
 
     books, skipped = [], []
     for i, item in enumerate(source, 1):
-        title = re.sub(r"\s+", " ", item.get("title") or "").strip()
+        title = clean_text(item.get("title") or "")
         pid = str(item.get("id") or "")
         if not title or not pid:
             skipped.append(item)
@@ -183,7 +201,7 @@ def main() -> int:
             "productId": pid,
             "title": title,
             "format": "Бумажная книга",
-            "publisher": item.get("publisher") or "",
+            "publisher": clean_text(item.get("publisher") or ""),
             "isbn": item.get("isbn") or "",
             "pages": item.get("pages") or "",
             "coverType": item.get("cover_type") or "",
@@ -207,8 +225,16 @@ def main() -> int:
             book["priceCheckedAt"] = item["price_checked"]
         book["annotation"] = annotate(title, cat, book["publisher"], book["pages"], book["coverType"], pid)
 
-        if args.no_download:
+        if args.no_download or (os.path.exists(os.path.join(COVERS, f"{base}.jpg")) and os.path.exists(os.path.join(COVERS, f"{base}.webp"))):
+            # Обложки уже скачаны — берём размеры с диска, чтобы не дёргать магазин повторно.
+            if os.path.exists(os.path.join(COVERS, f"{base}.jpg")):
+                try:
+                    with Image.open(os.path.join(COVERS, f"{base}.jpg")) as im0:
+                        book["coverWidth"], book["coverHeight"] = im0.width, im0.height
+                except Exception:
+                    pass
             books.append(book)
+            print(f"[{i}/{len(source)}] {pid} {title[:48]:<48} {cat:<22} {'кэш':>7}", flush=True)
             continue
         info = make_cover(item.get("image") or "", base)
         if info:
