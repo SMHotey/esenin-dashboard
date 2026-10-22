@@ -14,3 +14,10 @@ Thumbs.db
 
 # кэш wrangler (деплой на Cloudflare Pages)
 .wrangler/
+
+# рабочий мусор исследовательских сессий (скачанные страницы, дампы викитекста)
+.tmp_research/
+.tmp_*/
+cache_*.txt
+dossier.json
+ms_sitemap.xml
