@@ -85,10 +85,12 @@ function sectionOf(rel) {
 // Эвристика уровня. Оценка честная, но грубая: смотрим на то, что реально
 // лежит на странице (таблицы, цитаты, документы, внешние источники, объём).
 function levelOf(page) {
-  const { rel, text, ext, tables, quotes, figures, sourceBox } = page;
+  const { rel, text, ext, tables, quotes, figures, sourceBox, dossier } = page;
 
   if (rel.startsWith('works/') && !/^(works\/index|works\/az)\.html$/.test(rel)) return 'T1-текст';
   if (SERVICE.has(rel)) return 'служебная';
+  // Досье: факты и даты со ссылками на источники — это документ, а не пересказ.
+  if (dossier) return 'T1-досье';
 
   const docSignals =
     (quotes >= 2 ? 1 : 0) + (figures >= 1 ? 1 : 0) + (sourceBox && ext >= 3 ? 1 : 0);
@@ -152,6 +154,7 @@ for (const file of files) {
     figures: countOf(main, /<figure\b/gi),
     images: countOf(main, /<img\b/gi),
     sourceBox: /class="source-box"/.test(main),
+    dossier: /class="dossier"/.test(main),
     ext: ext.length,
     extHosts: [...new Set(ext.map((x) => x.host))].slice(0, 8),
   };
@@ -162,7 +165,7 @@ for (const file of files) {
 
 // ---------- сводка ----------
 
-const LEVELS = ['T1-документ', 'T2-расчёт', 'T3-синтез', 'T4-разбор', 'T5-справочник', 'T1-текст', 'служебная'];
+const LEVELS = ['T1-досье', 'T1-документ', 'T2-расчёт', 'T3-синтез', 'T4-разбор', 'T5-справочник', 'T1-текст', 'служебная'];
 
 function stats(list) {
   if (!list.length) return null;

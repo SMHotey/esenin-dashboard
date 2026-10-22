@@ -846,6 +846,18 @@ function categoryPage(key) {
 
 // Досье персоны: факты и даты со ссылками. Нумерация источников сквозная по блоку,
 // поэтому каждая строка несёт маленький номер-ссылку, а не длинный URL.
+const MONTHS_GEN = ['января', 'февраля', 'марта', 'апреля', 'мая', 'июня', 'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря'];
+const MONTHS_NOM = ['январь', 'февраль', 'март', 'апрель', 'май', 'июнь', 'июль', 'август', 'сентябрь', 'октябрь', 'ноябрь', 'декабрь'];
+// Даты в досье хранятся машинно (1915-03-09, 1922-05), а читателю нужен обычный вид.
+function fmtDossierDate(value) {
+  const s = String(value || '').trim();
+  let m = s.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if (m) return `${Number(m[3])} ${MONTHS_GEN[Number(m[2]) - 1]} ${m[1]}`;
+  m = s.match(/^(\d{4})-(\d{2})$/);
+  if (m) return `${MONTHS_NOM[Number(m[2]) - 1]} ${m[1]}`;
+  return s;
+}
+
 function dossierHtml(id) {
   const d = dossiers[id];
   if (!d) return '';
@@ -857,7 +869,7 @@ function dossierHtml(id) {
     return ` <a class="src-ref" href="${esc(url)}" rel="noopener external" target="_blank">${index.get(url)}</a>`;
   };
   const facts = (d.facts || []).map((f) => `<li>${esc(f.claim)}${ref(f.source)}</li>`).join('');
-  const rels = (d.relations || []).map((r) => `<li><b>${esc(r.date)}</b> — ${esc(r.event)}${ref(r.source)}</li>`).join('');
+  const rels = (d.relations || []).map((r) => `<li><b>${esc(fmtDossierDate(r.date))}</b> — ${esc(r.event)}${ref(r.source)}</li>`).join('');
   const unknown = (d.unknown || []).map((u) => `<li>${esc(u)}</li>`).join('');
   // порядок источников — как они встретились в тексте; затем добавляем неиспользованные
   for (const s of d.sources || []) { if (s.url && !index.has(s.url)) { order.push(s.url); index.set(s.url, order.length); } }
