@@ -11,6 +11,9 @@
 import { readFile, writeFile, mkdir, readdir } from 'node:fs/promises';
 import { join, relative, sep } from 'node:path';
 
+// Вывод часто смотрят через head — обрыв пайпа не должен считаться ошибкой.
+process.stdout.on('error', (e) => { if (e.code === 'EPIPE') process.exit(0); });
+
 const ROOT = process.cwd();
 const DIST = join(ROOT, 'dist');
 const OUT_DIR = join(ROOT, 'reports');
@@ -241,6 +244,20 @@ const candidates = content
 console.log('\nПервые кандидаты на доливку (короткие, без источника и документа):');
 for (const p of candidates.slice(0, 25)) {
   console.log(`  ${p.rel}  ${p.text} зн. — ${p.gaps.slice(0, 3).join('; ') || 'нет данных'}`);
+}
+
+// Сколько персон уже получили досье: это главный счётчик «доливки» по разделу «Люди».
+try {
+  const people = JSON.parse(await readFile(join(ROOT, 'data/people.json'), 'utf8'));
+  const dossiers = JSON.parse(await readFile(join(ROOT, 'data/dossiers.json'), 'utf8'));
+  const have = people.filter((p) => dossiers[p.id]).length;
+  const pct = people.length ? Math.round((have / people.length) * 100) : 0;
+  const noDossier = people.filter((p) => !dossiers[p.id]).map((p) => p.name);
+  summary.dossiers = { have, total: people.length, pct };
+  console.log(`\nДосье: ${have} из ${people.length} персон (${pct}%)`);
+  if (noDossier.length) console.log(`Без досье: ${noDossier.slice(0, 8).join(', ')}${noDossier.length > 8 ? ` и ещё ${noDossier.length - 8}` : ''}`);
+} catch (e) {
+  console.log(`\nДосье: данных нет (${e.code || e.message})`);
 }
 
 await mkdir(OUT_DIR, { recursive: true });
