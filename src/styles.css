@@ -845,6 +845,21 @@ select, .select {
 
 .hidden { display: none !important; }
 
+/* Досье персоны: факты, хронология, источники с номерами-ссылками */
+.dossier { margin: 8px 0 34px; }
+.dossier-h { font-size: 20px; margin: 26px 0 10px; }
+.dossier-h:first-child { margin-top: 0; }
+.dossier-list { margin: 0 0 6px; padding-left: 22px; font-size: 16px; line-height: 1.6; color: var(--ink-soft); font-family: var(--serif); }
+.dossier-list li { margin-bottom: 8px; }
+.dossier-time { list-style: none; padding-left: 0; }
+.dossier-time li { padding-left: 118px; position: relative; }
+.dossier-time li b { position: absolute; left: 0; top: 0; font-family: var(--sans); font-size: 12.5px; letter-spacing: .04em; color: var(--muted); white-space: nowrap; }
+.src-ref { font-size: 11px; vertical-align: super; line-height: 0; color: var(--accent); text-decoration: none; padding: 0 1px; }
+.src-ref:hover { text-decoration: underline; }
+.dossier-src { margin: 8px 0 0; padding-left: 20px; font-size: 13.5px; line-height: 1.6; }
+.dossier-src a { color: var(--ink-soft); }
+@media (max-width: 640px) { .dossier-time li { padding-left: 0; } .dossier-time li b { position: static; display: block; } }
+
 /* Таблицы в материалах журнала (расчёты, сравнения): читаемые в обеих темах */
 .table-wrap { overflow-x: auto; margin: 22px 0; border: 1px solid var(--line); border-radius: var(--radius); background: var(--card); }
 .table-wrap table { width: 100%; border-collapse: collapse; font-size: 14.5px; line-height: 1.5; }

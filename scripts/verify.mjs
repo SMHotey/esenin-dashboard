@@ -24,6 +24,31 @@ if (!SITE) errors.push('site.config.json: не задан siteUrl');
 if (/\.example\b|example\.(org|com)/.test(SITE)) warnings.push('siteUrl всё ещё заглушка — укажите боевой домен');
 if (config.affiliate?.enabled === false) info.push('партнёрские ссылки отключены в конфиге');
 
+// Досье персон: каждое утверждение должно нести ссылку на источник.
+// Досье без ссылок хуже, чем его отсутствие: это выглядит как проверенный факт.
+if (existsSync('data/dossiers.json')) {
+  const dossiers = await readJson('data/dossiers.json');
+  const people = existsSync('data/people.json') ? await readJson('data/people.json') : [];
+  const ids = new Set((Array.isArray(people) ? people : []).map((x) => x.id));
+  const isUrl = (u) => /^https?:\/\/[^\s]+\.[^\s]+/.test(String(u || ''));
+  for (const [id, d] of Object.entries(dossiers || {})) {
+    if (!ids.has(id)) errors.push(`досье: нет персоны с id «${id}»`);
+    for (const [i, f] of (d.facts || []).entries()) {
+      if (!String(f.claim || '').trim()) errors.push(`досье ${id}: факт ${i + 1} без текста`);
+      if (!isUrl(f.source)) errors.push(`досье ${id}: факт ${i + 1} без ссылки на источник`);
+    }
+    for (const [i, r] of (d.relations || []).entries()) {
+      if (!String(r.date || '').trim() || !String(r.event || '').trim()) errors.push(`досье ${id}: запись ${i + 1} без даты или события`);
+      if (!isUrl(r.source)) errors.push(`досье ${id}: запись ${i + 1} без ссылки на источник`);
+    }
+    for (const s of d.sources || []) {
+      if (!isUrl(s.url)) errors.push(`досье ${id}: источник «${s.label || '?'}» с битым адресом`);
+    }
+    if ((d.facts || []).length < 4) warnings.push(`досье ${id}: мало фактов (${(d.facts || []).length}) — возможно, недособрано`);
+  }
+  info.push(`досье: ${Object.keys(dossiers || {}).length} персон`);
+}
+
 async function walk(dir, acc = []) {
   for (const entry of await readdir(dir, { withFileTypes: true })) {
     const p = join(dir, entry.name);

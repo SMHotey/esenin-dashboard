@@ -78,6 +78,9 @@ const assetVersion = createHash('sha1')
 
 const works = await readJson('data/works.json', []);
 const people = await readJson('data/people.json', []);
+// Досье персон (п. 5.1–5.2 плана: документы и даты со ссылками на источник).
+// Формат: { "<id>": { facts:[{claim,source}], relations:[{date,event,source}], unknown:[], sources:[{label,url}] } }
+const dossiers = await readJson('data/dossiers.json', {});
 const timeline = await readJson('data/timeline.json', []);
 const research = await readJson('data/research.json', []);
 const sources = await readJson('data/sources.json', []);
@@ -841,8 +844,52 @@ function categoryPage(key) {
   <div class="wrap" style="padding-bottom:50px"><div class="people-grid">${list.map(personCard).join('')}</div></div>`;
 }
 
+// Досье персоны: факты и даты со ссылками. Нумерация источников сквозная по блоку,
+// поэтому каждая строка несёт маленький номер-ссылку, а не длинный URL.
+function dossierHtml(id) {
+  const d = dossiers[id];
+  if (!d) return '';
+  const order = [];
+  const index = new Map();
+  const ref = (url) => {
+    if (!url) return '';
+    if (!index.has(url)) { order.push(url); index.set(url, order.length); }
+    return ` <a class="src-ref" href="${esc(url)}" rel="noopener external" target="_blank">${index.get(url)}</a>`;
+  };
+  const facts = (d.facts || []).map((f) => `<li>${esc(f.claim)}${ref(f.source)}</li>`).join('');
+  const rels = (d.relations || []).map((r) => `<li><b>${esc(r.date)}</b> — ${esc(r.event)}${ref(r.source)}</li>`).join('');
+  const unknown = (d.unknown || []).map((u) => `<li>${esc(u)}</li>`).join('');
+  // порядок источников — как они встретились в тексте; затем добавляем неиспользованные
+  for (const s of d.sources || []) { if (s.url && !index.has(s.url)) { order.push(s.url); index.set(s.url, order.length); } }
+  const labels = new Map((d.sources || []).map((s) => [s.url, s.label]));
+  const srcList = order.map((u, i) => `<li><a href="${esc(u)}" rel="noopener external" target="_blank">${esc(labels.get(u) || u)}</a></li>`).join('');
+  if (!facts && !rels && !srcList) return '';
+  return `<div class="dossier">
+      ${facts ? `<h2 class="dossier-h">Что известно по документам</h2><ul class="dossier-list">${facts}</ul>` : ''}
+      ${rels ? `<h2 class="dossier-h">Хронология отношений</h2><ol class="dossier-list dossier-time">${rels}</ol>` : ''}
+      ${unknown ? `<h2 class="dossier-h">Чего мы не знаем</h2><ul class="dossier-list">${unknown}</ul>` : ''}
+      ${srcList ? `<div class="source-box"><b>Источники к досье.</b><ol class="dossier-src">${srcList}</ol></div>` : ''}
+    </div>`;
+}
+
+// Упоминания в корпусе считаем по точным формам имени из p.aliases, а не по первому
+// слову: иначе «Александр Никитич Есенин» совпадает с любым «Александр», а «Анна
+// Александровна» — с героиней «Анны Снегиной». Это не поиск ради ссылок: страница
+// человека должна показывать только проверяемые связи с текстами.
+const normedTexts = new Map(works.map((w) => [w, norm(w.text)]));
+function mentionsOf(p) {
+  const forms = [String(p.name || ''), ...(p.aliases || [])].map(norm).filter((s) => s.length > 3);
+  if (!forms.length) return [];
+  return works.filter((w) => {
+    const t = normedTexts.get(w);
+    return forms.some((f) => t.includes(f));
+  });
+}
+
 function personPage(p) {
-  const related = works.filter((w) => norm(w.text).includes(norm(String(p.name || '').split(' ')[0]))).slice(0, 6);
+  const all = mentionsOf(p);
+  const related = all.slice(0, 8);
+  const yearsMentioned = [...new Set(all.map((w) => w.year).filter(Boolean))].sort();
   const rel = people.filter((x) => x.category === p.category && x.id !== p.id).slice(0, 6);
   return `${crumbs([['/', 'Главная'], ['/people/', 'Люди'], [`/people/${p.category}.html`, categories[p.category] || 'Люди'], [null, p.name]])}
   <div class="wrap">
@@ -854,6 +901,7 @@ function personPage(p) {
         <p style="font-family:var(--serif);font-size:19px;color:var(--ink-soft);max-width:62ch">${esc(p.summary)}</p>
       </div>
     </div>
+    ${dossierHtml(p.id)}
     <div class="grid-2" style="padding-bottom:40px">
       <div class="panel">
         <h3>Связи</h3>
@@ -862,7 +910,10 @@ function personPage(p) {
       </div>
       <div class="panel">
         <h3>В произведениях</h3>
-        ${related.length ? `<div class="people-chips">${related.map((w) => `<a class="chip" href="${workUrl(w)}">${esc(w.title)}</a>`).join('')}</div>` : '<p style="color:var(--muted);font-size:14px">Прямых упоминаний в текстах библиотеки не найдено.</p>'}
+        ${related.length
+          ? `<p style="font-size:14px;color:var(--ink-soft);margin-bottom:12px">Упоминается в ${all.length} ${plural(all.length, ['произведении', 'произведениях', 'произведениях'])} библиотеки${yearsMentioned.length > 1 ? `, ${yearsMentioned[0]}–${yearsMentioned[yearsMentioned.length - 1]}` : yearsMentioned.length === 1 ? `, ${yearsMentioned[0]}` : ''}.</p>
+        <div class="people-chips">${related.map((w) => `<a class="chip" href="${workUrl(w)}">${esc(w.title)}</a>`).join('')}</div>`
+          : '<p style="color:var(--muted);font-size:14px">Прямых упоминаний по имени в текстах библиотеки нет: связь известна по письмам и мемуарам, но в самих произведениях имя не встречается.</p>'}
       </div>
     </div>
     <div class="source-box" style="margin-bottom:60px"><b>Источник.</b> Биографические сведения сверены с энциклопедическими и академическими изданиями; см. <a href="/sources.html">реестр источников</a>. Даты жизни уточняются по мере поступления новых данных.</div>
