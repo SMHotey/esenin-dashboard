@@ -43,11 +43,14 @@ function lines(text) {
 
 const works = JSON.parse(await readFile(join(ROOT, 'data', 'works.json'), 'utf8'));
 
-// Поэзия и проза считаются отдельно: смешивать стихи со статьями и автобиографиями
-// в частотных таблицах нельзя — разные регистры дают ложный «сдвиг словаря».
-const POETRY = new Set(['Стихотворение', 'Поэма', 'Малая поэма']);
+// Набор по умолчанию — только стихотворения: самый однородный корпус, на нём
+// и построены опубликованные цифры. Поэмы и прозу подмешиваем флагами, потому
+// что у них другая длина и другой регистр — смешение даёт ложный «сдвиг словаря».
+const GENRES = new Set(['Стихотворение']);
+if (process.argv.includes('--poems')) { GENRES.add('Поэма'); GENRES.add('Малая поэма'); }
 const WITH_ALL = process.argv.includes('--all');
-const corpus = works.filter((w) => w.text && w.year && (WITH_ALL || POETRY.has(w.genre)));
+if (WITH_ALL) for (const g of Object.keys(works.reduce((a, w) => ((a[w.genre] = 1), a), {}))) GENRES.add(g);
+const corpus = works.filter((w) => w.text && w.year && GENRES.has(w.genre));
 
 // ---------- общие счётчики ----------
 
@@ -183,7 +186,8 @@ await writeFile(join(ROOT, 'reports', 'corpus.json'), JSON.stringify(report, nul
 
 // ---------- печать ----------
 
-console.log(`Текстов: ${report.works} (${report.yearsRange.join('–')}), набор: ${WITH_ALL ? 'всё' : 'только поэзия'}`);
+const setLabel = WITH_ALL ? 'все жанры' : process.argv.includes('--poems') ? 'стихи и поэмы' : 'только стихотворения';
+console.log(`Текстов: ${report.works} (${report.yearsRange.join('–')}), набор: ${setLabel}`);
 console.log(`Жанры в наборе: ${JSON.stringify(report.genres)}`);
 console.log(`Словоупотреблений: ${report.totals.tokens}, разных словоформ: ${report.totals.uniqueWords}`);
 console.log(`Знаменательных словоформ: ${report.totals.contentUnique}, из них однократных: ${hapax} (${report.totals.hapaxShare}%)`);

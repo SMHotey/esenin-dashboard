@@ -11,6 +11,8 @@
     "build": "node scripts/build.mjs",
     "check": "node scripts/check-links.mjs",
     "sync:prices": "node scripts/sync-prices.mjs",
+    "inventory": "node scripts/inventory.mjs",
+    "analyze": "node scripts/analyze/corpus.mjs",
     "verify": "npm run build && npm run check && node scripts/verify.mjs",
     "verify:strict": "npm run build && npm run check && node scripts/verify.mjs --strict",
     "serve": "python -m http.server 4173 --directory dist",
