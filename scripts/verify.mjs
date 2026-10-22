@@ -121,6 +121,32 @@ else {
   if (!feed.includes(SITE)) errors.push('feed.xml: ссылки не на боевой домен');
 }
 
+// --- журнал (публикации) ---
+const pubDir = join('content', 'publications');
+if (existsSync(pubDir)) {
+  const today = new Date().toISOString().slice(0, 10);
+  const files = (await readdir(pubDir)).filter((f) => f.endsWith('.md'));
+  let published = 0;
+  for (const f of files) {
+    const raw = await readFile(join(pubDir, f), 'utf-8');
+    const title = raw.match(/^title:\s*"?([^"\n]+)"?\s*$/m)?.[1]?.trim();
+    const slug = raw.match(/^slug:\s*(\S+)\s*$/m)?.[1]?.trim() || f.replace(/\.md$/, '');
+    const date = raw.match(/^date:\s*(\S+)\s*$/m)?.[1]?.trim();
+    if (!title) errors.push(`публикация ${f}: нет title`);
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(date || '')) errors.push(`публикация ${f}: нет даты YYYY-MM-DD`);
+    const page = join(DIST, 'publications', `${slug}.html`);
+    const isFuture = /^\d{4}-\d{2}-\d{2}$/.test(date || '') && date > today;
+    if (!isFuture) {
+      published += 1;
+      if (!existsSync(page)) errors.push(`публикация ${f}: не выпущена, но страницы ${slug}.html нет`);
+    } else if (existsSync(page) && process.env.PUBLISH_ALL !== '1') {
+      errors.push(`публикация ${f}: будущая дата ${date}, а страница уже в dist`);
+    }
+  }
+  if (!existsSync(join(DIST, 'publications', 'index.html'))) errors.push('нет index.html журнала');
+  if (!sitemap.includes('/publications/')) errors.push('карта сайта: нет журнала');
+}
+
 // --- поиск ---
 const search = await readJson(join(DIST, 'search.json'));
 if (!Array.isArray(search) || !search.length) errors.push('search.json пуст');
