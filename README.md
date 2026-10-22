@@ -103,6 +103,8 @@ scripts/
   build.mjs          генератор сайта
   sections.mjs       разделы «Места», «Наследие», «Темы», «Словарь», «Вопросы», алфавит
   sync-prices.mjs    обновление цен книг с сайта магазина (JSON-LD Offer)
+  gen-affiliate-links.py  генерация партнёрских ссылок в кабинете (запускается внутри browser_exec)
+  import-books.py    сборка data/books.json и обложек из data/books-source.json
   check-links.mjs    проверка внутренних ссылок
   verify.mjs         прод-проверки dist/
   make-og.py         OG-картинка 1200×630 (Pillow)
