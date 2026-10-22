@@ -338,7 +338,10 @@ ${ogImage ? `<meta name="twitter:image" content="${SITE}${esc(ogImage)}">` : ''}
 <a class="skip-link" href="#main">К содержанию</a>
 <header class="site-header">
   <div class="wrap header-inner">
-    <a class="brand" href="/"><span class="brand-mark">${esc(A.lastName)}</span><span class="brand-years">${esc(A.years)}</span></a>
+    <a class="brand" href="/">
+      <span class="brand-top"><span class="brand-mark">${esc(A.lastName)}</span><span class="brand-years">${esc(A.years)}</span></span>
+      ${A.firstName && config.author?.patronymic ? `<span class="brand-sub">${esc(A.firstName)} ${esc(config.author.patronymic)}</span>` : ''}
+    </a>
     <nav class="main-nav" aria-label="Основная навигация">${navHtml}</nav>
     <div class="header-tools">
       <button class="icon-btn" data-search-open aria-label="Поиск по сайту" title="Поиск (Ctrl+K)" aria-haspopup="dialog" aria-controls="site-search">⌕</button>
