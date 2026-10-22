@@ -167,7 +167,9 @@ DEPLOY.md          деплой и продакшен-чеклист
 - уникальные `title` и `description` на каждой из 500 страниц, один `h1`, canonical;
 - JSON-LD: `Person`, `WebSite` (+ `SearchAction`), `WebPage` с `dateModified`,
   `BreadcrumbList` на всех страницах, `CreativeWork` для текстов, `ItemList`, `FAQPage`, `Place`;
-- `robots` с `max-image-preview:large`, `sitemap.xml` с `lastmod` и `priority`, `robots.txt`;
+- `robots` с `max-image-preview:large`, `sitemap.xml` с `lastmod`, `priority` и картинками
+  (`image:image` для портрета и обложек), `robots.txt`;
+- `feed.xml` — RSS-лента (последние тексты и статьи) + `<link rel="alternate">` на всех страницах;
 - `llms.txt` — карта сайта для ИИ-поиска;
 - плотная внутренняя перелинковка: главная → хабы → карточки, «Темы» на каждой странице
   произведения, «Смотрите также» в очерках, алфавитный указатель;

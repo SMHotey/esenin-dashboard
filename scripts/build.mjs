@@ -104,6 +104,15 @@ const esc = (s) => String(s ?? '')
   .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
   .replace(/"/g, '&quot;');
 
+// Обрезка по границе слова: длинные description поисковики обрезают сами, но неаккуратно.
+const shorten = (s, max = 200) => {
+  const text = String(s ?? '').replace(/\s+/g, ' ').trim();
+  if (text.length <= max) return text;
+  const cut = text.slice(0, max - 1);
+  const boundary = Math.max(cut.lastIndexOf(' '), cut.lastIndexOf(','), cut.lastIndexOf('.'));
+  return (boundary > max * 0.6 ? cut.slice(0, boundary) : cut).replace(/[,;:\s]+$/, '') + '…';
+};
+
 const plural = (n, forms) => {
   const a = Math.abs(n) % 100;
   const b = a % 10;
@@ -189,18 +198,19 @@ function analyticsHtml() {
   const ga = config.analytics?.googleAnalytics;
   let out = '';
   if (ym) {
-    out += `<!-- Yandex.Metrika counter -->
+    out += `<!-- Yandex.Metrika counter (инициализация после load: не задерживает LCP и TBT) -->
 <script type="text/javascript">
+window.addEventListener('load', function () {
     (function(m,e,t,r,i,k,a){
         m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
         m[i].l=1*new Date();
         for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
         k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)
     })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=${encodeURIComponent(ym)}', 'ym');
-
     ym(${JSON.stringify(String(ym))}, 'init', {ssr:true, webvisor:true, clickmap:true, ecommerce:"dataLayer", referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
+}, { once: true });
 </script>
-<noscript><div><img src="https://mc.yandex.ru/watch/${esc(ym)}" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+<noscript><div><img src="https://mc.yandex.ru/watch/${esc(ym)}" width="1" height="1" style="position:absolute; left:-9999px;" alt=""></div></noscript>
 <!-- /Yandex.Metrika counter -->`;
   }
   if (ga) {
@@ -214,6 +224,7 @@ function layout({ title, description, content, active = '', bodyClass = '', json
     `<a href="${href}"${active === key ? ' aria-current="page"' : ''}>${label}</a>`).join('');
 
   const fullTitle = title.includes(A.lastName) || title.includes(A.name) ? title : `${title} — ${A.name}`;
+  const descText = shorten(description, 200);
   const ogImage = config.ogImage || A.portrait;
   const ogDims = config.ogImage ? '\n<meta property="og:image:width" content="1200">\n<meta property="og:image:height" content="630">' : '';
   const twitterCard = config.ogImage ? 'summary_large_image' : 'summary';
@@ -250,7 +261,7 @@ function layout({ title, description, content, active = '', bodyClass = '', json
       '@id': '__CANONICAL__#webpage',
       url: '__CANONICAL__',
       name: fullTitle,
-      description,
+      description: descText,
       isPartOf: { '@id': `${SITE}/#website` },
       inLanguage: LANG,
       dateModified: UPDATED,
@@ -276,21 +287,24 @@ function layout({ title, description, content, active = '', bodyClass = '', json
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>${esc(fullTitle)}</title>
-<meta name="description" content="${esc(description)}">
+<meta name="description" content="${esc(descText)}">
 <meta name="robots" content="${noindex ? 'noindex, follow' : 'index, follow, max-image-preview:large, max-snippet:-1'}">
 <link rel="canonical" href="__CANONICAL__">
+<link rel="alternate" type="application/rss+xml" title="${esc(A.name)} — новые материалы" href="/feed.xml">
 ${preloadImage ? `<link rel="preload" href="${esc(preloadImage)}" as="image">` : ''}
+<link rel="dns-prefetch" href="//mc.yandex.ru">
+<link rel="preconnect" href="https://mc.yandex.ru" crossorigin>
 <link rel="stylesheet" href="/styles.css?v=${assetVersion}">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <meta property="og:type" content="${ogType}">
 <meta property="og:site_name" content="${esc(A.name)}">
 <meta property="og:locale" content="${esc(config.locale || 'ru_RU')}">
 <meta property="og:title" content="${esc(fullTitle)}">
-<meta property="og:description" content="${esc(description)}">
+<meta property="og:description" content="${esc(descText)}">
 <meta property="og:url" content="__CANONICAL__">
 ${ogImage ? `<meta property="og:image" content="${SITE}${esc(ogImage)}">${ogDims}\n<meta name="twitter:card" content="${twitterCard}">` : '<meta name="twitter:card" content="summary">'}
 <meta name="twitter:title" content="${esc(fullTitle)}">
-<meta name="twitter:description" content="${esc(description)}">
+<meta name="twitter:description" content="${esc(descText)}">
 ${ogImage ? `<meta name="twitter:image" content="${SITE}${esc(ogImage)}">` : ''}
 <meta name="theme-color" content="#141311">
 <script type="application/ld+json">${JSON.stringify({ '@context': 'https://schema.org', '@graph': graph })}</script>
@@ -820,6 +834,12 @@ function personPage(p) {
 const lifeIndex = `
 ${crumbs([['/', 'Главная'], [null, 'Жизнь']])}
 <div class="wrap page-head"><h1>Жизнь</h1><p>Учёба, интересы и хронология — три способа увидеть биографию не только как список дат.</p></div>
+<div class="wrap" style="padding-bottom:26px">
+  <div class="panel">
+    <p>Первый разрез — учёба: школа, училище, университет и то, что каждый из этих этапов дал будущему автору. Второй — увлечения: круг чтения, литературные объединения, поездки и люди, с которыми складывался взгляд на мир. Третий — хронология: даты от рождения до последних месяцев, сверенные по академическим изданиям и документам.</p>
+    <p>Разделы не спорят между собой: биография не сводится ни к перечню дат, ни к списку встреч. Здесь видно, как одно связано с другим, — и у каждого факта указан источник, чтобы его можно было проверить.</p>
+  </div>
+</div>
 <div class="wrap" style="padding-bottom:50px">
   <div class="tiles">
     <a class="tile" href="/life/studies.html"><span class="tile-kicker">01</span><span class="tile-title">Учёба</span><span class="tile-count">${studies.length ? 'Школа, училище, университет' : 'Раздел готовится'}</span></a>
@@ -1306,7 +1326,15 @@ for (let i = 0; i < works.length; i++) {
     ...(w.sourceUrl ? { isBasedOn: w.sourceUrl } : {}),
   };
   await writePage(`works/${w.slug}.html`, layout({
-    title: w.title,
+    title: (() => {
+      // Полное название + жанр + «текст» — ради CTR в выдаче, но не длиннее 88 символов.
+      const suffix = ` — ${String(w.genre || 'текст').toLowerCase()} ${A.genitive}: текст`;
+      const quoted = `«${w.title}»`;
+      if ((quoted + suffix).length <= 88) return quoted + suffix;
+      const plain = `${w.title} — ${A.name}`;
+      if (plain.length <= 88) return plain;
+      return `${w.title.slice(0, Math.max(40, 88 - A.name.length - 4)).trim()}… — ${A.name}`;
+    })(),
     description: `«${w.title}» — ${String(w.genre || '').toLowerCase()} ${A.genitive}${w.year ? ', ' + w.year : ''}. ${firstLine(w.text).slice(0, 120)} Читайте полный текст с указанием источника.`,
     content: workPage(w, i), active: 'works', ogType: 'article', jsonLd: ld,
     breadcrumb: [['/', 'Главная'], ['/works/', 'Библиотека'], [null, w.title]],
@@ -1465,11 +1493,61 @@ const urls = [
 
 const uniqueUrls = [...new Set(urls)];
 
+// Картинки для карты сайта: портрет на главной, обложки — в каталоге книг.
+const pageImages = new Map();
+if (A.portrait) pageImages.set('/', [{ loc: SITE + A.portrait, title: A.portraitAlt || A.name }]);
+if (books.length) {
+  pageImages.set('/books/', books.filter((b) => b.cover)
+    .map((b) => ({ loc: SITE + b.cover, title: b.coverAlt || `${b.title} — обложка` })));
+}
+
 const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${uniqueUrls.map((u) => `  <url><loc>${encodeURI(SITE + u)}</loc><lastmod>${UPDATED}</lastmod><priority>${u === '/' ? '1.0' : u.endsWith('/') ? '0.8' : '0.6'}</priority></url>`).join('\n')}
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+${uniqueUrls.map((u) => {
+  const imageXml = (pageImages.get(u) || [])
+    .map((i) => `<image:image><image:loc>${encodeURI(i.loc)}</image:loc><image:title>${esc(i.title)}</image:title></image:image>`)
+    .join('');
+  return `  <url><loc>${encodeURI(SITE + u)}</loc><lastmod>${UPDATED}</lastmod><priority>${u === '/' ? '1.0' : u.endsWith('/') ? '0.8' : '0.6'}</priority>${imageXml}</url>`;
+}).join('\n')}
 </urlset>`;
 await writeFile(join(DIST, 'sitemap.xml'), sitemap, 'utf8');
+
+// ---------- RSS-лента ----------
+const feedDate = (iso) => new Date(`${iso}T09:00:00+03:00`).toUTCString();
+const feedItems = [
+  ...works.filter((w) => w.text).slice(0, 60).map((w) => ({
+    title: w.year ? `${w.title} (${w.year})` : w.title,
+    link: SITE + workUrl(w),
+    pub: `${w.year || 1900}-01-01`,
+    desc: [String(w.genre || '').toLowerCase(), w.year ? String(w.year) : '', firstLine(w.text)].filter(Boolean).join(' · ').slice(0, 200),
+  })),
+  ...articles.filter((a) => a.title).map((a) => ({
+    title: a.title,
+    link: `${SITE}/biography/${a.slug}.html`,
+    pub: UPDATED,
+    desc: String(a.excerpt || '').slice(0, 200),
+  })),
+].sort((a, b) => b.pub.localeCompare(a.pub)).slice(0, 60);
+
+const feed = `<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+<channel>
+  <title>${esc(A.name)} — новые материалы</title>
+  <link>${SITE}/</link>
+  <description>${esc(shorten(A.footerAbout || A.lead, 200))}</description>
+  <language>${esc(LANG)}</language>
+  <lastBuildDate>${new Date().toUTCString()}</lastBuildDate>
+  <atom:link href="${SITE}/feed.xml" rel="self" type="application/rss+xml"/>
+${feedItems.map((i) => `  <item>
+    <title>${esc(i.title)}</title>
+    <link>${esc(i.link)}</link>
+    <guid isPermaLink="true">${esc(i.link)}</guid>
+    <pubDate>${feedDate(i.pub)}</pubDate>
+    <description>${esc(i.desc)}</description>
+  </item>`).join('\n')}
+</channel>
+</rss>`;
+await writeFile(join(DIST, 'feed.xml'), feed, 'utf8');
 await writeFile(join(DIST, 'robots.txt'), `User-agent: *\nAllow: /\nDisallow: /404.html\nSitemap: ${SITE}/sitemap.xml\n`, 'utf8');
 
 // llms.txt — краткая карта сайта для ИИ-поиска (AEO/GEO)

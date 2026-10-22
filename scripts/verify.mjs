@@ -108,6 +108,18 @@ for (const loc of locs) {
 if (locs.some((l) => l.includes('/404.html'))) errors.push('sitemap: 404 не должен индексироваться');
 if (!locs.some((l) => l.endsWith('/books/'))) errors.push('sitemap: нет раздела книг');
 if (locs.length > htmlFiles.length) errors.push('sitemap: URL больше, чем HTML-страниц');
+if (!sitemap.includes('image:image')) warnings.push('sitemap: нет картинок (портрет и обложки)');
+
+// --- RSS-лента ---
+const feedPath = join(DIST, 'feed.xml');
+if (!existsSync(feedPath)) errors.push('нет feed.xml');
+else {
+  const feed = await readFile(feedPath, 'utf8');
+  const items = [...feed.matchAll(/<item>/g)].length;
+  if (!items) errors.push('feed.xml: нет ни одного item');
+  if (!feed.includes(`${SITE}/feed.xml`)) errors.push('feed.xml: нет atom:link на себя');
+  if (!feed.includes(SITE)) errors.push('feed.xml: ссылки не на боевой домен');
+}
 
 // --- поиск ---
 const search = await readJson(join(DIST, 'search.json'));
