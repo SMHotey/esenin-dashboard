@@ -29,6 +29,10 @@ PHOTOS = {
     "anna-izryadnova": "Анна_Романовна_Изряднова_и_Сергей_Есенин.jpg",
     "anna-sardanovskaya": "Бальзамова,_Сардановская.jpg",
     "maria-balzamova": "Бальзамова,_Сардановская.jpg",
+    "alexander-nikitich": "Alexander Nikitich Yesenin 1912.jpg",
+    "tatyana-fyodorovna": "Tatiana Fyodorovna Yesenina.jpg",
+    "ekaterina": "Сергей Есенин с сёстрами Катей и Шурой.jpg",
+    "alexandra": "Есенина Александра с родителями (сестра поэта Есенина Сергея А.). Россия. 1912г scale 1200.jpg",
 }
 
 # подписи под фото: кто на снимке и что это
@@ -38,6 +42,10 @@ CAPTIONS = {
     "maria-balzamova": "Мария Бальзамова и Анна Сардановская",
     "augusta-miklashevskaya": "Августа Миклашевская в спектакле «Король-Арлекин»",
     "mariengof": "Анатолий Мариенгоф в своём кабинете",
+    "alexander-nikitich": "Александр Никитич Есенин, 1912 год",
+    "tatyana-fyodorovna": "Татьяна Фёдоровна Есенина, урождённая Титова",
+    "ekaterina": "Сергей Есенин с сёстрами Катей и Шурой. Москва",
+    "alexandra": "Александра Есенина с родителями, 1912 год",
 }
 
 
@@ -98,7 +106,8 @@ def main():
         if not os.path.exists(jpg):
             raw = fetch(info["url"], timeout=120)
             im = Image.open(io.BytesIO(raw)).convert("RGB")
-            im = im.resize((WIDTH, round(im.height * WIDTH / im.width)), Image.LANCZOS)
+            if im.width > WIDTH:  # мелкие снимки не растягиваем — только уменьшаем
+                im = im.resize((WIDTH, round(im.height * WIDTH / im.width)), Image.LANCZOS)
             im.save(jpg, "JPEG", quality=84, optimize=True, progressive=True)
             im.save(webp, "WEBP", quality=78, method=6)
         with Image.open(jpg) as im0:

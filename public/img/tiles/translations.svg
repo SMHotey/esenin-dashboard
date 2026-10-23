@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 220" fill="none" stroke="#c9a86a" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+<circle cx="216" cy="106" r="56"/>
+<ellipse cx="216" cy="106" rx="24" ry="56" opacity=".6"/>
+<ellipse cx="216" cy="106" rx="44" ry="56" opacity=".35"/>
+<path d="M162 88h108M158 106h116M162 124h108" opacity=".45"/>
+<path d="M186 168a30 30 0 0 1 60 0" opacity=".0"/>
+<path d="M216 50v112" opacity=".25"/>
+<text x="104" y="150" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="46" fill="#c9a86a" stroke="none" opacity=".75">А</text>
+<text x="316" y="150" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="46" fill="#c9a86a" stroke="none" opacity=".75">A</text>
+</svg>

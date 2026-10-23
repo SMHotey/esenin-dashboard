@@ -9,7 +9,15 @@
       "Александр Никитич"
     ],
     "summary": "Крестьянин села Константиново. С двенадцати лет работал в Москве, сначала помощником в мясной лавке, позже мясником; семью содержал из города. По воспоминаниям родных, был человеком суровым и немногословным.",
-    "source": "ru.wikipedia"
+    "source": "ru.wikipedia",
+    "photoW": 326,
+    "photoH": 290,
+    "photo": "/img/people/alexander-nikitich.jpg",
+    "photoWebp": "/img/people/alexander-nikitich.webp",
+    "photoAlt": "Александр Никитич Есенин, 1912 год",
+    "photoCredit": "Unknown author",
+    "photoLicense": "Public domain",
+    "photoSource": "https://commons.wikimedia.org/wiki/File:Alexander_Nikitich_Yesenin_1912.jpg"
   },
   {
     "id": "tatyana-fyodorovna",
@@ -22,7 +30,15 @@
       "Татьяна Федоровна"
     ],
     "summary": "Дочь зажиточных крестьян Фёдора Андреевича и Наталии Евтихиевны Титовых. После размолвки с мужем уходила из семьи, жила заработками в Москве. С её образом традиционно связывают «Письмо матери».",
-    "source": "ru.wikipedia"
+    "source": "ru.wikipedia",
+    "photoW": 172,
+    "photoH": 223,
+    "photo": "/img/people/tatyana-fyodorovna.jpg",
+    "photoWebp": "/img/people/tatyana-fyodorovna.webp",
+    "photoAlt": "Татьяна Фёдоровна Есенина, урождённая Титова",
+    "photoCredit": "Wikimedia Commons",
+    "photoLicense": "Public domain",
+    "photoSource": "https://commons.wikimedia.org/wiki/File:Tatiana_Fyodorovna_Yesenina.jpg"
   },
   {
     "id": "pyotr",
@@ -71,7 +87,15 @@
       "Екатерина Александровна"
     ],
     "summary": "Одна из двух сестёр, с которыми поэт поддерживал близкие отношения. Оставила воспоминания о жизни семьи в Константинове, ставшие важным источником для биографов.",
-    "source": "ru.wikipedia"
+    "source": "ru.wikipedia",
+    "photoW": 400,
+    "photoH": 557,
+    "photo": "/img/people/ekaterina.jpg",
+    "photoWebp": "/img/people/ekaterina.webp",
+    "photoAlt": "Сергей Есенин с сёстрами Катей и Шурой. Москва",
+    "photoCredit": "С. Чижов",
+    "photoLicense": "Public domain",
+    "photoSource": "https://commons.wikimedia.org/wiki/File:%D0%A1%D0%B5%D1%80%D0%B3%D0%B5%D0%B9_%D0%95%D1%81%D0%B5%D0%BD%D0%B8%D0%BD_%D1%81_%D1%81%D1%91%D1%81%D1%82%D1%80%D0%B0%D0%BC%D0%B8_%D0%9A%D0%B0%D1%82%D0%B5%D0%B9_%D0%B8_%D0%A8%D1%83%D1%80%D0%BE%D0%B9.jpg"
   },
   {
     "id": "alexandra",
@@ -83,7 +107,15 @@
       "Александра Александровна"
     ],
     "summary": "Младшая сестра поэта. После его смерти участвовала в сохранении и изучении наследия Есенина.",
-    "source": "ru.wikipedia"
+    "source": "ru.wikipedia",
+    "photoW": 400,
+    "photoH": 530,
+    "photo": "/img/people/alexandra.jpg",
+    "photoWebp": "/img/people/alexandra.webp",
+    "photoAlt": "Александра Есенина с родителями, 1912 год",
+    "photoCredit": "Unknown author",
+    "photoLicense": "Public domain",
+    "photoSource": "https://commons.wikimedia.org/wiki/File:%D0%95%D1%81%D0%B5%D0%BD%D0%B8%D0%BD%D0%B0_%D0%90%D0%BB%D0%B5%D0%BA%D1%81%D0%B0%D0%BD%D0%B4%D1%80%D0%B0_%D1%81_%D1%80%D0%BE%D0%B4%D0%B8%D1%82%D0%B5%D0%BB%D1%8F%D0%BC%D0%B8_(%D1%81%D0%B5%D1%81%D1%82%D1%80%D0%B0_%D0%BF%D0%BE%D1%8D%D1%82%D0%B0_%D0%95%D1%81%D0%B5%D0%BD%D0%B8%D0%BD%D0%B0_%D0%A1%D0%B5%D1%80%D0%B3%D0%B5%D1%8F_%D0%90.)._%D0%A0%D0%BE%D1%81%D1%81%D0%B8%D1%8F._1912%D0%B3_scale_1200.jpg"
   },
   {
     "id": "alexei",
@@ -488,12 +520,13 @@
   },
   {
     "id": "panfilov",
-    "name": "Г. А. Панфилов",
-    "years": "?–?",
+    "name": "Григорий Андреевич Панфилов",
+    "years": "1895—1914",
     "category": "friends",
     "role": "Друг юности",
     "aliases": [
       "Панфилов",
+      "Григорий Панфилов",
       "Г. А. Панфилов"
     ],
     "summary": "Адресат ранних писем Есенина 1911–1914 годов. Переписка с ним — один из немногих прямых источников о московском периоде жизни поэта до славы.",

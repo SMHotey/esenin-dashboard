@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 220" fill="none" stroke="#c9a86a" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+<rect x="104" y="94" width="116" height="72" rx="4"/>
+<path d="M104 96l58 40 58-40"/>
+<path d="M104 164l44-36M220 164l-44-36" opacity=".45"/>
+<circle cx="278" cy="104" r="40" opacity=".5"/>
+<text x="278" y="126" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="56" fill="#c9a86a" stroke="none" opacity=".9">?</text>
+</svg>

@@ -432,7 +432,9 @@ function workCard(w) {
 
 function personCard(p) {
   return `<a class="person-card${p.photo ? ' has-photo' : ''}" href="/people/${p.id}.html">
-    ${p.photo ? `<img class="person-card-photo" src="${esc(p.photo)}" alt="${esc(p.photoAlt || p.name)}" width="${Number(p.photoW) || 400}" height="${Number(p.photoH) || 500}" loading="lazy" decoding="async">` : ''}
+    ${p.photo
+      ? `<picture class="person-card-photo-wrap">${p.photoWebp ? `<source srcset="${esc(p.photoWebp)}" type="image/webp">` : ''}<img class="person-card-photo" src="${esc(p.photo)}" alt="${esc(p.photoAlt || p.name)}" width="${Number(p.photoW) || 400}" height="${Number(p.photoH) || 500}" loading="lazy" decoding="async"></picture>`
+      : `<span class="person-card-mono" aria-hidden="true">${esc(String(p.name || '?').trim()[0] || '?')}</span>`}
     <span class="role">${esc(p.role)}</span>
     <span class="name">${esc(p.name)}</span>
     <span class="years">${esc(p.years)}</span>
@@ -590,6 +592,22 @@ const tiles = [
   ['/about.html', '12', 'О проекте', 'Принципы, права, обновления'],
 ];
 
+// рисунок на фоне плитки: scripts/make-tile-art.py → public/img/tiles/<ключ>.svg
+const TILE_ART = {
+  '/biography/': 'biography', '/people/': 'people', '/life/': 'life', '/works/': 'library',
+  '/places/': 'places', '/legacy/': 'legacy', '/topics/': 'topics', '/books/': 'books',
+  '/research/': 'research', '/glossary.html': 'glossary', '/faq.html': 'faq', '/about.html': 'about',
+  '/legacy/gibel.html': 'gibel', '/legacy/memory.html': 'memory', '/legacy/music.html': 'music',
+  '/legacy/cinema.html': 'cinema', '/legacy/translations.html': 'translations',
+  '/life/studies.html': 'studies', '/life/passions.html': 'passions', '/life/timeline.html': 'timeline',
+};
+
+function tile(href, title, count) {
+  const art = TILE_ART[href];
+  const style = art ? ` style="--tile-art:url('/img/tiles/${art}.svg')"` : '';
+  return `<a class="tile" href="${href}"${style}><span class="tile-title">${esc(title)}</span><span class="tile-count">${esc(count)}</span></a>`;
+}
+
 const home = `
 <section class="hero">
   <div class="wrap hero-grid${A.portrait ? '' : ' no-portrait'}">
@@ -626,7 +644,7 @@ const home = `
       <div><h2>Разделы проекта</h2><p>Всё содержание собрано в связанные разделы — от биографии и людей до библиотеки и книжных изданий.</p></div>
     </div>
     <div class="tiles">
-      ${tiles.map(([href, , title, count]) => `<a class="tile" href="${href}"><span class="tile-title">${esc(title)}</span><span class="tile-count">${esc(count)}</span></a>`).join('')}
+      ${tiles.map(([href, , title, count]) => tile(href, title, count)).join('')}
     </div>
   </div>
 </section>
@@ -675,11 +693,12 @@ const home = `
       <a class="section-link" href="/legacy/">Весь раздел →</a>
     </div>
     <div class="tiles">
-      <a class="tile" href="/legacy/gibel.html"><span class="tile-title">Гибель поэта</span><span class="tile-count">Документы и версии</span></a>
-      <a class="tile" href="/legacy/memory.html"><span class="tile-title">Музеи и памятники</span><span class="tile-count">${museums.length + monuments.length} адресов</span></a>
-      <a class="tile" href="/legacy/music.html"><span class="tile-title">Есенин в музыке</span><span class="tile-count">Песни и романсы</span></a>
-      <a class="tile" href="/legacy/cinema.html"><span class="tile-title">Есенин на экране</span><span class="tile-count">Фильмы и сериалы</span></a>
-      <a class="tile" href="/legacy/translations.html"><span class="tile-title">Переводы</span><span class="tile-count">${(languages.languages || []).length} языков</span></a>
+      ${[['/legacy/gibel.html', 'Гибель поэта', 'Документы и версии'],
+        ['/legacy/memory.html', 'Музеи и памятники', `${museums.length + monuments.length} адресов`],
+        ['/legacy/music.html', 'Есенин в музыке', 'Песни и романсы'],
+        ['/legacy/cinema.html', 'Есенин на экране', 'Фильмы и сериалы'],
+        ['/legacy/translations.html', 'Переводы', `${(languages.languages || []).length} языков`]]
+        .map(([href, title, count]) => tile(href, title, count)).join('')}
     </div>
   </div>
 </section>
@@ -867,13 +886,8 @@ function dossierHtml(id) {
   if (!d) return '';
   const order = [];
   const index = new Map();
-  const ref = (url) => {
-    if (!url) return '';
-    if (!index.has(url)) { order.push(url); index.set(url, order.length); }
-    return ` <a class="src-ref" href="${esc(url)}" rel="noopener external" target="_blank">${index.get(url)}</a>`;
-  };
-  const facts = (d.facts || []).map((f) => `<li>${esc(f.claim)}${ref(f.source)}</li>`).join('');
-  const rels = (d.relations || []).map((r) => `<li><b>${esc(fmtDossierDate(r.date))}</b> — ${esc(r.event)}${ref(r.source)}</li>`).join('');
+  const facts = (d.facts || []).map((f) => `<li>${esc(f.claim)}</li>`).join('');
+  const rels = (d.relations || []).map((r) => `<li><b>${esc(fmtDossierDate(r.date))}</b> — ${esc(r.event)}</li>`).join('');
   const unknown = (d.unknown || []).map((u) => `<li>${esc(u)}</li>`).join('');
   // порядок источников — как они встретились в тексте; затем добавляем неиспользованные
   for (const s of d.sources || []) { if (s.url && !index.has(s.url)) { order.push(s.url); index.set(s.url, order.length); } }
@@ -884,7 +898,7 @@ function dossierHtml(id) {
       ${facts ? `<h2 class="dossier-h">Что известно по документам</h2><ul class="dossier-list">${facts}</ul>` : ''}
       ${rels ? `<h2 class="dossier-h">Хронология отношений</h2><ol class="dossier-list dossier-time">${rels}</ol>` : ''}
       ${unknown ? `<h2 class="dossier-h">Чего мы не знаем</h2><ul class="dossier-list">${unknown}</ul>` : ''}
-      ${srcList ? `<div class="source-box"><b>Источники к досье.</b><ol class="dossier-src">${srcList}</ol></div>` : ''}
+      ${srcList ? `<div class="source-box"><b>Источники к досье.</b><ul class="dossier-src">${srcList}</ul></div>` : ''}
     </div>`;
 }
 
@@ -951,10 +965,11 @@ ${crumbs([['/', 'Главная'], [null, 'Жизнь']])}
 </div>
 <div class="wrap" style="padding-bottom:50px">
   <div class="tiles">
-    <a class="tile" href="/life/studies.html"><span class="tile-title">Учёба</span><span class="tile-count">${studies.length ? 'Школа, училище, университет' : 'Раздел готовится'}</span></a>
-    <a class="tile" href="/life/passions.html"><span class="tile-title">Увлечения</span><span class="tile-count">${passions.length ? 'Темы, круги, путешествия' : 'Раздел готовится'}</span></a>
-    <a class="tile" href="/life/timeline.html"><span class="tile-title">Хронология</span><span class="tile-count">${timeline.length} ${plural(timeline.length, ['событие', 'события', 'событий'])}</span></a>
-    <a class="tile" href="/biography/"><span class="tile-title">Биография</span><span class="tile-count">Обзор и статьи</span></a>
+    ${[['/life/studies.html', 'Учёба', studies.length ? 'Школа, училище, университет' : 'Раздел готовится'],
+      ['/life/passions.html', 'Увлечения', passions.length ? 'Темы, круги, путешествия' : 'Раздел готовится'],
+      ['/life/timeline.html', 'Хронология', `${timeline.length} ${plural(timeline.length, ['событие', 'события', 'событий'])}`],
+      ['/biography/', 'Биография', 'Обзор и статьи']]
+      .map(([href, title, count]) => tile(href, title, count)).join('')}
   </div>
 </div>`;
 
@@ -1190,21 +1205,36 @@ ${crumbs([['/', 'Главная'], [null, 'Источники']])}
   <div class="note">Дата обращения ко всем источникам — ${esc(UPDATED_LABEL)}. Ссылки проверяются ежемесячно; устаревшие адреса фиксируются в журнале обновлений.</div>
 </div>`;
 
+const VERSION_STATUS = {
+  'дискуссионно': 'open',
+  'спорно': 'open',
+  'уточняется': 'open',
+  'уточнено': 'done',
+  'документировано': 'done',
+  'версия': 'draft',
+};
+
 const versionsPage = `
 ${crumbs([['/', 'Главная'], [null, 'Версии']])}
 <div class="wrap page-head">
   <h1>Версии и спорные вопросы</h1>
-  <p>Здесь собраны сюжеты, по которым в литературе нет единого мнения. Мы не выдаём версии за установленные факты.</p>
+  <p>Собранные в одном месте сюжеты, по которым в биографии и творчестве ${esc(A.genitive)} нет единого мнения или мнение менялось со временем. Каждая тема начинается с того, что установлено документами, — и только затем перечисляет версии. Мы не выдаём версии за факты и не выбрасываем спорное: расхождение источников тоже часть биографии.</p>
 </div>
 <div class="wrap" style="padding-bottom:50px">
-  ${versions.map((v) => `<details class="version-card">
+  <div class="version-legend">
+    <span class="vl-item"><i class="vl-dot" data-t="open"></i>дискуссионно — спор продолжается</span>
+    <span class="vl-item"><i class="vl-dot" data-t="draft"></i>версия — есть гипотеза, нет подтверждения</span>
+    <span class="vl-item"><i class="vl-dot" data-t="done"></i>уточнено — версия снята исследованиями</span>
+  </div>
+  ${versions.map((v) => `<details class="version-card" data-status="${esc(VERSION_STATUS[v.status] || 'open')}">
     <summary>${esc(v.question)}<span class="status">${esc(v.status)}</span></summary>
     <div class="version-body">
-      <ul>${v.versions.map((x) => `<li>${esc(x)}</li>`).join('')}</ul>
-      <p style="font-size:13px;color:var(--muted)">${esc(v.note)}</p>
+      ${v.lead ? `<p class="version-lead">${esc(v.lead)}</p>` : ''}
+      <ul class="version-list">${v.versions.map((x) => `<li>${esc(x)}</li>`).join('')}</ul>
+      ${v.note ? `<p class="version-note">${esc(v.note)}</p>` : ''}
     </div>
   </details>`).join('')}
-  <div class="note">Если вы заметили неточность — опишите её и укажите источник. Каждая правка проходит проверку и фиксируется в журнале обновлений.</div>
+  <div class="note">Если вы заметили неточность — опишите её и укажите источник. Каждая правка проходит проверку и фиксируется в журнале обновлений. Полный список источников проекта — в разделе <a href="/sources.html">«Источники»</a>.</div>
 </div>`;
 
 const aboutPage = `

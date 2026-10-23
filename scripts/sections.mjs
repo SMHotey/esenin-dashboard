@@ -140,7 +140,8 @@ export function buildSectionPages(ctx) {
 </div>
 <div class="wrap" style="padding-bottom:30px">
   <div class="works-grid">
-    ${places.map((p) => `<a class="work-card" href="/places/${p.id}.html">
+    ${places.map((p) => `<a class="work-card place-card" href="/places/${p.id}.html">
+      ${p.photo ? `<img class="place-card-photo" src="${esc(p.photoWebp || p.photo)}" alt="${esc(p.photoAlt || p.title)}" loading="lazy" decoding="async">` : ''}
       <span class="genre">${esc(p.kicker)}</span>
       <span class="title">${esc(p.title)}</span>
       <span class="year">${esc(p.years || '')}</span>
@@ -166,6 +167,7 @@ export function buildSectionPages(ctx) {
       `${crumbs([['/', 'Главная'], ['/places/', 'Места'], [null, p.title]])}
 <div class="wrap article-layout">
   <article>
+    ${p.photo ? `<figure class="place-hero"><picture>${p.photoWebp ? `<source srcset="${esc(p.photoWebp)}" type="image/webp">` : ''}<img src="${esc(p.photo)}" alt="${esc(p.photoAlt || p.title)}" loading="lazy" decoding="async"></picture><figcaption>${esc(p.photoAlt || p.title)} · Фото: <a href="${esc(p.photoSource)}" rel="noopener external" target="_blank">Викисклад</a>${p.photoCredit ? ` · ${esc(p.photoCredit)}` : ''}${p.photoLicense ? ` · ${esc(p.photoLicense)}` : ''}</figcaption></figure>` : ''}
     <div class="meta-line"><span class="badge">${esc(p.kicker)}</span><span>${esc(p.region)}</span>${p.years ? `<span>${esc(p.years)}</span>` : ''}</div>
     <h1 style="font-size:clamp(30px,4.6vw,44px);margin-bottom:10px">${esc(p.title)}</h1>
     <p style="font-family:var(--serif);font-size:19px;color:var(--ink-soft);max-width:64ch">${esc(p.lead)}</p>
@@ -203,11 +205,11 @@ export function buildSectionPages(ctx) {
   // ---------- наследие ----------
 
   const legacyCards = [
-    ['/legacy/gibel.html', '01', 'Гибель поэта', 'Обстоятельства, документы, версии'],
-    ['/legacy/memory.html', '02', 'Музеи и памятники', `${museums.length + monuments.length} адресов памяти`],
-    ['/legacy/music.html', '03', 'Есенин в музыке', 'Песни, романсы, Свиридов'],
-    ['/legacy/cinema.html', '04', 'Есенин на экране', 'Фильмы и сериалы'],
-    ['/legacy/translations.html', '05', 'Переводы', 'Как поэт говорит на других языках'],
+    ['/legacy/gibel.html', 'gibel', 'Гибель поэта', 'Обстоятельства, документы, версии'],
+    ['/legacy/memory.html', 'memory', 'Музеи и памятники', `${museums.length + monuments.length} адресов памяти`],
+    ['/legacy/music.html', 'music', 'Есенин в музыке', 'Песни, романсы, Свиридов'],
+    ['/legacy/cinema.html', 'cinema', 'Есенин на экране', 'Фильмы и сериалы'],
+    ['/legacy/translations.html', 'translations', 'Переводы', 'Как поэт говорит на других языках'],
   ];
 
   page('legacy/index.html', 'Наследие Есенина',
@@ -219,7 +221,7 @@ export function buildSectionPages(ctx) {
 </div>
 <div class="wrap" style="padding-bottom:30px">
   <div class="tiles">
-    ${legacyCards.map(([href, k, t, c]) => `<a class="tile" href="${href}"><span class="tile-title">${esc(t)}</span><span class="tile-count">${esc(c)}</span></a>`).join('')}
+    ${legacyCards.map(([href, art, t, c]) => `<a class="tile" href="${href}" style="--tile-art:url('/img/tiles/${art}.svg')"><span class="tile-title">${esc(t)}</span><span class="tile-count">${esc(c)}</span></a>`).join('')}
   </div>
 </div>
 <div class="wrap" style="padding-bottom:50px">

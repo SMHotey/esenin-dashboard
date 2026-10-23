@@ -13,6 +13,10 @@
   --card: #fbf8f1;
   --shadow: 0 12px 30px rgba(60, 45, 25, .08);
   --radius: 14px;
+  /* шторка под текстом плитки: цвет карточки слева, прозрачность справа */
+  --tile-scrim-1: rgba(251, 248, 241, .97);
+  --tile-scrim-2: rgba(251, 248, 241, .74);
+  --tile-scrim-3: rgba(251, 248, 241, .22);
   --serif: Georgia, "Times New Roman", "PT Serif", serif;
   --sans: "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   --mono: "Cascadia Mono", Consolas, monospace;
@@ -51,6 +55,9 @@
   --green: #8fb39b;
   --card: #1d1a16;
   --shadow: 0 14px 34px rgba(0, 0, 0, .45);
+  --tile-scrim-1: rgba(29, 26, 22, .97);
+  --tile-scrim-2: rgba(29, 26, 22, .72);
+  --tile-scrim-3: rgba(29, 26, 22, .18);
 
   --art-line: #d3bb98;
   --art-wood: #6d4e34;
@@ -275,12 +282,34 @@ p { margin: 0 0 1em; }
 
 .tiles { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
 .tile {
+  position: relative; isolation: isolate; overflow: hidden;
   display: flex; flex-direction: column; gap: 8px;
   padding: 20px; border: 1px solid var(--line); border-radius: var(--radius);
   background: var(--card); color: var(--ink); min-height: 132px;
   transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease;
 }
+/* рисунок в правой части плитки: --tile-art задаётся в разметке */
+.tile::before {
+  content: ""; position: absolute; inset: 0; z-index: -2;
+  background-image: var(--tile-art, none);
+  background-repeat: no-repeat;
+  background-position: right -14px center;
+  background-size: auto 128%;
+  opacity: .62;
+  transition: opacity .25s ease, transform .35s ease;
+}
+/* шторка: слева фон карточки, к правому краю плавно открывает рисунок */
+.tile::after {
+  content: ""; position: absolute; inset: 0; z-index: -1;
+  background: linear-gradient(96deg,
+    var(--tile-scrim-1) 0%, var(--tile-scrim-1) 26%,
+    var(--tile-scrim-2) 55%, var(--tile-scrim-3) 100%);
+}
+.tile > * { position: relative; }
 .tile:hover { transform: translateY(-3px); border-color: var(--accent-soft); box-shadow: var(--shadow); text-decoration: none; }
+.tile:hover::before { opacity: .78; transform: translateX(-6px); }
+[data-theme="light"] .tile::before { opacity: .78; }
+[data-theme="light"] .tile:hover::before { opacity: .95; }
 .tile-title { font-family: var(--serif); font-size: 21px; line-height: 1.2; }
 .tile-count { margin-top: auto; font-size: 12px; color: var(--muted); }
 
@@ -869,13 +898,12 @@ select, .select {
 .dossier-list { margin: 0 0 6px; padding-left: 22px; font-size: 16px; line-height: 1.6; color: var(--ink-soft); font-family: var(--serif); }
 .dossier-list li { margin-bottom: 8px; }
 .dossier-time { list-style: none; padding-left: 0; }
-.dossier-time li { padding-left: 118px; position: relative; }
-.dossier-time li b { position: absolute; left: 0; top: 0; font-family: var(--sans); font-size: 12.5px; letter-spacing: .04em; color: var(--muted); white-space: nowrap; }
-.src-ref { font-size: 11px; vertical-align: super; line-height: 0; color: var(--accent); text-decoration: none; padding: 0 1px; }
-.src-ref:hover { text-decoration: underline; }
-.dossier-src { margin: 8px 0 0; padding-left: 20px; font-size: 13.5px; line-height: 1.6; }
+.dossier-time li { display: grid; grid-template-columns: minmax(96px, max-content) 1fr; column-gap: 14px; align-items: baseline; }
+.dossier-time li b { font-family: var(--sans); font-size: 12.5px; letter-spacing: .04em; color: var(--muted); }
+.dossier-src { margin: 8px 0 0; padding-left: 18px; font-size: 13.5px; line-height: 1.6; }
+.dossier-src li::marker { color: var(--muted); }
 .dossier-src a { color: var(--ink-soft); }
-@media (max-width: 640px) { .dossier-time li { padding-left: 0; } .dossier-time li b { position: static; display: block; } }
+@media (max-width: 640px) { .dossier-time li { grid-template-columns: 1fr; } .dossier-time li b { margin-bottom: 2px; } }
 
 /* Таблицы в материалах журнала (расчёты, сравнения): читаемые в обеих темах */
 .table-wrap { overflow-x: auto; margin: 22px 0; border: 1px solid var(--line); border-radius: var(--radius); background: var(--card); }
@@ -891,3 +919,59 @@ select, .select {
   .table-wrap th, .table-wrap td { border-bottom: 1px solid #ccc; }
 }
 
+
+/* ---------- Места: фото в карточках и в шапке страницы ---------- */
+.place-card { padding: 0; overflow: hidden; }
+.place-card-photo {
+  display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover;
+  border-bottom: 1px solid var(--line);
+  filter: grayscale(.5) contrast(1.02);
+  transition: filter .25s ease, transform .35s ease;
+}
+[data-theme="light"] .place-card-photo { filter: grayscale(.3); }
+.place-card:hover .place-card-photo { filter: grayscale(0); transform: scale(1.02); }
+.place-card .genre, .place-card .title, .place-card .year, .place-card .preview { padding: 0 18px; }
+.place-card .genre { display: block; margin-top: 14px; }
+.place-card .title { display: block; margin: 4px 0 2px; }
+.place-card .preview { display: -webkit-box; padding-bottom: 16px; }
+
+.place-hero { margin: 0 0 22px; }
+.place-hero img {
+  display: block; width: 100%; height: auto; border-radius: 10px;
+  border: 1px solid var(--line); background: var(--paper-2);
+}
+.place-hero figcaption { margin-top: 8px; font-size: 12px; line-height: 1.45; color: var(--muted); }
+.place-hero figcaption a { color: var(--muted); }
+
+/* ---------- Версии и спорные вопросы ---------- */
+.version-legend {
+  display: flex; flex-wrap: wrap; gap: 10px 22px; margin: -10px 0 20px;
+  font-size: 13px; color: var(--muted);
+}
+.vl-item { display: inline-flex; align-items: center; gap: 8px; }
+.vl-dot { width: 9px; height: 9px; border-radius: 50%; flex: none; }
+.vl-dot[data-t="open"] { background: var(--accent); }
+.vl-dot[data-t="draft"] { background: var(--gold); }
+.vl-dot[data-t="done"] { background: var(--success, #5a9367); }
+
+.version-lead {
+  font-family: var(--serif); font-size: 16.5px; line-height: 1.6;
+  color: var(--ink-soft); margin: 0 0 14px;
+  padding-left: 14px; border-left: 2px solid var(--gold);
+}
+.version-lead::first-letter { font-weight: 600; }
+.version-list { margin: 0 0 14px; padding-left: 20px; font-size: 15px; line-height: 1.65; }
+.version-list li { margin-bottom: 10px; }
+.version-list li::marker { color: var(--gold); }
+.version-note {
+  font-size: 13.5px; line-height: 1.55; color: var(--muted);
+  margin: 0 0 18px; padding: 12px 14px;
+  background: var(--paper-2); border-radius: 8px;
+}
+.version-card summary .status::before {
+  content: ""; display: inline-block; width: 8px; height: 8px; border-radius: 50%;
+  margin-right: 7px; vertical-align: 1px;
+}
+.version-card[data-status="open"] summary .status::before { background: var(--accent); }
+.version-card[data-status="draft"] summary .status::before { background: var(--gold); }
+.version-card[data-status="done"] summary .status::before { background: var(--success, #5a9367); }
