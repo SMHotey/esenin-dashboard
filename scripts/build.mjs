@@ -3,6 +3,7 @@ import { existsSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { createHash } from 'node:crypto';
 import { buildSectionPages } from './sections.mjs';
+import { genreArt, musicArt, filmArt, researchArt, personArt } from './art.mjs';
 
 const ROOT = process.cwd();
 const DIST = join(ROOT, 'dist');
@@ -243,13 +244,13 @@ window.addEventListener('load', function () {
   return out;
 }
 
-function layout({ title, description, content, active = '', bodyClass = '', jsonLd = [], noindex = false, ogType = 'website', preloadImage = '', breadcrumb = [] }) {
+function layout({ title, description, content, active = '', bodyClass = '', jsonLd = [], noindex = false, ogType = 'website', preloadImage = '', breadcrumb = [], image = '' }) {
   const navHtml = nav.map(([href, label, key]) =>
     `<a href="${href}"${active === key ? ' aria-current="page"' : ''}>${label}</a>`).join('');
 
   const fullTitle = title.includes(A.lastName) || title.includes(A.name) ? title : `${title} — ${A.name}`;
   const descText = shorten(description, 200);
-  const ogImage = config.ogImage || A.portrait;
+  const ogImage = image || config.ogImage || A.portrait;
   const ogDims = config.ogImage ? '\n<meta property="og:image:width" content="1200">\n<meta property="og:image:height" content="630">' : '';
   const twitterCard = config.ogImage ? 'summary_large_image' : 'summary';
   const graph = [
@@ -422,7 +423,7 @@ function firstLine(text) {
 }
 
 function workCard(w) {
-  return `<a class="work-card" href="${workUrl(w)}">
+  return `<a class="work-card has-art" href="${workUrl(w)}" style="--card-art:url('${genreArt(w.genre)}')">
     <span class="genre">${esc(w.genre)}</span>
     <span class="title">${esc(w.title)}</span>
     <span class="year">${w.year ? esc(w.year) : 'дата не установлена'}</span>
@@ -431,10 +432,10 @@ function workCard(w) {
 }
 
 function personCard(p) {
-  return `<a class="person-card${p.photo ? ' has-photo' : ''}" href="/people/${p.id}.html">
+  return `<a class="person-card${p.photo ? ' has-photo' : ' has-art'}" href="/people/${p.id}.html">
     ${p.photo
       ? `<picture class="person-card-photo-wrap">${p.photoWebp ? `<source srcset="${esc(p.photoWebp)}" type="image/webp">` : ''}<img class="person-card-photo" src="${esc(p.photo)}" alt="${esc(p.photoAlt || p.name)}" width="${Number(p.photoW) || 400}" height="${Number(p.photoH) || 500}" loading="lazy" decoding="async"></picture>`
-      : `<span class="person-card-mono" aria-hidden="true">${esc(String(p.name || '?').trim()[0] || '?')}</span>`}
+      : `<span class="person-card-art" style="--art:url('${personArt(p)}')" aria-hidden="true"><span>${esc(String(p.name || '?').trim()[0] || '?')}</span></span>`}
     <span class="role">${esc(p.role)}</span>
     <span class="name">${esc(p.name)}</span>
     <span class="years">${esc(p.years)}</span>
@@ -445,6 +446,18 @@ function personCard(p) {
 function crumbs(items) {
   return `<nav class="crumbs wrap" aria-label="Хлебные крошки">${items.map(([href, label], i) =>
     `${i ? '<span>→</span>' : ''}${href ? `<a href="${href}">${esc(label)}</a>` : esc(label)}`).join('')}</nav>`;
+}
+
+// Крупное изображение в начале статьи или очерка. Подпись обязательна: если у снимка
+// есть автор и лицензия, они печатаются рядом со ссылкой на файл.
+function leadFigure(item, className = 'lead-figure') {
+  if (!item || !item.image) return '';
+  const caption = item.imageCaption || item.imageAlt || '';
+  const credit = [item.imageCredit, item.imageLicense].filter(Boolean).filter((c) => c !== 'Викисклад').join(' · ');
+  return `<figure class="${className}${item.imageShape === 'portrait' ? ' is-portrait' : ''}">
+    <img src="${esc(item.image)}" alt="${esc(item.imageAlt || caption)}"${item.imageW ? ` width="${Number(item.imageW)}"` : ''}${item.imageH ? ` height="${Number(item.imageH)}"` : ''} loading="lazy" decoding="async">
+    ${caption || credit ? `<figcaption>${esc(caption)}${credit ? ` · ${esc(credit)}` : ''}${item.imageSource ? ` · <a href="${esc(item.imageSource)}" rel="noopener external" target="_blank">Викисклад</a>` : ''}</figcaption>` : ''}
+  </figure>`;
 }
 
 function affiliateUrl(url, store) {
@@ -806,7 +819,8 @@ ${crumbs([['/', 'Главная'], [null, 'Биография']])}
 </div>
 <div class="wrap" style="padding-bottom:50px">
   ${articles.length ? `<div class="works-grid">
-    ${articles.map((a) => `<a class="work-card" href="/biography/${a.slug}.html">
+    ${articles.map((a) => `<a class="work-card${a.image ? ' has-photo' : ''}" href="/biography/${a.slug}.html">
+      ${a.image ? `<img class="work-card-thumb" src="${esc(a.image)}" alt="${esc(a.imageAlt || a.title)}" loading="lazy" decoding="async">` : ''}
       <span class="genre">${a.kind === 'overview' ? 'Обзор' : 'Период'}</span>
       <span class="title">${esc(a.title)}</span>
       <span class="preview">${esc(a.excerpt)}</span>
@@ -820,6 +834,7 @@ function articlePage(a) {
     <article>
       <h1 style="font-size:clamp(32px,5vw,48px);margin-bottom:14px">${esc(a.title)}</h1>
       <div class="meta-line"><span class="badge">${a.kind === 'overview' ? 'обзор' : 'статья о жизни'}</span><span>Обновлено ${esc(UPDATED_LABEL)}</span></div>
+      ${leadFigure(a)}
       <div class="prose">${a.html}</div>
       <div class="source-box"><b>Источники и аппарат.</b> Полный перечень — в разделе <a href="/sources.html">«Источники»</a>. Оценки и версии, по которым в литературе нет согласия, разобраны в разделе <a href="/versions.html">«Версии»</a>.</div>
     </article>
@@ -926,7 +941,7 @@ function personPage(p) {
     <div class="person-hero">
       ${p.photo
         ? `<figure class="person-photo"><img src="${esc(p.photo)}" alt="${esc(p.photoAlt || p.name)}" width="${Number(p.photoW) || 400}" height="${Number(p.photoH) || 500}" loading="lazy" decoding="async"><figcaption>${p.photoSource ? `<a href="${esc(p.photoSource)}" rel="noopener external" target="_blank">Викисклад</a>` : 'Викисклад'}${p.photoCredit && !/unknown/i.test(p.photoCredit) ? ` · ${esc(p.photoCredit)}` : ''}${p.photoLicense ? ` · ${esc(p.photoLicense)}` : ''}</figcaption></figure>`
-        : `<div class="person-mono" aria-hidden="true">${esc(String(p.name || '?')[0])}</div>`}
+        : `<figure class="person-photo person-photo-art"><span class="person-art" style="--art:url('${personArt(p)}')" aria-hidden="true"><span>${esc(String(p.name || '?')[0])}</span></span><figcaption>Портрет не сохранился в свободных источниках — карточка с гравированным медальоном.</figcaption></figure>`}
       <div>
         <div class="meta-line"><span class="badge">${esc(p.role)}</span><span>${esc(p.years)}</span></div>
         <h1 style="font-size:clamp(30px,4.5vw,44px)">${esc(p.name)}</h1>
@@ -1001,7 +1016,9 @@ ${crumbs([['/', 'Главная'], ['/life/', 'Жизнь'], [null, 'Хроно�
 <div class="wrap page-head"><h1>Хронология</h1><p>${timeline.length} ${plural(timeline.length, ['событие', 'события', 'событий'])} — от рождения до последних лет.</p></div>
 <div class="wrap" style="padding-bottom:60px">
   <ul class="timeline-mini" style="background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px 24px">
-    ${timeline.map((e) => `<li><span class="year">${esc(e.display)}</span><span class="what"><b>${esc(e.title)}</b><small>${esc(e.text)}</small></span></li>`).join('')}
+    ${timeline.map((e) => `<li class="tl-item${e.photo ? ' has-photo' : ''}">
+      ${e.photo ? `<img class="tl-thumb" src="${esc(e.photo)}" alt="${esc(e.photoAlt || e.title)}" width="56" height="56" loading="lazy" decoding="async">` : ''}
+      <span class="year">${esc(e.display)}</span><span class="what"><b>${esc(e.title)}</b><small>${esc(e.text)}</small></span></li>`).join('')}
   </ul>
 </div>`;
 
@@ -1050,7 +1067,7 @@ ${crumbs([['/', 'Главная'], [null, 'Библиотека']])}
 <div class="wrap">
   <div class="results-line"><span>Найдено: <b data-result-count>${works.length}</b></span><span>${TEXTS_PD ? 'Полные тексты с указанием источника' : 'Метаданные и ссылки на издания'}</span></div>
   <div class="catalog-grid" data-catalog>
-    ${works.map((w) => `<a class="catalog-card" href="${workUrl(w)}" data-title="${esc(w.title)}" data-genre="${esc(w.genre)}" data-decade="${w.year ? Math.floor(w.year / 10) * 10 : ''}" data-year="${w.year || ''}" data-chars="${w.chars || 0}" data-first="${esc(firstLine(w.text))}">
+    ${works.map((w) => `<a class="catalog-card has-art" href="${workUrl(w)}" style="--card-art:url('${genreArt(w.genre)}')" data-title="${esc(w.title)}" data-genre="${esc(w.genre)}" data-decade="${w.year ? Math.floor(w.year / 10) * 10 : ''}" data-year="${w.year || ''}" data-chars="${w.chars || 0}" data-first="${esc(firstLine(w.text))}">
       <span class="t">${esc(w.title)}</span>
       <span class="f">${esc(firstLine(w.text))}</span>
       <span class="m">${w.year ? w.year : '—'} · ${esc(w.genre)}</span>
@@ -1172,7 +1189,7 @@ ${crumbs([['/', 'Главная'], [null, 'Научные работы']])}
   <div class="note">Раздел задуман как отправная точка для исследования. Аннотации кратко описывают тему работы и не заменяют чтение источника.</div>
   <div class="research-list">
     ${research.slice().sort((a, b) => b.year - a.year).map((r) => `<article class="research-item">
-      <div class="research-year">${r.year}</div>
+      <div class="research-year"><span class="ri-art" style="--art:url('${researchArt(r.type)}')" aria-hidden="true"></span>${r.year}</div>
       <div>
         <h3>${esc(r.title)}</h3>
         <div class="authors">${esc((r.authors || []).join(', '))}</div>
@@ -1394,13 +1411,15 @@ await writePage('biography/index.html', layout({
 for (const a of articles) {
   await writePage(`biography/${a.slug}.html`, layout({
     title: a.title, description: a.excerpt || '', content: articlePage(a), active: 'biography', ogType: 'article',
+    image: a.image || '',
     breadcrumb: [['/', 'Главная'], ['/biography/', 'Биография'], [null, a.title]],
   }));
 }
 
 // ---------- Журнал: индекс и страницы публикаций ----------
 function pubCard(p) {
-  return `<a class="work-card" href="/publications/${p.slug}.html">
+  return `<a class="work-card${p.image ? ' has-photo' : ''}" href="/publications/${p.slug}.html">
+    ${p.image ? `<img class="work-card-thumb" src="${esc(p.image)}" alt="${esc(p.imageAlt || p.title)}" loading="lazy" decoding="async">` : ''}
     <span class="genre">${esc(p.category || 'Публикация')} · ${esc(p.date.split('-').reverse().join('.'))}</span>
     <span class="title">${esc(p.title)}</span>
     <span class="preview">${esc(p.excerpt || '')}</span>
@@ -1418,6 +1437,7 @@ function pubPage(p) {
     <article>
       <h1 style="font-size:clamp(32px,5vw,48px);margin-bottom:14px">${esc(p.title)}</h1>
       <div class="meta-line"><span class="badge">${esc(p.category || 'Публикация')}</span><span>Опубликовано ${esc(dateLabel)}</span></div>
+      ${leadFigure(p)}
       <div class="prose">${p.html}</div>
       <div class="source-box"><b>Источники.</b> ${esc(p.sources || 'Даты, имена и обстоятельства сверены с академическими изданиями; перечень — в разделе «Источники».')} <a href="/sources.html">Смотреть «Источники»</a>.</div>
     </article>
@@ -1455,6 +1475,7 @@ for (const p of publications) {
     content: pubPage(p),
     active: 'publications',
     ogType: 'article',
+    image: p.image || '',
     jsonLd: {
       '@type': 'Article',
       headline: p.title,

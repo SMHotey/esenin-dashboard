@@ -3,6 +3,8 @@
 // Все тексты написаны для проекта; факты и общедоступные сведения — без заимствованных
 // фрагментов чужих статей.
 
+import { musicArt, filmArt } from './art.mjs';
+
 export function buildSectionPages(ctx) {
   const {
     A, SITE, LANG, UPDATED, UPDATED_LABEL, esc, plural, norm, crumbs, workUrl,
@@ -21,6 +23,14 @@ export function buildSectionPages(ctx) {
   };
 
   const findWork = (q) => works.find((w) => norm(w.title).startsWith(norm(q))) || works.find((w) => norm(w.title).includes(norm(q)));
+
+  // Крупное фото места для страниц «Наследия»: берём готовый снимок из data/places.json,
+  // чтобы не дублировать файлы и атрибуцию.
+  const placeFigure = (id) => {
+    const p = places.find((x) => x.id === id);
+    if (!p || !p.photo) return '';
+    return `<figure class="lead-figure"><picture>${p.photoWebp ? `<source srcset="${esc(p.photoWebp)}" type="image/webp">` : ''}<img src="${esc(p.photo)}" alt="${esc(p.photoAlt || p.title)}" loading="lazy" decoding="async"></picture><figcaption>${esc(p.photoAlt || p.title)} · Фото: <a href="${esc(p.photoSource)}" rel="noopener external" target="_blank">Викисклад</a>${p.photoCredit ? ` · ${esc(p.photoCredit)}` : ''}${p.photoLicense ? ` · ${esc(p.photoLicense)}` : ''}</figcaption></figure>`;
+  };
   const workChips = (titles = []) => {
     const items = titles.map(findWork).filter(Boolean);
     if (!items.length) return '';
@@ -65,7 +75,8 @@ export function buildSectionPages(ctx) {
 </div>
 <div class="wrap" style="padding-bottom:50px">
   <div class="works-grid">
-    ${topics.map((t) => `<a class="work-card" href="/topics/${t.id}.html">
+    ${topics.map((t) => `<a class="work-card topic-card${t.photo ? ' has-photo' : ''}" href="/topics/${t.id}.html">
+      ${t.photo ? `<img class="work-card-thumb" src="${esc(t.photoWebp || t.photo)}" alt="${esc(t.photoAlt || t.title)}" loading="lazy" decoding="async">` : ''}
       <span class="genre">${esc(t.kicker || 'Подборка')}</span>
       <span class="title">${esc(t.title)}</span>
       <span class="year">${(topicWorks.get(t.id) || []).length} ${plural((topicWorks.get(t.id) || []).length, ['текст', 'текста', 'текстов'])}</span>
@@ -92,6 +103,7 @@ export function buildSectionPages(ctx) {
   <article>
     <h1 style="font-size:clamp(30px,4.6vw,44px);margin-bottom:12px">${esc(t.title)}</h1>
     <div class="meta-line"><span class="badge">подборка</span><span>${list.length} ${plural(list.length, ['текст', 'текста', 'текстов'])}</span><span>Обновлено ${esc(UPDATED_LABEL)}</span></div>
+    ${t.photo ? `<figure class="lead-figure"><picture>${t.photoWebp ? `<source srcset="${esc(t.photoWebp)}" type="image/webp">` : ''}<img src="${esc(t.photo)}" alt="${esc(t.photoAlt || t.title)}" loading="lazy" decoding="async"></picture><figcaption>${esc(t.photoAlt || t.title)}${t.photoCredit ? ` · ${esc(t.photoCredit)}` : ''}${t.photoLicense ? ` · ${esc(t.photoLicense)}` : ''}${t.photoSource ? ` · <a href="${esc(t.photoSource)}" rel="noopener external" target="_blank">Викисклад</a>` : ''}</figcaption></figure>` : ''}
     <p style="font-family:var(--serif);font-size:19px;color:var(--ink-soft);max-width:64ch">${esc(t.lead)}</p>
     <div class="prose">
       ${(t.intro || []).map((p) => `<p>${esc(p)}</p>`).join('')}
@@ -237,6 +249,7 @@ export function buildSectionPages(ctx) {
   <article>
     <h1 style="font-size:clamp(30px,4.6vw,44px);margin-bottom:12px">Гибель поэта</h1>
     <div class="meta-line"><span class="badge">1925</span><span>Ленинград</span><span>Обновлено ${esc(UPDATED_LABEL)}</span></div>
+    ${placeFigure('peterburg')}
     <p style="font-family:var(--serif);font-size:19px;color:var(--ink-soft);max-width:64ch">${esc(death.lead)}</p>
     <dl class="fact-list" style="margin:20px 0 26px">
       ${(death.facts || []).map((f) => `<div><dt>${esc(f.label)}</dt><dd>${esc(f.value)}</dd></div>`).join('')}
@@ -278,20 +291,28 @@ export function buildSectionPages(ctx) {
 </div>
 <div class="wrap" style="padding-bottom:40px">
   <h2 style="font-size:26px;margin-bottom:14px">Музеи</h2>
-  ${museums.map((m) => `<div class="panel" style="margin-bottom:14px">
-    <div class="meta-line"><span class="badge">${esc(m.place)}</span>${m.founded ? `<span>${esc(m.founded)}</span>` : ''}</div>
-    <h3 style="font-size:22px">${esc(m.name)}</h3>
-    ${m.address ? `<p style="font-size:13px;color:var(--muted);margin:0 0 8px">${esc(m.address)}</p>` : ''}
-    <p style="color:var(--ink-soft);max-width:72ch">${esc(m.about)}</p>
-    <div class="tag-row">${(m.what || []).map((x) => `<span class="tag">${esc(x)}</span>`).join('')}</div>
-    ${m.note ? `<p style="font-size:13px;color:var(--muted);margin:10px 0 0">${esc(m.note)}</p>` : ''}
+  ${museums.map((m) => `<div class="panel place-panel">
+    ${m.photo ? `<picture class="panel-photo">${m.photoWebp ? `<source srcset="${esc(m.photoWebp)}" type="image/webp">` : ''}<img src="${esc(m.photo)}" alt="${esc(m.photoAlt || m.name)}" loading="lazy" decoding="async"></picture>` : ''}
+    <div>
+      <div class="meta-line"><span class="badge">${esc(m.place)}</span>${m.founded ? `<span>${esc(m.founded)}</span>` : ''}</div>
+      <h3 style="font-size:22px">${esc(m.name)}</h3>
+      ${m.address ? `<p style="font-size:13px;color:var(--muted);margin:0 0 8px">${esc(m.address)}</p>` : ''}
+      <p style="color:var(--ink-soft);max-width:72ch">${esc(m.about)}</p>
+      <div class="tag-row">${(m.what || []).map((x) => `<span class="tag">${esc(x)}</span>`).join('')}</div>
+      ${m.note ? `<p style="font-size:13px;color:var(--muted);margin:10px 0 0">${esc(m.note)}</p>` : ''}
+      ${m.photo ? `<p class="photo-credit">Фото: ${esc(m.photoCredit || 'Wikimedia Commons')}${m.photoLicense ? ` · ${esc(m.photoLicense)}` : ''}${m.photoSource ? ` · <a href="${esc(m.photoSource)}" rel="noopener external" target="_blank">Викисклад</a>` : ''}</p>` : ''}
+    </div>
   </div>`).join('')}
   <h2 style="font-size:26px;margin:34px 0 14px">Памятники и могила</h2>
-  ${monuments.map((m) => `<div class="panel" style="margin-bottom:14px">
-    <div class="meta-line"><span class="badge">${esc(m.place)}</span>${m.year ? `<span>${esc(m.year)}</span>` : ''}</div>
-    <h3 style="font-size:22px">${esc(m.name)}</h3>
-    <p style="color:var(--ink-soft);max-width:72ch">${esc(m.about)}</p>
-    ${m.note ? `<p style="font-size:13px;color:var(--muted);margin:0">${esc(m.note)}</p>` : ''}
+  ${monuments.map((m) => `<div class="panel place-panel">
+    ${m.photo ? `<picture class="panel-photo">${m.photoWebp ? `<source srcset="${esc(m.photoWebp)}" type="image/webp">` : ''}<img src="${esc(m.photo)}" alt="${esc(m.photoAlt || m.name)}" loading="lazy" decoding="async"></picture>` : ''}
+    <div>
+      <div class="meta-line"><span class="badge">${esc(m.place)}</span>${m.year ? `<span>${esc(m.year)}</span>` : ''}</div>
+      <h3 style="font-size:22px">${esc(m.name)}</h3>
+      <p style="color:var(--ink-soft);max-width:72ch">${esc(m.about)}</p>
+      ${m.note ? `<p style="font-size:13px;color:var(--muted);margin:0">${esc(m.note)}</p>` : ''}
+      ${m.photo ? `<p class="photo-credit">Фото: ${esc(m.photoCredit || 'Wikimedia Commons')}${m.photoLicense ? ` · ${esc(m.photoLicense)}` : ''}${m.photoSource ? ` · <a href="${esc(m.photoSource)}" rel="noopener external" target="_blank">Викисклад</a>` : ''}</p>` : ''}
+    </div>
   </div>`).join('')}
   <div class="prose" style="margin-top:30px">
     <h2>Как память становится инфраструктурой</h2>
@@ -315,7 +336,7 @@ export function buildSectionPages(ctx) {
     <div class="prose">${(music.intro || []).map((p) => `<p>${esc(p)}</p>`).join('')}</div>
     <div class="research-list" style="margin-top:26px">
       ${(music.items || []).map((m) => `<article class="research-item">
-        <div class="research-year">${esc(m.year || '')}</div>
+        <div class="research-year"><span class="ri-art" style="--art:url('${musicArt(m.kind)}')" aria-hidden="true"></span>${esc(m.year || '')}</div>
         <div>
           <h3>${esc(m.title)}</h3>
           <div class="authors">${esc(m.kind || '')}${m.work ? ` · стихи: «${esc(m.work)}»` : ''}</div>
@@ -355,7 +376,7 @@ export function buildSectionPages(ctx) {
     <div class="prose">${(films.intro || []).map((p) => `<p>${esc(p)}</p>`).join('')}</div>
     <div class="research-list" style="margin-top:26px">
       ${(films.items || []).map((f) => `<article class="research-item">
-        <div class="research-year">${esc(f.year || '')}</div>
+        <div class="research-year"><span class="ri-art" style="--art:url('${filmArt(f.kind)}')" aria-hidden="true"></span>${esc(f.year || '')}</div>
         <div>
           <h3>${esc(f.title)}</h3>
           <div class="authors">${esc(f.kind || '')}${f.authors ? ' · ' + esc(f.authors) : ''}</div>

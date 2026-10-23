@@ -6,6 +6,15 @@ category: Интересно знать
 kind: publication
 excerpt: "От 900 до 1500 текстов в разных списках: как считать наследие поэта, что считать произведением и почему список не закрыт."
 sources: "Сравнение данных по ПСС в 7 т. и открытым библиографическим описаниям."
+image: "/img/era/yesenin-portrait.jpg"
+imageAlt: "Портрет Сергея Есенина с автографом"
+imageCaption: "Портрет Есенина с автографом на паспарту"
+imageCredit: "Викисклад"
+imageLicense: "Public domain"
+imageSource: "https://commons.wikimedia.org/wiki/File:%D0%95%D1%81%D0%B5%D0%BD%D0%B8%D0%BD_%D0%BF%D0%BE%D1%80%D1%82%D1%80%D0%B5%D1%82_(cropped).jpg"
+imageW: "606"
+imageH: "900"
+imageShape: "portrait"
 ---
 
 В разных источниках число произведений Есенина указывается по-разному: от примерно 900 до 1500 наименований. Разница не в ошибках, а в методе подсчёта.

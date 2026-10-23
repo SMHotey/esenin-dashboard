@@ -975,3 +975,131 @@ select, .select {
 .version-card[data-status="open"] summary .status::before { background: var(--accent); }
 .version-card[data-status="draft"] summary .status::before { background: var(--gold); }
 .version-card[data-status="done"] summary .status::before { background: var(--success, #5a9367); }
+
+/* ---------- изображения в карточках и статьях ----------
+   Принцип: фотография — часть карточки, а не фон под текстом. Там, где снимка нет
+   (произведения, типы музыки, кино, наука), работает гравированный водо­яный знак
+   из public/img/genre и public/img/art. */
+
+/* карточка произведения / подборки / статьи: рисунок по жанру или типу */
+.work-card.has-art { position: relative; isolation: isolate; overflow: hidden; }
+.work-card.has-art::before {
+  content: ""; position: absolute; inset: 0; z-index: -1;
+  background-image: var(--card-art, none);
+  background-repeat: no-repeat;
+  background-position: right -30px bottom -12px;
+  background-size: auto 112%;
+  opacity: .17;
+  transition: opacity .25s ease, transform .4s ease;
+  pointer-events: none;
+}
+.work-card.has-art:hover::before { opacity: .3; transform: translateX(-6px); }
+[data-theme="light"] .work-card.has-art::before { opacity: .2; }
+[data-theme="light"] .work-card.has-art:hover::before { opacity: .34; }
+.work-card > * { position: relative; }
+
+/* обложка-миниатюра у карточек статей, публикаций и подборок */
+.work-card-thumb {
+  width: calc(100% + 36px); margin: -18px -18px 8px; height: 148px;
+  object-fit: cover; object-position: center 22%;
+  border-bottom: 1px solid var(--line);
+  filter: grayscale(.55) contrast(1.02);
+}
+[data-theme="light"] .work-card-thumb { filter: none; }
+.topic-card .work-card-thumb { object-position: center 40%; }
+
+/* медальон для персон без портрета: рисунок категории + инициал */
+.person-card-art, .person-art {
+  position: relative; display: grid; place-items: center;
+  border: 1px solid var(--line); border-radius: 50%;
+  background: var(--paper-2) var(--art, none) center / 78% no-repeat;
+}
+.person-card-art { width: 64px; height: 64px; margin-bottom: 6px; }
+.person-card-art span {
+  position: absolute; right: -2px; bottom: -2px;
+  width: 20px; height: 20px; border-radius: 50%;
+  background: var(--card); border: 1px solid var(--line);
+  display: grid; place-items: center;
+  font-family: var(--serif); font-size: 11px; color: var(--gold); line-height: 1;
+}
+.person-art { width: 200px; height: 200px; }
+.person-art span {
+  font-family: var(--serif); font-size: 34px; color: var(--gold); opacity: .55;
+  text-shadow: 0 0 12px var(--paper-2);
+}
+.person-photo-art figcaption { font-size: 12px; }
+
+/* крупное изображение в начале статьи, очерка, подборки */
+.lead-figure { margin: 6px 0 26px; width: fit-content; max-width: 100%; }
+.lead-figure img {
+  display: block; width: auto; height: auto;
+  max-width: 100%; max-height: 560px;
+  border: 1px solid var(--line); border-radius: 12px;
+  filter: grayscale(.5) contrast(1.02);
+}
+/* Портретный снимок не растягиваем на всю колонку: он встаёт слева, текст обтекает. */
+.lead-figure.is-portrait { float: left; width: min(290px, 42%); margin: 6px 26px 14px 0; }
+.lead-figure.is-portrait img { max-height: none; }
+.prose::after { content: ""; display: block; clear: both; }
+[data-theme="light"] .lead-figure img { filter: none; }
+.lead-figure figcaption {
+  margin-top: 8px; font-size: 12px; line-height: 1.5; color: var(--muted);
+}
+.lead-figure figcaption a { color: var(--muted); }
+
+/* музеи и памятники: фото слева, текст справа */
+.place-panel { display: grid; grid-template-columns: 200px 1fr; gap: 20px; margin-bottom: 14px; }
+.panel-photo { margin: 0; }
+.panel-photo img {
+  width: 100%; height: 148px; object-fit: cover; border-radius: 10px;
+  border: 1px solid var(--line); background: var(--paper-2);
+  filter: grayscale(.5) contrast(1.02);
+}
+[data-theme="light"] .panel-photo img { filter: none; }
+.photo-credit { margin: 10px 0 0; font-size: 11.5px; color: var(--muted); }
+.photo-credit a { color: var(--muted); }
+
+/* наука, музыка, кино: гравированная иконка типа работы */
+.research-year { position: relative; }
+.ri-art {
+  display: block; width: 44px; height: 44px; margin-bottom: 8px;
+  border: 1px solid var(--line); border-radius: 10px;
+  background: var(--paper-2) var(--art, none) center / 82% no-repeat;
+}
+
+/* хронология: круглая миниатюра слева от даты */
+.timeline-mini li.has-photo { grid-template-columns: 44px 96px 1fr; align-items: start; }
+.timeline-mini .tl-thumb {
+  width: 44px; height: 44px; border-radius: 50%; object-fit: cover;
+  border: 1px solid var(--line); filter: grayscale(.7) contrast(1.03);
+}
+[data-theme="light"] .timeline-mini .tl-thumb { filter: none; }
+
+@media (max-width: 720px) {
+  .place-panel { grid-template-columns: 1fr; }
+  .panel-photo img { height: 190px; }
+  .work-card-thumb { height: 132px; }
+  .timeline-mini li.has-photo { grid-template-columns: 40px 1fr; }
+  .timeline-mini li.has-photo .year { grid-column: 2; }
+  .timeline-mini li.has-photo .what { grid-column: 2; }
+}
+
+@media print {
+  .work-card.has-art::before, .work-card-thumb, .lead-figure, .tl-thumb, .ri-art { display: none !important; }
+}
+
+/* каталог библиотеки: тот же приём, но тише — 413 карточек на странице */
+.catalog-card.has-art { position: relative; isolation: isolate; overflow: hidden; }
+.catalog-card.has-art::before {
+  content: ""; position: absolute; inset: 0; z-index: -1;
+  background: var(--card-art, none) no-repeat right -34px bottom -14px / auto 118%;
+  opacity: .12; pointer-events: none;
+}
+.catalog-card.has-art:hover::before { opacity: .22; }
+[data-theme="light"] .catalog-card.has-art::before { opacity: .15; }
+
+/* на узком экране обтекание снимаем: портрет идёт обычным блоком */
+@media (max-width: 720px) {
+  .lead-figure.is-portrait { float: none; width: 100%; margin: 6px 0 18px; }
+  .lead-figure.is-portrait img { max-height: 380px; }
+}
