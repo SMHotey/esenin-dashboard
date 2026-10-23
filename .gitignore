@@ -21,3 +21,6 @@ Thumbs.db
 cache_*.txt
 dossier.json
 ms_sitemap.xml
+
+# scratch-каталог исследовательских сессий (не коммитится)
+scratch/
