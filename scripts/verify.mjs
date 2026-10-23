@@ -126,6 +126,11 @@ for (const file of htmlFiles) {
     try { JSON.parse(body); } catch (e) { errors.push(`${rel}: битый JSON-LD (${e.message})`); }
   }
 
+  // Экранированный HTML-тег в отрендеренной странице = сырой тег в markdown или данных:
+  // генератор прогоняет текст через esc(), и читатель видит «<a href=…>» обычным текстом.
+  const escTag = html.match(/&lt;\/?[a-zA-Z][a-zA-Z0-9]*(?:[^&]|&(?!gt;))*?(?:&gt;|&nbsp;|\s|$)/);
+  if (escTag) errors.push(`${rel}: на странице виден экранированный HTML «${escTag[0].slice(0, 60)}» — в источнике сырой тег`);
+
   // внутренние ссылки
   for (const [, href] of html.matchAll(/(?:href|src)="(\/[^"#?]*)/g)) {
     if (href.startsWith('//')) continue;
@@ -175,6 +180,17 @@ if (existsSync(pubDir)) {
     const date = raw.match(/^date:\s*(\S+)\s*$/m)?.[1]?.trim();
     if (!title) errors.push(`публикация ${f}: нет title`);
     if (!/^\d{4}-\d{2}-\d{2}$/.test(date || '')) errors.push(`публикация ${f}: нет даты YYYY-MM-DD`);
+    // Сырой HTML в markdown: генератор экранирует теги (esc в inline), и читатель
+    // увидит их на странице текстом — «<a href=…>Библиотека</a>». Ссылка = [текст](/путь/).
+    const pubBody = raw.replace(/^---\n[\s\S]*?\n---\n/, '');
+    if (/<\/?[a-zA-Z][^>]*>/.test(pubBody)) {
+      errors.push(`публикация ${f}: в тексте сырой HTML — ссылки пишутся как [текст](/путь/), теги не нужны`);
+    }
+    // Разработчицкие детали (пути скриптов, npm-команды) в тексте для читателя —
+    // признак недописанной редакционной правки.
+    if (/\b(?:scripts\/[\w./-]+|npm run [\w:.-]+|reports\/[\w./-]+|[\w-]+\.mjs)\b/.test(raw)) {
+      errors.push(`публикация ${f}: разработчицкие пути/команды (scripts/, npm run, reports/) в тексте для читателя`);
+    }
     const page = join(DIST, 'publications', `${slug}.html`);
     const isFuture = /^\d{4}-\d{2}-\d{2}$/.test(date || '') && date > today;
     if (!isFuture) {
@@ -243,6 +259,17 @@ for (const b of books) {
     }
   }
 }
+
+// --- тексты произведений ---
+// Импорт с Викитеки оставлял <h3>, __NOTOC__ и «== 1 ==» — на странице это мусор.
+const worksData = await readJson('data/works.json');
+for (const w of worksData) {
+  const t = String(w.text || '');
+  if (/<\/?[a-zA-Z][^>]*>/.test(t)) errors.push(`works.json: ${w.slug} — сырые HTML-теги в тексте произведения`);
+  if (/(?:^|\n)__\w+__/.test(t)) errors.push(`works.json: ${w.slug} — wiki-хелперы (__NOTOC__) в тексте`);
+  if (/(?:^|\n)==+[^=\n]+==+\s*(?:\n|$)/.test(t)) errors.push(`works.json: ${w.slug} — wiki-заголовки «== … ==» в тексте`);
+}
+if (worksData.length) info.push(`произведений проверено: ${worksData.length}`);
 
 // --- служебные файлы ---
 for (const f of ['404.html', 'robots.txt', 'sitemap.xml', 'search.json', '_headers', '_redirects', '.nojekyll', 'favicon.svg', 'styles.css', 'app.js']) {

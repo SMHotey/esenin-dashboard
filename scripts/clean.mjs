@@ -1,4 +1,7 @@
-const TAG_RE = /<\/?(?:center|div|span|small|big|p|i|b|u|sup|sub|blockquote|font|table|tr|td|th)[^>]*>/gi;
+const TAG_RE = /<\/?(?:center|div|span|small|big|p|i|b|u|sup|sub|blockquote|font|table|tr|td|th|h[1-6]|hr|li|ul|ol)[^>]*>/gi;
+
+// Служебные заголовки викитеки, после которых идёт не текст произведения.
+const SERVICE_SECTIONS = 'Примечания|Пояснения|Комментарии|Сноски|Библиография|Литература|Источники|Ссылки|Оглавление|Персонал|См\\. также';
 
 function stripBasic(t) {
   t = t.replace(/<!--[\s\S]*?-->/g, '');
@@ -16,7 +19,14 @@ function stripBasic(t) {
   t = t.replace(/<\/?poem[^>]*>/gi, '');
   t = t.replace(/<br\s*\/?>/gi, '\n');
   t = t.replace(TAG_RE, '\n');
-  t = t.replace(/^__[A-Z]+__$/gm, '');
+  // Заголовки викитеки «== 1 ==» / «=== * ===»: маркеры убрать, содержимое оставить —
+  // это номера частей длинных поэм, без них текст не читается.
+  t = t.replace(/^=+([^=\n]*?)=+\s*$/gm, (_, c) => c.trim());
+  // Служебные помощники вроде __NOTOC__ и __NOEDITSECTION__ (в т.ч. склеенные в одну строку).
+  t = t.replace(/(?:^|\n)(?:__\w+__)+/g, '\n');
+  // Шапка викитеки: «* Название, ‹год›» и строки оглавления «# …» — перед текстом, не часть его.
+  t = t.replace(/^# .*$/gm, '');
+  t = t.replace(/^\* .*(?:‹[^›]*›|Текст целиком).*$/gm, '');
   t = t.replace(/&nbsp;/g, ' ').replace(/&mdash;/g, '—').replace(/&ndash;/g, '–')
        .replace(/&quot;/g, '"').replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>');
   return t;
@@ -61,7 +71,7 @@ function extractPoemBlocks(raw) {
 }
 
 export function cleanWiki(raw) {
-  raw = raw.split(/\n==+\s*(Примечания|Комментарии|Сноски|Библиография|Литература|Источники|См\. также)\s*==+/i)[0];
+  raw = raw.split(new RegExp(`(?:^|\\n)==+\\s*(?:${SERVICE_SECTIONS})\\s*==+`, 'i'))[0];
   const poemClose = raw.lastIndexOf('</poem>');
   const divIdx = raw.search(/<div[^>]*class="[^"]*indent[^"]*"/i);
   if (poemClose !== -1 && divIdx > poemClose) raw = raw.slice(0, divIdx);
