@@ -204,6 +204,28 @@ if (existsSync(pubDir)) {
   if (!sitemap.includes('/publications/')) errors.push('карта сайта: нет журнала');
 }
 
+// --- редакционный тон страниц ---
+// Формулы, которые выдают текст, собранный роботом: обращение к учителю,
+// обещания «вы узнаете», канцелярские концовки. Проверяем весь dist, а не
+// только журнал: эти фразы умеют просачиваться в описания разделов.
+const BAD_TONE = [
+  'как использовать на уроке',
+  'что использовать на уроке',
+  'что важно знать к разбору',
+  'по одной публикации в день',
+  'факты сверены с академическими изданиями',
+  'формулировки — наши',
+  'в этой статье мы расскажем',
+  'вы узнаете',
+];
+for (const f of htmlFiles) {
+  const text = await readFile(f, 'utf8');
+  const low = text.toLowerCase();
+  for (const phrase of BAD_TONE) {
+    if (low.includes(phrase)) errors.push(`${f}: редакционная формула «${phrase}» — переписать живым текстом`);
+  }
+}
+
 // --- поиск ---
 const search = await readJson(join(DIST, 'search.json'));
 if (!Array.isArray(search) || !search.length) errors.push('search.json пуст');
