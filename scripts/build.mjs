@@ -60,6 +60,63 @@ function formatDate(iso) {
 }
 const UPDATED_LABEL = formatDate(UPDATED);
 
+// «Обновлено» — фактическая дата правки раздела, а не дата сборки.
+// data/updated.json собирает scripts/last-updated.mjs из истории git (запускается
+// перед сборкой); в CI без истории используется закоммиченный манифест.
+const updatedManifest = await readJson('data/updated.json', { sections: {}, files: {} });
+const sectionDates = updatedManifest.sections || {};
+const publicationDates = updatedManifest.files || {};
+
+function latestDate(...dates) {
+  const ok = dates.filter((d) => /^\d{4}-\d{2}-\d{2}$/.test(String(d || '')));
+  return ok.length ? ok.sort().at(-1) : null;
+}
+
+// Какой раздел отвечает за страницу — по её адресу.
+function sectionForPage(rel) {
+  const p = String(rel || '').replace(/^\/+/, '');
+  if (p === 'publications/index.html' || p === 'publications/') return 'publications';
+  if (p.startsWith('publications/')) return 'publications';
+  if (p.startsWith('works/')) return 'works';
+  if (p.startsWith('people/')) return 'people';
+  if (p.startsWith('biography/')) return 'biography';
+  if (p.startsWith('life/')) return 'timeline';
+  if (p.startsWith('places/')) return 'places';
+  if (p.startsWith('legacy/')) return 'legacy';
+  if (p.startsWith('books/')) return 'books';
+  if (p.startsWith('research/')) return 'research';
+  if (p.startsWith('topics/')) return 'topics';
+  if (p === 'versions.html') return 'versions';
+  if (p === 'sources.html') return 'sources';
+  if (p === 'faq.html') return 'faq';
+  if (p === 'glossary.html') return 'legacy';
+  return 'structure';
+}
+
+// Дата страницы = самая поздняя из: правки структуры, правки раздела и (для
+// журнала) даты самой публикации и её файла.
+//
+// Правило: страница с собственным материалом (статья, произведение, персона,
+// место, подборка) показывает дату правки этого материала. Правки структуры
+// (шаблон, меню, CSS, конфиг) датируются только теми страницами, которые сами
+// и есть структура: главная, «О проекте», политика, 404. Иначе любая правка
+// вёрстки переставляла бы «Обновлено» на всех 500 страницах и дата перестала
+// бы что-либо значить.
+function updatedForPage(rel) {
+  const structure = sectionDates.structure || UPDATED;
+  const p = String(rel || '').replace(/^\/+/, '');
+  if (p.startsWith('publications/') && p !== 'publications/index.html') {
+    const slug = p.slice('publications/'.length).replace(/\.html$/, '');
+    const pub = publications.find((x) => x.slug === slug);
+    return latestDate(publicationDates[`content/publications/${slug}.md`], pub && pub.date) || UPDATED;
+  }
+  if (p === 'index.html' || p === '404.html' || p === 'about.html' || p === 'privacy.html') {
+    return latestDate(structure, UPDATED) || UPDATED;
+  }
+  const section = sectionDates[sectionForPage(p)];
+  return section || UPDATED;
+}
+
 // Цена книги: «8 299 ₽», пробелы-разделители как в магазине.
 function priceFmt(value, currency = 'RUB') {
   const num = Number(value);
@@ -1391,7 +1448,13 @@ async function writePage(rel, html) {
   const file = join(DIST, rel);
   await mkdir(dirname(file), { recursive: true });
   const url = rel === 'index.html' ? '/' : '/' + rel.replace(/index\.html$/, '');
-  const out = html.replaceAll('__CANONICAL__', encodeURI(SITE + url));
+  const pageDate = updatedForPage(rel);
+  const pageLabel = formatDate(pageDate);
+  // Подменяем общую дату на дату этой страницы: подвал, мета-строки и JSON-LD.
+  const out = html
+    .replaceAll('__CANONICAL__', encodeURI(SITE + url))
+    .split(UPDATED_LABEL).join(pageLabel)
+    .split(`"dateModified":"${UPDATED}"`).join(`"dateModified":"${pageDate}"`);
   await writeFile(file, out, 'utf8');
   return out;
 }
@@ -1757,7 +1820,8 @@ ${uniqueUrls.map((u) => {
   const imageXml = (pageImages.get(u) || [])
     .map((i) => `<image:image><image:loc>${encodeURI(i.loc)}</image:loc><image:title>${esc(i.title)}</image:title></image:image>`)
     .join('');
-  return `  <url><loc>${encodeURI(SITE + u)}</loc><lastmod>${UPDATED}</lastmod><priority>${u === '/' ? '1.0' : u.endsWith('/') ? '0.8' : '0.6'}</priority>${imageXml}</url>`;
+  const lastmod = updatedForPage(u);
+  return `  <url><loc>${encodeURI(SITE + u)}</loc><lastmod>${lastmod}</lastmod><priority>${u === '/' ? '1.0' : u.endsWith('/') ? '0.8' : '0.6'}</priority>${imageXml}</url>`;
 }).join('\n')}
 </urlset>`;
 await writeFile(join(DIST, 'sitemap.xml'), sitemap, 'utf8');

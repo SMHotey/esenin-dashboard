@@ -22,6 +22,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
           node-version: 20
@@ -40,6 +42,8 @@ jobs:
       - id: deployment
         uses: actions/deploy-pages@v4
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - name: Пересборка (нужен список адресов для очистки)
         run: node scripts/build.mjs
       - name: Сброс кэша Cloudflare

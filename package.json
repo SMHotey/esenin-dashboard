@@ -8,6 +8,8 @@
     "import:genres": "node scripts/import-genres.mjs",
     "import:works": "node scripts/import-works.mjs",
     "build:works": "node scripts/build-works.mjs",
+    "stamp:updated": "node scripts/last-updated.mjs",
+    "prebuild": "node scripts/last-updated.mjs",
     "build": "node scripts/build.mjs",
     "check": "node scripts/check-links.mjs",
     "audit:texts": "node scripts/text-audit.mjs",

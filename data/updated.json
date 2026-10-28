@@ -1,0 +1,32 @@
+{
+  "generatedAt": "2026-10-28",
+  "sections": {
+    "structure": "2026-10-28",
+    "works": "2026-10-23",
+    "people": "2026-10-23",
+    "timeline": "2026-10-23",
+    "biography": "2026-10-23",
+    "publications": "2026-10-28",
+    "places": "2026-10-24",
+    "legacy": "2026-10-24",
+    "books": "2026-10-22",
+    "research": "2026-10-20",
+    "versions": "2026-10-23",
+    "sources": "2026-10-20",
+    "faq": "2026-10-21",
+    "topics": "2026-10-24"
+  },
+  "files": {
+    "content/publications/anna-snegina-realnaya-vstrecha.md": "2026-10-28",
+    "content/publications/bereza-istoriya-napisaniya.md": "2026-10-28",
+    "content/publications/esenin-duncan-hronologiya.md": "2026-10-28",
+    "content/publications/konstantinovo-dom-babushki.md": "2026-10-28",
+    "content/publications/korova-1915-razbor.md": "2026-10-28",
+    "content/publications/molitva-materi-1914.md": "2026-10-28",
+    "content/publications/poslednyaya-zima-dekabr-1925.md": "2026-10-28",
+    "content/publications/pyat-avtobiografiy-1916-1925.md": "2026-10-28",
+    "content/publications/schet-naslediya-pochemu-raskhozhdeniya.md": "2026-10-28",
+    "content/publications/slovo-v-korpuse-1910-1925.md": "2026-10-28"
+  },
+  "note": "Даты последнего изменения по разделам. Обновляется скриптом scripts/last-updated.mjs из истории git; в CI без истории используется этот файл."
+}

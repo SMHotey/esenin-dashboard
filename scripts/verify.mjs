@@ -226,6 +226,33 @@ for (const f of htmlFiles) {
   }
 }
 
+// --- «Обновлено»: фактическая дата правки ---
+// В подвале каждой страницы должна стоять дата последнего изменения её
+// материала или структуры (data/updated.json), а не дата сборки.
+const updatedManifest = await readJson('data/updated.json', null);
+if (!updatedManifest || !updatedManifest.sections || !updatedManifest.sections.structure) {
+  errors.push('data/updated.json: нет манифеста дат разделов — запустить npm run stamp:updated');
+} else {
+  const todayIso = new Date().toISOString().slice(0, 10);
+  for (const [key, date] of Object.entries(updatedManifest.sections)) {
+    if (date && date > todayIso) errors.push(`data/updated.json: раздел ${key} датирован будущим (${date})`);
+  }
+  let dated = 0;
+  for (const f of htmlFiles) {
+    const text = await readFile(f, 'utf8');
+    if (!/Обновлено \d{1,2} [а-яё]+ \d{4}/i.test(text)) {
+      errors.push(`${f}: в подвале нет поля «Обновлено» с датой`);
+      continue;
+    }
+    dated++;
+    const futureDates = [...text.matchAll(/"dateModified":"(\d{4}-\d{2}-\d{2})"/g)]
+      .map((m) => m[1])
+      .filter((d) => d > todayIso);
+    if (futureDates.length) errors.push(`${f}: dateModified в будущем (${futureDates[0]})`);
+  }
+  info.push(`страниц с датой «Обновлено»: ${dated}`);
+}
+
 // --- поиск ---
 const search = await readJson(join(DIST, 'search.json'));
 if (!Array.isArray(search) || !search.length) errors.push('search.json пуст');
