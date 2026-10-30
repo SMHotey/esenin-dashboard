@@ -51,3 +51,5 @@ jobs:
           CF_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
           CF_ZONE_ID: ${{ secrets.CF_ZONE_ID }}
         run: node scripts/purge-cache.mjs
+      - name: IndexNow — отправка изменённых адресов Яндексу и Bing
+        run: node scripts/indexnow.mjs --recent 2

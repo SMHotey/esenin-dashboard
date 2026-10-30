@@ -24,3 +24,6 @@ ms_sitemap.xml
 
 # scratch-каталог исследовательских сессий (не коммитится)
 scratch/
+
+# состояние отправки в IndexNow (локальный кэш scripts/indexnow.mjs)
+.cache/

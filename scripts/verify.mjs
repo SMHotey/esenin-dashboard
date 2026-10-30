@@ -81,7 +81,10 @@ function distPathFor(urlPath) {
 }
 
 const files = await walk(DIST);
-const htmlFiles = files.filter((f) => extname(f) === '.html');
+// Файлы подтверждения прав (yandex_<код>.html и подобные) — служебные заглушки
+// поисковиков: у них нет ни canonical, ни title, правила обычных страниц к ним не относятся.
+const VERIFICATION_FILE = /(?:^|\/)(?:yandex|google|msvalidate|mailru)[_-][A-Za-z0-9]+\.html$/i;
+const htmlFiles = files.filter((f) => extname(f) === '.html').filter((f) => !VERIFICATION_FILE.test(f.replace(/\\/g, '/')));
 const titles = new Map();
 
 for (const file of htmlFiles) {
@@ -326,6 +329,24 @@ for (const f of ['404.html', 'robots.txt', 'sitemap.xml', 'search.json', '_heade
 }
 if (!existsSync(join(DIST, 'books/index.html'))) errors.push('нет страницы /books/');
 if (!existsSync(join(DIST, 'theme.js'))) errors.push('нет /theme.js (анти-вспышка темы)');
+
+// IndexNow: без файла-ключа в корне Яндекс и Bing отклонят отправку адресов.
+const indexNowKey = String(config.indexNow?.key || '').trim();
+if (config.indexNow?.enabled !== false && indexNowKey) {
+  const keyPath = join(DIST, `${indexNowKey}.txt`);
+  if (!existsSync(keyPath)) errors.push(`нет файла ключа IndexNow dist/${indexNowKey}.txt`);
+  else if ((await readFile(keyPath, 'utf8')).trim() !== indexNowKey) errors.push(`файл ключа IndexNow ${indexNowKey}.txt не совпадает с ключом в конфиге`);
+  else info.push('IndexNow: ключ на месте');
+}
+
+// Файл подтверждения Яндекс.Вебмастера: без него домен не подтвердить.
+const yandexCode = String(config.verification?.yandex || '').trim();
+if (yandexCode) {
+  const yFile = join(DIST, `yandex_${yandexCode}.html`);
+  if (!existsSync(yFile)) errors.push(`нет файла подтверждения Вебмастера dist/yandex_${yandexCode}.html`);
+  else if (!(await readFile(yFile, 'utf8')).includes(`Verification: ${yandexCode}`)) errors.push(`файл yandex_${yandexCode}.html не содержит код подтверждения`);
+  else info.push('Вебмастер: файл подтверждения на месте');
+}
 
 // --- итог ---
 const totalBytes = (await Promise.all(files.map((f) => stat(f).then((s) => s.size)))).reduce((a, b) => a + b, 0);

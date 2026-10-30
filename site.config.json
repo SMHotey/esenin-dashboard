@@ -79,5 +79,15 @@
   "analytics": {
     "yandexMetrika": "113725113",
     "googleAnalytics": ""
+  },
+  "verification": {
+    "yandex": "a8c91ba71623a4ce",
+    "google": "",
+    "bing": "",
+    "mailru": ""
+  },
+  "indexNow": {
+    "enabled": true,
+    "key": "a9211b20b093e30873064e0bd9f13c00"
   }
 }

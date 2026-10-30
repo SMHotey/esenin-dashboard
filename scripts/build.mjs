@@ -301,6 +301,20 @@ window.addEventListener('load', function () {
   return out;
 }
 
+function verificationHtml() {
+  const v = config.verification || {};
+  const pairs = [
+    ['yandex', 'yandex-verification'],
+    ['google', 'google-site-verification'],
+    ['bing', 'msvalidate.01'],
+    ['mailru', 'mailru-verification'],
+  ];
+  return pairs
+    .filter(([k]) => String(v[k] || '').trim())
+    .map(([k, name]) => `<meta name="${name}" content="${esc(String(v[k]).trim())}">`)
+    .join('\n');
+}
+
 function layout({ title, description, content, active = '', bodyClass = '', jsonLd = [], noindex = false, ogType = 'website', preloadImage = '', breadcrumb = [], image = '' }) {
   const navHtml = nav.map(([href, label, key]) =>
     `<a href="${href}"${active === key ? ' aria-current="page"' : ''}>${label}</a>`).join('');
@@ -372,6 +386,7 @@ function layout({ title, description, content, active = '', bodyClass = '', json
 <meta name="description" content="${esc(descText)}">
 <meta name="robots" content="${noindex ? 'noindex, follow' : 'index, follow, max-image-preview:large, max-snippet:-1'}">
 <link rel="canonical" href="__CANONICAL__">
+${verificationHtml()}
 <link rel="alternate" type="application/rss+xml" title="${esc(A.name)} — новые материалы" href="/feed.xml">
 ${preloadImage ? `<link rel="preload" href="${esc(preloadImage)}" as="image">` : ''}
 <link rel="dns-prefetch" href="//mc.yandex.ru">
@@ -1869,6 +1884,27 @@ ${feedItems.map((i) => `  <item>
 </rss>`;
 await writeFile(join(DIST, 'feed.xml'), feed, 'utf8');
 await writeFile(join(DIST, 'robots.txt'), `User-agent: *\nAllow: /\nDisallow: /404.html\nSitemap: ${SITE}/sitemap.xml\n`, 'utf8');
+
+// IndexNow: файл-ключ в корне подтверждает владение доменом для Яндекса и Bing.
+// После деплоя scripts/indexnow.mjs отправляет адреса страниц на переобход.
+const indexNowKey = String(config.indexNow?.key || '').trim();
+const indexNowOn = config.indexNow?.enabled !== false && /^[A-Za-z0-9-]{8,128}$/.test(indexNowKey);
+if (indexNowOn) {
+  await writeFile(join(DIST, `${indexNowKey}.txt`), indexNowKey, 'utf8');
+}
+
+// Подтверждение прав Яндекс.Вебмастера файлом в корне: yandex_<код>.html с точным
+// содержимым. Файл должен отдаваться как есть — никаких canonical и разметки.
+const yandexCode = String(config.verification?.yandex || '').trim();
+if (/^[A-Za-z0-9]+$/.test(yandexCode)) {
+  const verificationHtml = `<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    </head>
+    <body>Verification: ${yandexCode}</body>
+</html>`;
+  await writeFile(join(DIST, `yandex_${yandexCode}.html`), verificationHtml, 'utf8');
+}
 
 // llms.txt — краткая карта сайта для ИИ-поиска (AEO/GEO)
 await writeFile(join(DIST, 'llms.txt'), `# ${A.name} — ${A.shortDescription.toLowerCase()}
