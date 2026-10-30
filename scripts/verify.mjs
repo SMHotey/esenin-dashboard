@@ -83,7 +83,7 @@ function distPathFor(urlPath) {
 const files = await walk(DIST);
 // Файлы подтверждения прав (yandex_<код>.html и подобные) — служебные заглушки
 // поисковиков: у них нет ни canonical, ни title, правила обычных страниц к ним не относятся.
-const VERIFICATION_FILE = /(?:^|\/)(?:yandex|google|msvalidate|mailru)[_-][A-Za-z0-9]+\.html$/i;
+const VERIFICATION_FILE = /(?:^|\/)(?:yandex|google|msvalidate|mailru)[_-]?[A-Za-z0-9]+\.html$/i;
 const htmlFiles = files.filter((f) => extname(f) === '.html').filter((f) => !VERIFICATION_FILE.test(f.replace(/\\/g, '/')));
 const titles = new Map();
 
@@ -346,6 +346,15 @@ if (yandexCode) {
   if (!existsSync(yFile)) errors.push(`нет файла подтверждения Вебмастера dist/yandex_${yandexCode}.html`);
   else if (!(await readFile(yFile, 'utf8')).includes(`Verification: ${yandexCode}`)) errors.push(`файл yandex_${yandexCode}.html не содержит код подтверждения`);
   else info.push('Вебмастер: файл подтверждения на месте');
+}
+
+// Файл подтверждения Google Search Console.
+const googleCode = String(config.verification?.google || '').trim();
+if (googleCode) {
+  const gFile = join(DIST, `google${googleCode}.html`);
+  if (!existsSync(gFile)) errors.push(`нет файла подтверждения Google dist/google${googleCode}.html`);
+  else if (!(await readFile(gFile, 'utf8')).includes(`google-site-verification: google${googleCode}.html`)) errors.push(`файл google${googleCode}.html не содержит код подтверждения`);
+  else info.push('Google: файл подтверждения на месте');
 }
 
 // --- итог ---

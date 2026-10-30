@@ -1906,6 +1906,16 @@ if (/^[A-Za-z0-9]+$/.test(yandexCode)) {
   await writeFile(join(DIST, `yandex_${yandexCode}.html`), verificationHtml, 'utf8');
 }
 
+// Google Search Console: файл google<код>.html с одной строкой без разметки.
+const googleCode = String(config.verification?.google || '').trim();
+if (/^[A-Za-z0-9_-]+$/.test(googleCode)) {
+  await writeFile(
+    join(DIST, `google${googleCode}.html`),
+    `google-site-verification: google${googleCode}.html`,
+    'utf8',
+  );
+}
+
 // llms.txt — краткая карта сайта для ИИ-поиска (AEO/GEO)
 await writeFile(join(DIST, 'llms.txt'), `# ${A.name} — ${A.shortDescription.toLowerCase()}
 
