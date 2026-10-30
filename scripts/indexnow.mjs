@@ -11,8 +11,8 @@
 // <key>.txt кладёт в dist сама сборка (build.mjs), поэтому перед отправкой
 // убедитесь, что деплой уже прошёл: робот сначала проверяет ключ на сайте.
 
-import { readFileSync, existsSync, readdirSync, writeFileSync } from "node:fs";
-import { join } from "node:path";
+import { readFileSync, existsSync, writeFileSync, mkdirSync } from "node:fs";
+import { join, dirname } from "node:path";
 
 const ENDPOINTS = ["https://api.indexnow.org/indexnow", "https://yandex.com/indexnow"];
 const MAX_PER_REQUEST = 10000; // ограничение протокола
@@ -114,9 +114,17 @@ for (const endpoint of ENDPOINTS) {
 
 if (ok) {
   // Помним отправленное, чтобы --changed не гонял одни и те же адреса каждый день.
-  const all = new Set([...sent, ...queue]);
-  writeFileSync(STATE, JSON.stringify({ updated: new Date().toISOString(), urls: [...all] }, null, 1));
-  console.log(`IndexNow: отправлено ${queue.length}, всего помечено ${all.size}`);
+  // В CI каталог .cache может отсутствовать, а падать из-за состояния нельзя:
+  // отправка уже прошла, это лишь локальная памятка.
+  try {
+    mkdirSync(dirname(STATE), { recursive: true });
+    const all = new Set([...sent, ...queue]);
+    writeFileSync(STATE, JSON.stringify({ updated: new Date().toISOString(), urls: [...all] }, null, 1));
+    console.log(`IndexNow: отправлено ${queue.length}, всего помечено ${all.size}`);
+  } catch (e) {
+    warn(`IndexNow: не удалось сохранить состояние (${e.code || e.message}) — на отправку не влияет`);
+    console.log(`IndexNow: отправлено ${queue.length}`);
+  }
 } else {
   console.log("IndexNow: ни один сервис не принял пакет (роботу всё равно нужен живой сайт и ключ).");
   process.exitCode = 0; // не валим деплой из-за внешнего сервиса
