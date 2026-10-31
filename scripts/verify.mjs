@@ -176,6 +176,9 @@ if (existsSync(pubDir)) {
   const today = new Date().toISOString().slice(0, 10);
   const files = (await readdir(pubDir)).filter((f) => f.endsWith('.md'));
   let published = 0;
+  // Одно и то же фото в двух публикациях подряд читается как небрежность:
+  // карточки журнала стоят рядом, повтор сразу видно. Держим картинки разными.
+  const pubImages = new Map();
   for (const f of files) {
     const raw = await readFile(join(pubDir, f), 'utf-8');
     const title = raw.match(/^title:\s*"?([^"\n]+)"?\s*$/m)?.[1]?.trim();
@@ -193,6 +196,21 @@ if (existsSync(pubDir)) {
     // признак недописанной редакционной правки.
     if (/\b(?:scripts\/[\w./-]+|npm run [\w:.-]+|reports\/[\w./-]+|[\w-]+\.mjs)\b/.test(raw)) {
       errors.push(`публикация ${f}: разработчицкие пути/команды (scripts/, npm run, reports/) в тексте для читателя`);
+    }
+    // Иллюстрация публикации: файл на месте, атрибуция полная, свободная лицензия.
+    const fm = (name) => raw.match(new RegExp(`^${name}:\\s*"?([^"\\n]+)"?\\s*$`, 'm'))?.[1]?.trim() || '';
+    const pubImage = fm('image');
+    if (pubImage) {
+      if (!existsSync(join(DIST, pubImage.replace(/^\//, '')))) errors.push(`публикация ${f}: нет файла картинки ${pubImage}`);
+      if (!fm('imageAlt')) errors.push(`публикация ${f}: у картинки нет imageAlt`);
+      if (!fm('imageCaption') && !fm('imageAlt')) errors.push(`публикация ${f}: у картинки нет подписи`);
+      if (!/pd|public domain|cc0|cc by/i.test(fm('imageLicense'))) errors.push(`публикация ${f}: лицензия «${fm('imageLicense') || 'нет'}» — нужна свободная`);
+      if (!String(fm('imageSource')).startsWith('https://commons.wikimedia.org/')) errors.push(`публикация ${f}: нет ссылки на файл Викисклада (imageSource)`);
+      const seen = pubImages.get(pubImage);
+      if (seen) errors.push(`публикация ${f}: картинка ${pubImage} уже стоит в публикации ${seen} — в журнале нужны разные`);
+      else pubImages.set(pubImage, f);
+    } else {
+      errors.push(`публикация ${f}: нет картинки (image)`);
     }
     const page = join(DIST, 'publications', `${slug}.html`);
     const isFuture = /^\d{4}-\d{2}-\d{2}$/.test(date || '') && date > today;

@@ -6,13 +6,13 @@ category: Разборы
 kind: publication
 excerpt: "Двадцать строк, строгое чередование восьми и семи слогов и смерть животного, описанная без единого восклицания: разбираем «Корову» по тексту."
 sources: "Текст и первая публикация — Полное собрание сочинений в 7 т. (М.: Наука; Голос, 1995–2002); напечатано в журнале «Северные записки» (Пг., 1916, № 9, с. 53)."
-image: "/img/era/yesenin-1914.jpg"
-imageAlt: "Сергей Есенин, 1914 год"
-imageCaption: "Сергей Есенин. 1914 год"
+image: "/img/era/klyuev-yesenin-1915.jpg"
+imageAlt: "Николай Клюев и Сергей Есенин. Петроград, 1915 год"
+imageCaption: "Петроград, 1915 год: Есенин с Николаем Клюевым — год, когда написана «Корова»"
 imageCredit: "Викисклад"
 imageLicense: "Public domain"
-imageSource: "https://commons.wikimedia.org/wiki/File:%D0%A1%D0%B5%D1%80%D0%B3%D0%B5%D0%B9_%D0%95%D1%81%D0%B5%D0%BD%D0%B8%D0%BD_%D0%B2_1914_%D0%B3%D0%BE%D0%B4%D1%83.jpg"
-imageW: "560"
+imageSource: "https://commons.wikimedia.org/wiki/File:%D0%9A%D0%BB%D1%8E%D0%B5%D0%B2_%D0%B8_%D0%95%D1%81%D0%B5%D0%BD%D0%B8%D0%BD_%D0%B2_%D0%9F%D0%B5%D1%82%D1%80%D0%BE%D0%B3%D1%80%D0%B0%D0%B4%D0%B5_%D0%B2_1915_%D0%B3%D0%BE%D0%B4%D1%83.jpg"
+imageW: "603"
 imageH: "900"
 imageShape: "portrait"
 ---

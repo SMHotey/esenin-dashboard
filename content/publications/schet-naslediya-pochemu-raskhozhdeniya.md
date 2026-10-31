@@ -6,13 +6,13 @@ category: Интересно знать
 kind: publication
 excerpt: "413 текстов в нашей библиотеке, 346 стихотворений в корпусном расчёте, «более тысячи» в интернет-списках: что именно считают в каждом случае."
 sources: "Состав библиотеки сайта — по данным раздела «Библиотека» (413 текстов, сверка с Полным собранием сочинений в 7 т., М.: Наука; Голос, 1995–2002); структура ПСС и примеры с заглавиями — по комментариям к тому 3 и тому 4."
-image: "/img/era/yesenin-portrait.jpg"
-imageAlt: "Портрет Сергея Есенина с автографом"
-imageCaption: "Портрет Есенина с автографом на паспарту"
+image: "/img/era/yesenin-1924.jpg"
+imageAlt: "Сергей Есенин, 1924 год"
+imageCaption: "Сергей Есенин. 1924 год"
 imageCredit: "Викисклад"
 imageLicense: "Public domain"
-imageSource: "https://commons.wikimedia.org/wiki/File:%D0%95%D1%81%D0%B5%D0%BD%D0%B8%D0%BD_%D0%BF%D0%BE%D1%80%D1%82%D1%80%D0%B5%D1%82_(cropped).jpg"
-imageW: "606"
+imageSource: "https://commons.wikimedia.org/wiki/File:%D0%95%D1%81%D0%B5%D0%BD%D0%B8%D0%BD_%D0%A1%D0%B5%D1%80%D0%B3%D0%B5%D0%B9_1924.jpg"
+imageW: "626"
 imageH: "900"
 imageShape: "portrait"
 ---
