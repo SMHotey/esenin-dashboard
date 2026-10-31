@@ -16,6 +16,7 @@
 import { execFileSync } from 'node:child_process';
 import { readFile, writeFile } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
+import { moscowToday } from './today.mjs';
 
 const MANIFEST = 'data/updated.json';
 
@@ -100,7 +101,7 @@ if (hasGit && !shallow) {
 }
 
 const manifest = {
-  generatedAt: new Date().toISOString().slice(0, 10),
+  generatedAt: moscowToday(),
   sections,
   files,
   note: 'Даты последнего изменения по разделам. Обновляется скриптом scripts/last-updated.mjs из истории git; в CI без истории используется этот файл.',

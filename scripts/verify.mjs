@@ -5,6 +5,7 @@
 import { readdir, readFile, stat } from 'node:fs/promises';
 import { join, extname } from 'node:path';
 import { existsSync } from 'node:fs';
+import { moscowToday } from './today.mjs';
 
 const DIST = 'dist';
 const strict = process.argv.includes('--strict');
@@ -173,7 +174,7 @@ else {
 // --- журнал (публикации) ---
 const pubDir = join('content', 'publications');
 if (existsSync(pubDir)) {
-  const today = new Date().toISOString().slice(0, 10);
+  const today = moscowToday();
   const files = (await readdir(pubDir)).filter((f) => f.endsWith('.md'));
   let published = 0;
   // Одно и то же фото в двух публикациях подряд читается как небрежность:
@@ -254,7 +255,7 @@ const updatedManifest = await readJson('data/updated.json', null);
 if (!updatedManifest || !updatedManifest.sections || !updatedManifest.sections.structure) {
   errors.push('data/updated.json: нет манифеста дат разделов — запустить npm run stamp:updated');
 } else {
-  const todayIso = new Date().toISOString().slice(0, 10);
+  const todayIso = moscowToday();
   for (const [key, date] of Object.entries(updatedManifest.sections)) {
     if (date && date > todayIso) errors.push(`data/updated.json: раздел ${key} датирован будущим (${date})`);
   }

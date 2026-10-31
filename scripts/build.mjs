@@ -4,6 +4,7 @@ import { join, dirname } from 'node:path';
 import { createHash } from 'node:crypto';
 import { buildSectionPages } from './sections.mjs';
 import { genreArt, musicArt, filmArt, researchArt, personArt } from './art.mjs';
+import { moscowToday } from './today.mjs';
 
 const ROOT = process.cwd();
 const DIST = join(ROOT, 'dist');
@@ -50,7 +51,7 @@ if (!A.lastName) A.lastName = A.name;
 const SITE = String(config.siteUrl || 'https://example.org').replace(/\/$/, '');
 const TEXTS_PD = config.textsPublicDomain !== false;
 const LANG = config.lang || 'ru';
-const UPDATED = config.updated || new Date().toISOString().slice(0, 10);
+const UPDATED = config.updated || moscowToday();
 const MONTHS = ['января', 'февраля', 'марта', 'апреля', 'мая', 'июня', 'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря'];
 
 function formatDate(iso) {
@@ -865,7 +866,7 @@ for (const f of articleFiles) {
 articles.sort((a, b) => (a.kind === 'overview' ? -1 : 0) - (b.kind === 'overview' ? -1 : 0) || a.order - b.order);
 
 // ---------- Публикации (журнал): content/publications/*.md с датой в frontmatter ----------
-const TODAY = new Date().toISOString().slice(0, 10);
+const TODAY = moscowToday();
 const PUBLISH_ALL = process.env.PUBLISH_ALL === '1';
 const pubDir = join(ROOT, 'content', 'publications');
 let pubFiles = [];

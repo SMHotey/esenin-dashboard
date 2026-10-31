@@ -13,12 +13,13 @@
 import { readFile, readdir } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import { join } from 'node:path';
+import { moscowToday } from './today.mjs';
 
 const ROOT = process.cwd();
 const PUB_DIR = join(ROOT, 'content', 'publications');
 const STRICT = process.argv.includes('--strict');
 const ALL = !process.argv.includes('--published');
-const TODAY = new Date().toISOString().slice(0, 10);
+const TODAY = moscowToday();
 
 // Формулы, которых в текстах быть не должно: обращение к учителю, обещания
 // читателю, редакционные шаблоны. Каждая — с объяснением для правки.
