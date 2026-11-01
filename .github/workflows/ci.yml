@@ -1,0 +1,36 @@
+name: CI
+
+# Проверки без выкладки: каждая ветка и каждый pull request.
+# На master/main проверки делает deploy.yml — там они часть деплоя,
+# поэтому здесь эти ветки исключены, чтобы не гонять сборку дважды.
+
+on:
+  push:
+    branches-ignore: [master, main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # Полная история нужна scripts/last-updated.mjs: даты «Обновлено»
+          # берутся из коммитов, а не из времени сборки.
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Сборка и проверки (строгий режим)
+        run: npm run verify:strict
+      - name: Отчёт о размере сборки
+        if: always()
+        run: du -sh dist && find dist -type f | wc -l
