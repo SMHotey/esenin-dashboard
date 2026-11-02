@@ -222,6 +222,33 @@ if (existsSync(pubDir)) {
       errors.push(`публикация ${f}: будущая дата ${date}, а страница уже в dist`);
     }
   }
+  // Правило редакции: одна публикация в день и запас готовых статей на две недели.
+  // Предупреждение, а не ошибка: срочная правка сайта не должна ждать редактуры.
+  const futureDates = [];
+  for (const f of files) {
+    const raw = await readFile(join(pubDir, f), 'utf-8');
+    const d = raw.match(/^date:\s*(\d{4}-\d{2}-\d{2})\s*$/m)?.[1];
+    if (d && d > today) futureDates.push(d);
+  }
+  futureDates.sort();
+  if (futureDates.length) {
+    const isWeekday = (iso) => {
+      const day = new Date(iso + 'T12:00:00Z').getUTCDay();
+      return day !== 0 && day !== 6;
+    };
+    const last = futureDates[futureDates.length - 1];
+    let buffer = 0;
+    const cursor = new Date(today + 'T12:00:00Z');
+    while (cursor.toISOString().slice(0, 10) < last) {
+      cursor.setUTCDate(cursor.getUTCDate() + 1);
+      if (isWeekday(cursor.toISOString().slice(0, 10))) buffer += 1;
+    }
+    buffer += 1;
+    if (buffer < 14) warnings.push(`очередь журнала: готовых статей на ${buffer} будних дней вперёд из 14 — пора писать`);
+    else info.push(`очередь журнала: запас ${buffer} будних дней`);
+  } else {
+    warnings.push('очередь журнала пуста: нет ни одной статьи с будущей датой — публиковать будет нечего');
+  }
   if (!existsSync(join(DIST, 'publications', 'index.html'))) errors.push('нет index.html журнала');
   if (!sitemap.includes('/publications/')) errors.push('карта сайта: нет журнала');
 }

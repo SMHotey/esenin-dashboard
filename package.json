@@ -22,7 +22,8 @@
     "verify:strict": "npm run build && npm run check && node scripts/text-audit.mjs --strict && node scripts/verify.mjs --strict",
     "serve": "python -m http.server 4173 --directory dist",
     "preview": "npm run build && npm run serve",
-    "dev": "npm run build && npm run serve"
+    "dev": "npm run build && npm run serve",
+    "queue:status": "node scripts/queue-status.mjs"
   },
   "engines": {
     "node": ">=20"
