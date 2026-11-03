@@ -29,3 +29,4 @@ scratch/
 .cache/
 # движок конвейера шагов ставится командой `hermes pipeline setup`, в git не хранится
 .pipeline/
+.hermes/
