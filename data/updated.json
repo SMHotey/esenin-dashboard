@@ -2,11 +2,11 @@
   "generatedAt": "2026-11-03",
   "sections": {
     "structure": "2026-11-02",
-    "works": "2026-10-23",
+    "works": "2026-11-03",
     "people": "2026-10-23",
     "timeline": "2026-10-23",
     "biography": "2026-10-23",
-    "publications": "2026-11-01",
+    "publications": "2026-11-03",
     "places": "2026-10-24",
     "legacy": "2026-10-24",
     "books": "2026-10-22",
@@ -26,7 +26,11 @@
     "content/publications/poslednyaya-zima-dekabr-1925.md": "2026-10-28",
     "content/publications/pyat-avtobiografiy-1916-1925.md": "2026-10-28",
     "content/publications/schet-naslediya-pochemu-raskhozhdeniya.md": "2026-11-01",
-    "content/publications/slovo-v-korpuse-1910-1925.md": "2026-10-28"
+    "content/publications/slovo-v-korpuse-1910-1925.md": "2026-10-28",
+    "content/publications/cherny-chelovek-1925.md": "2026-11-03",
+    "content/publications/mariengof-roman-bez-vranya.md": "2026-11-03",
+    "content/publications/otgovorila-roshcha-1924.md": "2026-11-03",
+    "content/publications/porosha-1914.md": "2026-11-03"
   },
   "note": "Даты последнего изменения по разделам. Обновляется скриптом scripts/last-updated.mjs из истории git; в CI без истории используется этот файл."
 }
