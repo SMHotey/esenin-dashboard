@@ -369,6 +369,118 @@ for (const w of worksData) {
 }
 if (worksData.length) info.push(`произведений проверено: ${worksData.length}`);
 
+// --- книжный вид: разметка прозы (план 1, шаг S1) ---
+// V1. Охват задан конфигом, а не кодом: без genres/minChars книгу не собрать.
+const bookCfg = config.reader?.book || {};
+if (!Array.isArray(bookCfg.genres) || !bookCfg.genres.length) {
+  errors.push('site.config.json: нет reader.book.genres/minChars');
+} else if (!(Number(bookCfg.minChars) > 0)) {
+  errors.push('site.config.json: нет reader.book.genres/minChars');
+}
+// V2. Отбор по конфигу: ровно 17 текстов (решение владельца, порог не подгоняем).
+const bookGenres = new Set(bookCfg.genres || []);
+const bookMin = Number(bookCfg.minChars) || 1500;
+const bookSelection = worksData.filter((w) => bookGenres.has(w.genre) && (w.chars || 0) >= bookMin);
+if (bookSelection.length !== 17) {
+  errors.push(`book: по reader.book отобрано ${bookSelection.length} текстов вместо 17`);
+}
+const bookSelSlugs = new Set(bookSelection.map((w) => w.slug));
+const collapseBook = (s) => String(s ?? '').replace(/\s+/g, ' ').trim();
+const decodeBook = (s) => String(s)
+  .replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"')
+  .replace(/&amp;/g, '&');
+
+// V4. Содержимое обёртки .poem[data-book-source] без потери знаков.
+// Идём по тегам и считаем баланс div — иначе оборвёмся на вложенном book-verse.
+function bookInner(html) {
+  const at = html.indexOf('class="poem" data-book-source');
+  if (at < 0) return null;
+  const openEnd = html.indexOf('>', at);
+  if (openEnd < 0) return null;
+  let depth = 1;
+  const re = /<(\/?)div\b[^>]*>/gi;
+  re.lastIndex = openEnd + 1;
+  let m;
+  while ((m = re.exec(html))) {
+    if (m[1] === '/') {
+      depth -= 1;
+      if (depth === 0) return html.slice(openEnd + 1, m.index);
+    } else {
+      depth += 1;
+    }
+  }
+  return null;
+}
+const bookPlain = (inner) => collapseBook(decodeBook(String(inner)
+  .replace(/<br\s*\/?>/gi, ' ')
+  .replace(/<[^>]+>/g, ' ')));
+
+// V3. Обёртка стоит ровно у 17 отобранных текстов и отсутствует у остальных.
+const bookPages = new Map();
+let bookBlocks = 0;
+for (const w of worksData) {
+  const rel = `works/${w.slug}.html`;
+  const file = join(DIST, rel);
+  if (!existsSync(file)) continue; // пропажу поймает проверка ссылок
+  const html = await readFile(file, 'utf8');
+  const inner = bookInner(html);
+  if (inner == null) {
+    if (bookSelSlugs.has(w.slug)) errors.push(`${rel}: у текста книги нет обёртки .poem[data-book-source]`);
+    continue;
+  }
+  if (!bookSelSlugs.has(w.slug)) {
+    errors.push(`${rel}: обёртка data-book-source у текста вне отбора reader.book`);
+    continue;
+  }
+  bookPages.set(w.slug, html);
+  bookBlocks += (inner.match(/<p[\s>]/g) || []).length
+    + (inner.match(/class="book-verse"/g) || []).length
+    + (inner.match(/class="book-head"/g) || []).length;
+  const got = bookPlain(inner);
+  const want = collapseBook(w.text);
+  if (got !== want) {
+    let i = 0;
+    while (i < got.length && got[i] === want[i]) i += 1;
+    errors.push(`${rel}: текст книги расходится с works.json на позиции ${i}: «${got.slice(i, i + 40)}» вместо «${want.slice(i, i + 40)}»`);
+  }
+}
+if (bookPages.size !== 17) errors.push(`book: страниц с обёрткой data-book-source ${bookPages.size} вместо 17`);
+
+// V5. Типовые счётчики: замер по правилам БП на текущих данных. Расхождение означает,
+// что правило реализовано иначе, а не что замер устарел.
+const bookTypeExpect = {
+  'ярославны-плачут': { 'book-verse': 11 },
+  'ключи-марии': { 'book-verse': 3 },
+  'отчее-слово': { 'book-verse': 2 },
+  'о-сборниках-произведений-пролетарских-писателей': { 'book-verse': 1 },
+  'железный-миргород': { 'book-part': 2, 'book-head': 5 },
+  'у-белой-воды': { 'book-part': 3 },
+  'avtobiografiya-1923': { 'book-date': 1 },
+};
+for (const [slug, expect] of Object.entries(bookTypeExpect)) {
+  const html = bookPages.get(slug);
+  if (!html) {
+    errors.push(`book: нет страницы works/${slug}.html с обёрткой data-book-source`);
+    continue;
+  }
+  for (const [cls, want] of Object.entries(expect)) {
+    const got = (html.match(new RegExp(`class="${cls}"`, 'g')) || []).length;
+    if (got !== want) errors.push(`works/${slug}.html: блоков ${cls} ${got}, ожидалось ${want}`);
+  }
+}
+// Структурные строки не должны остаться обычными абзацами.
+if (bookPages.has('железный-миргород') && /<p>\s*(?:I|II)\s*<\/p>/.test(bookPages.get('железный-миргород'))) {
+  errors.push('works/железный-миргород.html: номер части «I»/«II» остался абзацем p');
+}
+if (bookPages.has('у-белой-воды') && /<p>\s*[123]\s*<\/p>/.test(bookPages.get('у-белой-воды'))) {
+  errors.push('works/у-белой-воды.html: номер части «1»/«2»/«3» остался абзацем p');
+}
+if (bookPages.has('avtobiografiya-1923') && !/class="book-date">1923</.test(bookPages.get('avtobiografiya-1923'))) {
+  errors.push('works/avtobiografiya-1923.html: год 1923 не размечен блоком book-date');
+}
+// V6. Сводка по книжному виду (575 блоков — замер по правилам БП).
+info.push(`book: ${bookPages.size} текстов, ${bookBlocks} абзацев`);
+
 // --- служебные файлы ---
 for (const f of ['404.html', 'robots.txt', 'sitemap.xml', 'search.json', '_headers', '_redirects', '.nojekyll', 'favicon.svg', 'styles.css', 'app.js']) {
   if (!existsSync(join(DIST, f))) errors.push(`dist/${f} отсутствует`);

@@ -136,6 +136,142 @@ const assetVersion = createHash('sha1')
   .digest('hex').slice(0, 8);
 
 const works = await readJson('data/works.json', []);
+
+// ---------- книжный вид: отбор и разметка прозы (план 1, шаг S1) ----------
+// Охват берётся из site.config.json (reader.book), а не из кода: жанры и порог —
+// решение владельца. Переопределения типов — data/book-overrides.json.
+const bookCfg = config.reader?.book || {};
+const bookGenres = new Set(bookCfg.genres || []);
+const bookMin = Number(bookCfg.minChars) || 1500;
+const bookSlugs = new Set(works.filter((w) => bookGenres.has(w.genre) && (w.chars || 0) >= bookMin).map((w) => w.slug));
+const bookOverrides = await readJson('data/book-overrides.json', {});
+// Типы блоков книжного вида: p — абзац, verse — стихотворная цитата, part — номер части,
+// date — год, head — подзаголовок капслоком.
+const BOOK_TYPES = new Set(['p', 'verse', 'part', 'date', 'head']);
+// Порог «длинной строки» прозы (БП3/БП4): короткие строки — признак стихов.
+const BOOK_LONG_LINE = 56;
+{
+  const slugs = new Set(works.map((w) => w.slug));
+  for (const [slug, ov] of Object.entries(bookOverrides || {})) {
+    if (!slugs.has(slug)) throw new Error(`data/book-overrides.json: slug «${slug}» отсутствует в data/works.json`);
+    for (const rule of ov?.types || []) {
+      if (!BOOK_TYPES.has(rule?.type)) throw new Error(`data/book-overrides.json: ${slug} — неизвестный type «${rule?.type}»`);
+      if (!String(rule?.text ?? '').trim()) throw new Error(`data/book-overrides.json: ${slug} — пустой text в types`);
+    }
+  }
+}
+
+const bookCollapse = (s) => String(s ?? '').replace(/\s+/g, ' ').trim();
+
+// Медиана длин строк: по ней решается, разбирать блок построчно (БП4).
+function bookMedian(nums) {
+  const sorted = [...nums].sort((a, b) => a - b);
+  const mid = Math.floor(sorted.length / 2);
+  return sorted.length % 2 ? sorted[mid] : (sorted[mid - 1] + sorted[mid]) / 2;
+}
+
+// БП5: структурная строка (номер части, год, подзаголовок) или null — обычный текст.
+function bookLineType(line) {
+  if (/^\d{1,4}$/.test(line)) return /^(19|20)\d\d$/.test(line) ? 'date' : 'part';
+  if (/^[IVX]+\.?$/.test(line)) return 'part';
+  if (line.length <= 40 && line === line.toUpperCase() && /\p{L}/u.test(line) && !/[.!?—]$/.test(line)) return 'head';
+  return null;
+}
+
+// БП1: убрать \r, обрезать строки по краям, три и более переводов строки свести к двум.
+function bookNormalize(text) {
+  return String(text ?? '')
+    .replace(/\r/g, '')
+    .split('\n')
+    .map((line) => line.trim())
+    .join('\n')
+    .replace(/\n{3,}/g, '\n\n');
+}
+
+// БП3-БП6 для группы строк между переопределениями.
+function bookPushGroup(lines, lineParagraphs, out) {
+  // БП3: блок из 2+ коротких строк — стихотворная цитата целиком.
+  if (lines.length >= 2 && lines.every((line) => line.length <= 55)) {
+    out.push({ type: 'verse', text: lines.join('\n') });
+    return;
+  }
+  // БП4: построчный разбор, если включён переопределением или медиана длин строк ≥ 56.
+  const perLine = lineParagraphs || (lines.length >= 2 && bookMedian(lines.map((line) => line.length)) >= BOOK_LONG_LINE);
+  // БП6: буфер обычного текста сбрасывается перед структурным блоком и в конце.
+  let buffer = [];
+  const flush = () => {
+    if (buffer.length) out.push({ type: 'p', text: buffer.join(' ') });
+    buffer = [];
+  };
+  for (const line of lines) {
+    const type = bookLineType(line);
+    if (type) {
+      flush();
+      out.push({ type, text: line });
+    } else if (perLine) {
+      flush();
+      out.push({ type: 'p', text: line });
+    } else {
+      buffer.push(line);
+    }
+  }
+  flush();
+}
+
+// Чистая функция разметки: текст произведения → блоки { type, text } (БП1-БП7).
+// Знаки текста не меняются: переводы строк внутри абзаца становятся пробелами.
+function bookParagraphs(text, override = null) {
+  const out = [];
+  const forced = new Map();
+  for (const rule of override?.types || []) forced.set(String(rule.text).trim(), rule.type);
+  const lineParagraphs = override?.lineParagraphs === true;
+  for (const block of bookNormalize(text).split(/\n{2,}/)) {
+    const lines = block.split('\n').filter((line) => line.length > 0);
+    if (!lines.length) continue;
+    let group = [];
+    const flushGroup = () => {
+      if (group.length) bookPushGroup(group, lineParagraphs, out);
+      group = [];
+    };
+    for (const line of lines) {
+      // БП7: переопределение срабатывает до БП3-БП5 и заменяет тип блока.
+      const type = forced.get(line);
+      if (type) {
+        flushGroup();
+        out.push({ type, text: line });
+      } else {
+        group.push(line);
+      }
+    }
+    flushGroup();
+  }
+  return out;
+}
+
+// T5: разметка блоков. Между тегами ни одного перевода строки и отступа —
+// у .poem включён white-space: pre-wrap, иначе на экране появятся пустые строки.
+function bookBlockHtml(block) {
+  switch (block.type) {
+    case 'part': return `<p class="book-part">${esc(block.text)}</p>`;
+    case 'date': return `<p class="book-date">${esc(block.text)}</p>`;
+    case 'head': return `<h3 class="book-head">${esc(block.text)}</h3>`;
+    case 'verse': return `<div class="book-verse">${String(block.text).split('\n').map((line) => esc(line)).join('<br>')}</div>`;
+    default: return `<p>${esc(block.text)}</p>`;
+  }
+}
+
+const bookTextHtml = (w) => `<div class="poem" data-book-source>${bookParagraphs(w.text, bookOverrides[w.slug] || null).map(bookBlockHtml).join('')}</div>`;
+
+// Сверка «сумма текста абзацев равна источнику» (решение R3): сравнивается текст,
+// а не длина в байтах — переводы строк законно заменяются пробелами.
+const bookLost = [];
+let bookBlockCount = 0;
+for (const w of works) {
+  if (!bookSlugs.has(w.slug)) continue;
+  const blocks = bookParagraphs(w.text, bookOverrides[w.slug] || null);
+  bookBlockCount += blocks.length;
+  if (bookCollapse(blocks.map((b) => b.text).join(' ')) !== bookCollapse(w.text)) bookLost.push(w.slug);
+}
 const people = await readJson('data/people.json', []);
 // Досье персон (п. 5.1–5.2 плана: документы и даты со ссылками на источник).
 // Формат: { "<id>": { facts:[{claim,source}], relations:[{date,event,source}], unknown:[], sources:[{label,url}] } }
@@ -1180,7 +1316,7 @@ function workPage(w, index) {
       <button data-poem-action="print">Печать</button>
       <button data-poem-action="copy">Копировать</button>
     </div>
-    <div class="poem">${esc(w.text)}</div>
+    ${bookSlugs.has(w.slug) ? bookTextHtml(w) : `<div class="poem">${esc(w.text)}</div>`}
     <div class="source-box">
       <b>Источник текста.</b> <a href="${esc(w.sourceUrl)}" rel="noopener">${esc(w.title)}</a> в Викитеке.
       ${w.source ? `<br><b>Редакция/издание:</b> ${esc(cleanSource(w.source))}` : ''}
@@ -2015,3 +2151,11 @@ if (config.affiliate?.enabled && books.length && !Object.values(stores).some((s)
   console.warn('ВНИМАНИЕ: у партнёрских ссылок нет меток — заполните affiliate.stores.*.tag перед публикацией');
 }
 if (!books.length) console.warn('ВНИМАНИЕ: data/books.json пуст — раздел «Книги» покажет заглушку');
+// Строка отчёта книжного вида печатается всегда: по ней шаг S1 сверяет, что разметка
+// не потеряла ни одного знака источника (сравнение схлопнутого текста, решение R3).
+console.log(`book: ${bookSlugs.size} текстов, ${bookLost.length} расхождений`);
+console.log(`book: блоков размечено ${bookBlockCount}`);
+if (bookLost.length) {
+  console.error(`book: текст расходится с источником в ${bookLost.join(', ')}`);
+  process.exitCode = 1;
+}

@@ -43,6 +43,12 @@
     "featuredPeople": ["alexander-nikitich", "tatyana-fyodorovna", "zinaida-raikh", "isadora-duncan", "sofia-tolstaya", "blok", "mariengof", "benislavskaya"],
     "keyEvents": ["1895-10-03", "1909", "1914", "1915", "1916", "1917-07-30", "1922-05-02", "1925-12-28"]
   },
+  "reader": {
+    "book": {
+      "genres": ["Проза", "Статья", "Автобиография"],
+      "minChars": 1500
+    }
+  },
   "affiliate": {
     "enabled": true,
     "showPrice": false,
