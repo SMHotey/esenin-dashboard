@@ -481,6 +481,29 @@ if (bookPages.has('avtobiografiya-1923') && !/class="book-date">1923</.test(book
 // V6. Сводка по книжному виду (575 блоков — замер по правилам БП).
 info.push(`book: ${bookPages.size} текстов, ${bookBlocks} абзацев`);
 
+// V7. Книга S3: вендоренный лист на месте, цел и в бюджете, canvas в разметке нет.
+// Книжные файлы копируются из src/book как есть, поэтому проверяется именно dist.
+for (const f of ['book.js', 'book.css', 'stpageflip.js']) {
+  if (!existsSync(join(DIST, 'book', f))) errors.push(`dist/book/${f} отсутствует`);
+}
+const flipPath = join(DIST, 'book', 'stpageflip.js');
+if (existsSync(flipPath)) {
+  const raw = await readFile(flipPath);
+  // Заголовка MIT в самом бандле нет (он добавлен при вендоринге), поэтому
+  // проверяется начало файла — соглашение шага S3, решение R2.
+  const head = raw.subarray(0, 2048).toString('utf8');
+  if (!head.includes('MIT') || !head.includes('StPageFlip')) {
+    errors.push('dist/book/stpageflip.js: в первых 2 КБ нет заголовка MIT со StPageFlip');
+  }
+  if (raw.length > 51200) errors.push(`dist/book/stpageflip.js: ${raw.length} байт при бюджете 51200`);
+  else info.push(`book: StPageFlip ${raw.length} байт`);
+}
+// Текст книги обязан оставаться текстом: canvas в собранной разметке нет.
+for (const file of files.filter((f) => extname(f) === '.html')) {
+  const html = await readFile(file, 'utf8');
+  if (/<canvas[\s>]/i.test(html)) errors.push(`${file.replace(/\\/g, '/')}: элемент canvas в разметке`);
+}
+
 // --- служебные файлы ---
 for (const f of ['404.html', 'robots.txt', 'sitemap.xml', 'search.json', '_headers', '_redirects', '.nojekyll', 'favicon.svg', 'styles.css', 'app.js']) {
   if (!existsSync(join(DIST, f))) errors.push(`dist/${f} отсутствует`);

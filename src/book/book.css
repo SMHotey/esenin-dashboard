@@ -1,12 +1,12 @@
-/* Книжный вид — план 1, шаг S2.
+/* Книжный вид — план 1, шаги S2-S3.
    Файл подключает book.js после клика «Режим книги», поэтому на обычных
-   страницах его нет и 5 КБ стилей не едут на каждом адресе.
+   страницах его нет и стили книги не едут на каждом адресе.
 
    Здесь только книжная типографика: src/styles.css шаг не правит, у книги
    свой кегль (--book-size), а не --poem-size обычной вёрстки. Цвета — только
    через переменные темы, светлая тема работает без отдельных правил.
-   Анимация листа, звук, печать и клавиатура кроме Esc придут в S3-S6,
-   поэтому переходов (@transition) и @media print здесь намеренно нет. */
+   Анимацию листа даёт StPageFlip (S3), звук, печать и клавиатура кроме Esc
+   придут в S4-S6, поэтому @media print здесь намеренно нет. */
 
 /* Обычная вёрстка уходит, пока книга открыта. Оригинал div.poem остаётся в
    DOM и не меняется — книжный поток строится из его копий. */
@@ -18,7 +18,6 @@ html[data-book-open] .poem-tools { display: none; }
 [data-book] {
   --book-page-w: 480px;
   --book-gap: 60px;
-  --book-size: 20px;
   position: relative;
   left: 50%;
   transform: translateX(-50%);
@@ -58,7 +57,7 @@ html[data-book-open] .poem-tools { display: none; }
   text-align: center;
 }
 
-/* ---------- сцена и поток ---------- */
+/* ---------- сцена и книжный блок ---------- */
 
 /* Высота и ширина сцены — решение владельца (документ §5): страница растёт
    по высоте окна, геометрия колонок от ширины окна не зависит. */
@@ -71,27 +70,41 @@ html[data-book-open] .poem-tools { display: none; }
   width: calc(2 * var(--book-page-w) + var(--book-gap));
 }
 
-/* Поток — контейнер колонок: колонка и есть страница. Поток шире сцены и
-   уезжает влево на transform, сцена обрезает лишнее (overflow: hidden). */
+/* Книжный блок — корень StPageFlip: библиотека вставляет в него обёртку,
+   блок и листы. Размеры как у сцены, поэтому ориентацию («одна страница» или
+   «разворот») по-прежнему выбирает ширина сцены из CSS (R3). */
 [data-book-flow] {
+  position: relative;
   height: 100%;
-  column-width: var(--book-page-w);
-  column-gap: var(--book-gap);
-  column-fill: auto;
+}
+
+/* ---------- лист книги (S3) ---------- */
+
+/* Элементы .page собирает нарезка по Range (T3) и отдаёт StPageFlip: он вешает
+   на них .stf__item и ставит абсолютно. Паддинги входят в box-sizing, по этой
+   контентной коробке и режется текст. Кегль живёт на листе, а не на контейнере
+   потока: колонок S2 в книге больше нет (T4a), правила S2 перенесены сюда. */
+[data-book] .page {
+  --book-size: 20px;
+  box-sizing: border-box;
+  padding: 22px 26px 18px;
+  background: var(--paper-2);
+  color: var(--ink);
+  border-radius: 2px;
+  box-shadow: inset 0 0 0 1px var(--line);
   font-family: var(--serif);
   font-size: var(--book-size);
   line-height: 1.6;
   text-align: justify;
   hyphens: auto;
   white-space: normal;
-  transition: none;
-  color: var(--ink);
+  overflow: hidden;
 }
 
-/* ---------- типографика блоков внутри потока ---------- */
+/* ---------- типографика блоков внутри листа ---------- */
 
-[data-book-flow] p { margin: 0; text-indent: 1.6em; }
-[data-book-flow] p.book-part,
-[data-book-flow] p.book-date { margin: .9em 0; text-align: center; text-indent: 0; }
-[data-book-flow] h3.book-head { margin: 1.4em 0 .8em; font-size: 1em; text-align: center; }
-[data-book-flow] .book-verse { margin: 1.2em 0; text-align: left; text-indent: 0; }
+[data-book] .page p { margin: 0; text-indent: 1.6em; }
+[data-book] .page p.book-part,
+[data-book] .page p.book-date { margin: .9em 0; text-align: center; text-indent: 0; }
+[data-book] .page h3.book-head { margin: 1.4em 0 .8em; font-size: 1em; text-align: center; }
+[data-book] .page .book-verse { margin: 1.2em 0; text-align: left; text-indent: 0; }
