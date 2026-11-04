@@ -72,7 +72,7 @@
 
 - Кнопка у 17 текстов открывает постраничный вид с номерами «N из M»; до клика `book.js` не загружается.
 - Файл: `scripts/build.mjs`, `src/app.js`, `src/book/book.js`, `src/book/book.css`, `site.config.json`
-- Тесты/гейты: `npm run verify` → 0/0 и срабатывание гейта «book.js нет как `<script src>` в HTML»; `curl -s http://localhost:4173/works/бобыль-и-дружок.html` → в ответе нет `book.js`; DevTools → Network → после клика один запрос `/book/book.js?v=…`
+- Тесты/гейты: `npm run verify` → 0/0 (гейт «book.js нет как `<script src>` в HTML» добавляет S6 — см. R1 постановки S2); `curl -s http://localhost:4173/works/бобыль-и-дружок.html` → в ответе нет `book.js`; DevTools → Network → после клика один запрос `/book/book.js?v=…`
 - Готово = кнопка есть у 17 текстов и отсутствует у 8 коротких и у стихов; клик открывает книгу с номерами страниц и кнопками «Одна страница»/«Разворот», «Обычный текст» возвращает исходную вёрстку на том же месте чтения, выбор и позиция живут в `localStorage`; постановка в `docs/prompts/` прошла `check_task_prompt.py`
 - Важно: `.poem` не переписывать в разметке сборки — книжный вид строится из него в браузере
 - Риск: normal
