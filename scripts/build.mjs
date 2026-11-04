@@ -131,9 +131,15 @@ const ruDate = (iso) => formatDate(String(iso || '').slice(0, 10));
 const stylesSource = await readFile('src/styles.css');
 const appSource = await readFile('src/app.js');
 const themeSource = await readFile('src/theme.js');
-const assetVersion = createHash('sha1')
-  .update(stylesSource).update(appSource).update(themeSource)
-  .digest('hex').slice(0, 8);
+// Версия ассетов покрывает и книжный каталог: книга грузится по отдельным
+// адресам /book/*, но берёт ?v= отсюда же — иначе правка book.js осталась бы
+// незамеченной браузером (§4 документа). Если каталога нет, сборка падает:
+// книжный режим обязан существовать.
+const bookAssetNames = (await readdir('src/book')).sort();
+const assetHash = createHash('sha1')
+  .update(stylesSource).update(appSource).update(themeSource);
+for (const name of bookAssetNames) assetHash.update(await readFile(join('src/book', name)));
+const assetVersion = assetHash.digest('hex').slice(0, 8);
 
 const works = await readJson('data/works.json', []);
 
@@ -515,7 +521,7 @@ function layout({ title, description, content, active = '', bodyClass = '', json
   if (jsonLd) graph.push(...(Array.isArray(jsonLd) ? jsonLd : [jsonLd]));
 
   return `<!doctype html>
-<html lang="${esc(LANG)}" data-theme="dark">
+<html lang="${esc(LANG)}" data-theme="dark" data-v="${assetVersion}">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -1312,6 +1318,7 @@ function workPage(w, index) {
       <button data-poem-action="smaller" aria-label="Уменьшить шрифт">A−</button>
       <button data-poem-action="bigger" aria-label="Увеличить шрифт">A+</button>
       <button data-poem-action="reading">Режим чтения</button>
+      ${bookCfg.available === true && bookSlugs.has(w.slug) ? '<button data-poem-action="book">Режим книги</button>' : ''}
       <button data-poem-action="plain">Без оформления</button>
       <button data-poem-action="print">Печать</button>
       <button data-poem-action="copy">Копировать</button>
@@ -1906,6 +1913,12 @@ for (const p of extra.pages) {
 await writeFile(join(DIST, 'styles.css'), await readFile('src/styles.css'));
 await writeFile(join(DIST, 'app.js'), await readFile('src/app.js'));
 await writeFile(join(DIST, 'theme.js'), await readFile('src/theme.js'));
+// Книжный код живёт отдельно от общих ассетов: он подключается динамически,
+// по клику «Режим книги», и в common-сборку не попадает (T3).
+await mkdir(join(DIST, 'book'), { recursive: true });
+for (const name of bookAssetNames) {
+  await writeFile(join(DIST, 'book', name), await readFile(join('src/book', name)));
+}
 await cp('public/img', join(DIST, 'img'), { recursive: true, force: true });
 
 await writeFile(join(DIST, 'favicon.svg'), `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="12" fill="#7b2f2f"/><text x="32" y="45" font-family="Georgia,serif" font-size="38" fill="#f7f2e8" text-anchor="middle">${esc(String(A.lastName || A.name)[0])}</text></svg>`, 'utf8');
@@ -2117,6 +2130,8 @@ await writeFile(join(DIST, '_headers'), `# Заголовки для Netlify / C
   Cache-Control: public, max-age=31536000, immutable
 /theme.js
   Cache-Control: public, max-age=31536000, immutable
+/book/*
+  Cache-Control: public, max-age=31536000, immutable
 /img/*
   Cache-Control: public, max-age=31536000, immutable
 /*.html
@@ -2155,6 +2170,10 @@ if (!books.length) console.warn('ВНИМАНИЕ: data/books.json пуст — 
 // не потеряла ни одного знака источника (сравнение схлопнутого текста, решение R3).
 console.log(`book: ${bookSlugs.size} текстов, ${bookLost.length} расхождений`);
 console.log(`book: блоков размечено ${bookBlockCount}`);
+// Отчёт об охвате кнопки: считается из той же выборки, что и разметка,
+// при выключенном флаге available — 0. Кнопок из этого числа больше нет:
+// она появляется у тех же 17 текстов (T4).
+console.log(`book: кнопка у ${bookCfg.available === true ? bookSlugs.size : 0} текстов`);
 if (bookLost.length) {
   console.error(`book: текст расходится с источником в ${bookLost.join(', ')}`);
   process.exitCode = 1;

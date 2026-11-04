@@ -238,6 +238,23 @@
     apply();
   }
 
+  // ---------- ленивый запуск книжного режима (план 1, шаг S2) ----------
+  // Книжный модуль живёт в src/book/book.js и в общую сборку не входит: до
+  // клика «Режим книги» браузер не запрашивает ни скрипт, ни стили книги.
+  // Промис лежит в замыкании, повторный клик переиспользует его же.
+  let bookModule = null;
+
+  function loadBook() {
+    if (bookModule) return bookModule;
+    const version = document.documentElement.dataset.v || '';
+    bookModule = import('/book/book.js?v=' + version).catch((err) => {
+      bookModule = null;
+      console.warn('Режим книги: не удалось загрузить модуль', err);
+      return null;
+    });
+    return bookModule;
+  }
+
   // ---------- poem tools ----------
   const poemPage = document.querySelector('.poem-page');
   if (poemPage) {
@@ -258,6 +275,13 @@
         poemPage.classList.toggle('plain');
       } else if (act === 'print') {
         window.print();
+      } else if (act === 'book') {
+        // Ленивая загрузка: книжный модуль и его стили запрашиваются только
+        // по этому клику, до него в Network запросов к /book/ нет (T5).
+        loadBook().then((mod) => {
+          if (mod) mod.open();
+        });
+        return;
       } else if (act === 'copy') {
         const text = poemPage.querySelector('.poem')?.innerText || '';
         const title = poemPage.querySelector('h1')?.innerText || '';

@@ -45,6 +45,7 @@
   },
   "reader": {
     "book": {
+      "available": true,
       "genres": ["Проза", "Статья", "Автобиография"],
       "minChars": 1500
     }
