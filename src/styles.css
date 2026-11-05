@@ -804,6 +804,13 @@ select, .select {
   .main-nav a { font-size: 13px; padding: 8px 7px; }
 }
 
+/* Между планшетом и десктопом пунктов меню десять — не даём им переноситься на вторую строку. */
+@media (max-width: 1080px) and (min-width: 901px) {
+  .header-inner { gap: 14px; }
+  .main-nav { flex-wrap: nowrap; }
+  .main-nav a { font-size: 12.5px; padding: 8px 5px; }
+}
+
 @media (max-width: 1000px) {
   .tiles { grid-template-columns: repeat(2, 1fr); }
   .catalog-grid { grid-template-columns: repeat(3, 1fr); }

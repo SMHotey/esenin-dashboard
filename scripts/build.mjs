@@ -1406,8 +1406,12 @@ ${books.length ? `<div class="catalog-toolbar">
 // ---------- audiobooks ----------
 
 const audioCats = [...new Set(audiobooks.map((b) => b.category).filter(Boolean))];
-const audioMinutes = audiobooks.reduce((s, b) => s + (Number(b.durationMinutes) || 0), 0);
-const audioHours = Math.max(1, Math.round(audioMinutes / 60));
+const audioDurations = audiobooks.map((b) => Number(b.durationMinutes) || 0).filter(Boolean);
+const audioShort = Math.min(...(audioDurations.length ? audioDurations : [0]));
+const audioLong = Math.max(...(audioDurations.length ? audioDurations : [0]));
+const audioRange = audioDurations.length
+  ? ` — от ${Math.floor(audioShort / 60) ? `${Math.floor(audioShort / 60)} ч ${audioShort % 60} мин` : `${audioShort} мин`} до ${Math.floor(audioLong / 60)} ч звучания`
+  : '';
 const isoDuration = (m) => {
   const n = Number(m) || 0;
   if (!n) return '';
@@ -1421,7 +1425,7 @@ ${crumbs([['/', 'Главная'], [null, 'Аудиокниги']])}
 <div class="wrap page-head">
   <h1>Аудиокниги ${esc(A.genitive)}</h1>
   <p>${audiobooks.length
-    ? `${audiobooks.length} ${plural(audiobooks.length, ['запись', 'записи', 'записей'])} в ЛитРесе — около ${audioHours} ${plural(audioHours, ['час', 'часа', 'часов'])} звучания: от отдельных поэм и спектаклей до полных собраний лирики.`
+    ? `${audiobooks.length} ${plural(audiobooks.length, ['запись', 'записи', 'записей'])} в ЛитРесе, ${audioRange.replace(' — ', '')}: отдельные поэмы, спектакли и полные собрания лирики.`
     : 'Раздел готовится: здесь появятся аудиокниги с партнёрскими ссылками.'} Записи читают актёры и чтецы, поэтому это не замена тексту, а другой способ услышать его. Сами тексты по-прежнему бесплатны в <a href="/works/">библиотеке</a>.</p>
 </div>
 ${audiobooks.length ? `<div class="catalog-toolbar">
