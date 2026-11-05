@@ -111,9 +111,14 @@ export function buildSectionPages(ctx) {
     <h2 style="margin:34px 0 14px;font-size:26px">Тексты подборки</h2>
     <ul class="topic-work-list">
       ${list.map(({ w }) => `<li>
-        <a href="${workUrl(w)}">${esc(w.title)}</a>
-        <span class="tw-year">${w.year ? esc(w.year) : 'дата не установлена'}</span>
-        <span class="tw-first">${esc((w.text || '').split('\\n').find((l) => l.trim()) || '')}</span>
+        <details class="tw-item">
+          <summary>
+            <span class="tw-title">${esc(w.title)}</span>
+            <span class="tw-year">${w.year ? esc(w.year) : 'дата не установлена'}</span>
+          </summary>
+          <div class="tw-text">${esc(w.text || '')}</div>
+          <a class="tw-open" href="${workUrl(w)}">Страница произведения →</a>
+        </details>
       </li>`).join('')}
     </ul>
     <div class="source-box"><b>Принцип отбора.</b> В подборку входят тексты, где тема подтверждается ключевыми образами и словарём. Это редакционный список, а не академическая классификация.
