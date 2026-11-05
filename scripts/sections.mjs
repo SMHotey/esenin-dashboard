@@ -66,16 +66,18 @@ export function buildSectionPages(ctx) {
     }
   }
 
+  const visibleTopics = topics.filter((t) => (topicWorks.get(t.id) || []).length > 0);
+
   page('topics/index.html', 'Стихи Есенина по темам: подборки', 
     'Тематические подборки стихов Сергея Есенина: природа, Родина, деревня, любовь, мать, город, смерть, Кавказ, революция. С пояснениями и ссылками на полные тексты.',
     `${crumbs([['/', 'Главная'], [null, 'Темы']])}
 <div class="wrap page-head">
   <h1>Стихи по темам</h1>
-  <p>Девять подборок: от природы и деревни до города, смерти и революции. В каждой — короткое вступление и тексты, в которых тема держится не одним словом, а всей тканью стихотворения.</p>
+  <p>${visibleTopics.length} ${plural(visibleTopics.length, ['подборка', 'подборки', 'подборок'])}: от природы и деревни до города, смерти и революции. В каждой — короткое вступление и тексты, в которых тема держится не одним словом, а всей тканью стихотворения.</p>
 </div>
 <div class="wrap" style="padding-bottom:50px">
   <div class="works-grid">
-    ${topics.map((t) => `<a class="work-card topic-card${t.photo ? ' has-photo' : ''}" href="/topics/${t.id}.html">
+    ${visibleTopics.map((t) => `<a class="work-card topic-card${t.photo ? ' has-photo' : ''}" href="/topics/${t.id}.html">
       ${t.photo ? `<img class="work-card-thumb" src="${esc(t.photoWebp || t.photo)}" alt="${esc(t.photoAlt || t.title)}" loading="lazy" decoding="async">` : ''}
       <span class="genre">${esc(t.kicker || 'Подборка')}</span>
       <span class="title">${esc(t.title)}</span>
@@ -90,11 +92,11 @@ export function buildSectionPages(ctx) {
 </div>`,
     { active: 'works', breadcrumb: [['/', 'Главная'], ['/topics/', 'Темы']], jsonLd: {
       '@type': 'CollectionPage', name: 'Стихи Есенина по темам', inLanguage: LANG,
-      hasPart: topics.map((t) => ({ '@type': 'CollectionPage', name: t.title, url: `${SITE}/topics/${t.id}.html` })),
+      hasPart: visibleTopics.map((t) => ({ '@type': 'CollectionPage', name: t.title, url: `${SITE}/topics/${t.id}.html` })),
     } });
   search.push({ t: 'Стихи по темам', u: '/topics/', g: 'Раздел', k: 'Подборки', s: 'Природа, Родина, деревня, любовь, город, Кавказ' });
 
-  for (const t of topics) {
+  for (const t of visibleTopics) {
     const list = (topicWorks.get(t.id) || []).slice();
     page(`topics/${t.id}.html`, t.title,
       `${t.title}: ${list.length} ${plural(list.length, ['произведение', 'произведения', 'произведений'])} с пояснением, о чём подборка и как читать эти тексты.`,
@@ -110,16 +112,21 @@ export function buildSectionPages(ctx) {
     </div>
     <h2 style="margin:34px 0 14px;font-size:26px">Тексты подборки</h2>
     <ul class="topic-work-list">
-      ${list.map(({ w }) => `<li>
+      ${list.map(({ w }) => {
+        const long = (w.text || '').length > 4500;
+        const year = `<span class="tw-year">${w.year ? esc(w.year) : 'дата не установлена'}</span>`;
+        return long
+          ? `<li class="tw-row"><a class="tw-title" href="${workUrl(w)}">${esc(w.title)}</a>${year}<span class="tw-hint">текст на странице произведения</span></li>`
+          : `<li>
         <details class="tw-item">
           <summary>
-            <span class="tw-title">${esc(w.title)}</span>
-            <span class="tw-year">${w.year ? esc(w.year) : 'дата не установлена'}</span>
+            <span class="tw-title">${esc(w.title)}</span>${year}
           </summary>
           <div class="tw-text">${esc(w.text || '')}</div>
           <a class="tw-open" href="${workUrl(w)}">Страница произведения →</a>
         </details>
-      </li>`).join('')}
+      </li>`;
+      }).join('')}
     </ul>
     <div class="source-box"><b>Принцип отбора.</b> В подборку входят тексты, где тема подтверждается ключевыми образами и словарём. Это редакционный список, а не академическая классификация.
       <a href="/topics/">Другие темы →</a></div>
