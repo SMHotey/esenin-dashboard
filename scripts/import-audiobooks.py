@@ -334,6 +334,9 @@ def main() -> None:
     cands.sort(key=lambda x: x["id"])
     print(f"кандидатов: {len(cands)}")
 
+    # Аннотации редакционные (переписаны по описанию ЛитРеса): при повторном импорте
+    # сохраняем уже готовый текст, иначе карточки снова станут одинаковыми.
+    prev_map = {x["id"]: x for x in (json.load(open(OUT, encoding="utf-8")) if os.path.exists(OUT) else [])}
     key = "" if args.no_download else api_key()
     books = []
     skipped = {"продажа": 0, "робот": 0, "коротко": 0, "чужое": 0, "без чтеца": 0, "без данных": 0}
@@ -410,7 +413,8 @@ def main() -> None:
             "searchQuery": f"{' '.join(author_names) or 'Сергей Есенин'} {title}",
             "tags": [duration_text(minutes), cat, "ЛитРес"],
             "availability": availability,
-            "annotation": annotate(cat, reader_text, minutes, year, about_author, title),
+            "annotation": (prev_map.get(f"audio-{pid}") or {}).get("annotation")
+            or annotate(cat, reader_text, minutes, year, about_author, title),
         }
         if about_author:
             # У книг о поэте названия часто одинаковые («Есенин», «Сергей Есенин») — автора показываем подзаголовком.
