@@ -70,6 +70,7 @@ let graphWarmed = false;
 let pendingDir = 0;
 let dragStartX = 0;
 let dragMoved = false;
+let dragActive = false;
 let dragDx = 0;
 let pressRightHalf = true;
 
@@ -237,9 +238,9 @@ function settleAudioError(err) {
 // нарушен: ни при загрузке модуля, ни при открытии книги контекста нет (G4.1).
 function warmAudio() {
   if (!soundOn || audioBroken || graphWarmed) return;
-  const ctx = ensureAudio();
-  if (!ctx || audioBroken) return;
   try {
+    const ctx = ensureAudio();
+    if (!ctx) return;
     const freq = Math.sqrt(FWD_BAND[0] * FWD_BAND[1]);
     noiseBuffer(ctx);
     const source = ctx.createBufferSource();
@@ -255,6 +256,7 @@ function warmAudio() {
     gain.connect(ctx.destination);
     graphWarmed = true;
   } catch (err) {
+    // Сюда попадает и отказ ensureAudio (resume() синхронно бросает).
     settleAudioError(err);
   }
 }
@@ -267,9 +269,9 @@ function playFlip(dir) {
   if (!soundOn || audioBroken || !state) return;
   const now = performance.now();
   if (now - lastPlayedAt < THROTTLE_MS) return;
-  const ctx = ensureAudio();
-  if (!ctx) return;
   try {
+    const ctx = ensureAudio();
+    if (!ctx) return;
     const band = dir < 0 ? BACK_BAND : FWD_BAND;
     const freq = Math.sqrt(band[0] * band[1]);
     const source = ctx.createBufferSource();
@@ -439,30 +441,51 @@ function turn(delta) {
   pendingDir = 0;
 }
 
-// Направление звука по приоритету R2: нажатие кнопки «‹/›» → знак смещения
-// перетаскивания → половина сцены под указателем (правая — вперёд) → вперёд.
+// Направление звука по приоритету R2: нажатие кнопки «‹/›» → половина сцены
+// под указателем (правая — вперёд) → вперёд. Перетаскивание передаёт знак
+// смещения само — его отпускание знает и dx, и факт переворота.
 function nextDir() {
   if (pendingDir !== 0) {
     const dir = pendingDir;
     pendingDir = 0;
     return dir;
   }
-  if (dragMoved) return dragDx < 0 ? 1 : -1;
   return pressRightHalf ? 1 : -1;
 }
 
+// Перевернётся ли лист, если отпустить сейчас: библиотека на отпускании
+// переворачивает только при getPosition().x <= 0 (F4.11) — по этому признаку
+// и решается звук, иначе лист возвращается на место молча.
+function flipWillTurn() {
+  const flip = state && state.flip;
+  if (!flip) return false;
+  try {
+    const calc = flip.getFlipController().getCalculation();
+    return Boolean(calc) && calc.getPosition().x <= 0;
+  } catch (err) {
+    return false;
+  }
+}
+
 // S4: жест на сцене. pointerdown запоминает точку и половину сцены, pointermove
-// (перехват, passive) — признак и знак смещения больше 5 px, pointerup — единственный
-// звук перетаскивания: библиотека на отпускании листает без события changeState.
+// (перехват, passive) — смещение больше 5 px. Движение и отпускание слушаются на
+// window: библиотека завершает жест своим userStop там же, и отпускание за краем
+// сцены — тоже переворот (F4.7, F4.11).
 function onStagePointerDown(event) {
+  dragActive = true;
   dragStartX = event.clientX;
   dragMoved = false;
   dragDx = 0;
   const rect = state.stage.getBoundingClientRect();
   pressRightHalf = event.clientX >= rect.left + rect.width / 2;
+  // Прогрев графа — в том же жесте, который может потребовать звука (R6):
+  // холодный new AudioContext стоит 150-250 мс, а до changeState остаются
+  // десятки миллисекунд (см. warmAudio()).
+  warmAudio();
 }
 
 function onStagePointerMove(event) {
+  if (!dragActive) return;
   if (Math.abs(event.clientX - dragStartX) > 5) {
     dragMoved = true;
     dragDx = event.clientX - dragStartX;
@@ -470,10 +493,13 @@ function onStagePointerMove(event) {
 }
 
 function onStagePointerUp() {
+  if (!dragActive) return;
+  dragActive = false;
   if (!dragMoved) return;
-  const dir = dragDx < 0 ? 1 : -1;
   dragMoved = false;
-  playFlip(dir);
+  // Звук — только по факту переворота: короткий жест лист возвращает на место.
+  if (!flipWillTurn()) return;
+  playFlip(dragDx < 0 ? 1 : -1);
 }
 
 // Пересборка книги: из копий блоков источника режется текст, листы монтируются
@@ -689,13 +715,14 @@ function buildSection(view) {
   btnSingle.addEventListener('click', () => setView('single'));
   btnSpread.addEventListener('click', () => setView('spread'));
   // Переключатель звука (T5): выбор пишется сразу; включение — жест, в котором
-  // создаётся контекст, пробного звука нет (R6). Отказ аудио гасит кнопку.
+  // создаётся контекст и прогревается граф, пробного звука нет (R6, R11).
+  // Отказ аудио гасит кнопку.
   btnSound.addEventListener('click', () => {
     if (audioBroken) return;
     soundOn = !soundOn;
     writeSoundPref(soundOn);
     btnSound.setAttribute('aria-pressed', String(soundOn));
-    if (soundOn) ensureAudio();
+    warmAudio();
   });
 
   return { section, stage, counter, prev, next, btnSingle, btnSpread, btnSound };
@@ -728,17 +755,20 @@ async function openInternal() {
     document.addEventListener('keydown', onKeydown);
     window.addEventListener('resize', onResize);
 
-    // S4: состояние звука читается после mount — кнопка соответствует ключу
-    // (T8), и жесты сцены: pointerdown/move/up в фазе перехвата, pointermove
-    // passive; слушатели снимаются в close().
+    // S4: состояние звука — после mount, кнопка по ключу (T8). Жесты сцены —
+    // перехват; движение и отпускание — на window (указатель уходит за край
+    // сцены), снимаются в close(). Прогрев контекста — только в жестах, которые
+    // требуют звука: сцена и «‹/›/Звук» (R6); клик по переключателю вида его
+    // не создаёт.
     soundOn = readSoundPref();
     state.btnSound.setAttribute('aria-pressed', String(soundOn));
     if (audioBroken) state.btnSound.disabled = true;
-    // Прогрев контекста — на всём тулбаре и сцене (см. warmAudio()).
-    state.section.addEventListener('pointerdown', warmAudio, true);
+    [state.prev, state.next, state.btnSound].forEach((btn) => {
+      btn.addEventListener('pointerdown', warmAudio, true);
+    });
     state.stage.addEventListener('pointerdown', onStagePointerDown, true);
-    state.stage.addEventListener('pointermove', onStagePointerMove, { capture: true, passive: true });
-    state.stage.addEventListener('pointerup', onStagePointerUp, true);
+    window.addEventListener('pointermove', onStagePointerMove, { capture: true, passive: true });
+    window.addEventListener('pointerup', onStagePointerUp, true);
 
     // Верх секции (тулбар + сцена) — на 90 px ниже верха окна. Привязываемся
     // к секции, а не к сцене: шапка сайта липкая и занимает 73 px, при привязке
@@ -788,10 +818,9 @@ export function close() {
   // S4: жесты сцены снять, аудио закрыть, состояния вернуть к умолчаниям —
   // следующее открытие прочитает ключ заново (T8). Кнопка «Звук» при этом
   // уже убрана вместе с секцией.
-  state.section.removeEventListener('pointerdown', warmAudio, true);
   state.stage.removeEventListener('pointerdown', onStagePointerDown, true);
-  state.stage.removeEventListener('pointermove', onStagePointerMove, { capture: true, passive: true });
-  state.stage.removeEventListener('pointerup', onStagePointerUp, true);
+  window.removeEventListener('pointermove', onStagePointerMove, { capture: true, passive: true });
+  window.removeEventListener('pointerup', onStagePointerUp, true);
   if (audioCtx) {
     try {
       audioCtx.close();
@@ -807,6 +836,7 @@ export function close() {
   graphWarmed = false;
   pendingDir = 0;
   dragMoved = false;
+  dragActive = false;
   dragDx = 0;
   pressRightHalf = true;
   state = null;
