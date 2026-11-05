@@ -53,3 +53,24 @@ jobs:
         run: node scripts/purge-cache.mjs
       - name: IndexNow — отправка изменённых адресов Яндексу и Bing
         run: node scripts/indexnow.mjs --recent 2
+
+  # Партнёрские ссылки проверяются после выкладки: карточки товаров снимают с продажи,
+  # и мёртвая ссылка должна всплывать сама, а не находиться вручную. Красный статус
+  # этого job'а — сигнал поправить data/books.json или data/audiobooks.json;
+  # на публикацию он уже не влияет (сайт обновлён предыдущим job'ом).
+  affiliates:
+    needs: deploy
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Актуальность партнёрских ссылок (Читай-город, ЛитРес)
+        run: node scripts/check-affiliate.mjs
+      - name: Отчёт проверки
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: affiliate-report
+          path: reports/affiliate-report.json

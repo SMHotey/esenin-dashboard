@@ -12,6 +12,7 @@
     "prebuild": "node scripts/last-updated.mjs",
     "build": "node scripts/build.mjs",
     "check": "node scripts/check-links.mjs",
+    "check:affiliate": "node scripts/check-affiliate.mjs",
     "audit:texts": "node scripts/text-audit.mjs",
     "sync:prices": "node scripts/sync-prices.mjs",
     "import:audiobooks": "python scripts/import-audiobooks.py",
