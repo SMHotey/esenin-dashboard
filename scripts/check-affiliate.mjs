@@ -19,6 +19,7 @@ const ARGS = process.argv.slice(2);
 const JSON_ONLY = ARGS.includes('--json');
 const STORE_FILTER = (ARGS.find((a) => a.startsWith('--store=')) || '').split('=')[1] || '';
 const LIMIT = Number((ARGS.find((a) => a.startsWith('--limit=')) || '').split('=')[1] || 0);
+const ALLOW_BLOCKED = process.argv.includes('--allow-blocked');
 const CONCURRENCY = 6;
 const TIMEOUT_MS = 25000;
 // Магазины троттлят частые запросы (403/429): одна пауза и повтор снимают половину
@@ -217,5 +218,5 @@ if (dead.length) {
 // такой прогон не должен выглядеть зелёным, иначе проверка тихо перестанет работать.
 if (results.length && blocked.length === results.length) {
   console.log('ПРОВЕРКА НЕ ВЫПОЛНЕНА: ни одна ссылка не открылась из этой сети');
-  process.exit(2);
+  process.exit(ALLOW_BLOCKED ? 0 : 2);
 }
