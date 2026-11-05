@@ -289,6 +289,7 @@ const studies = await readJson('data/studies.json', []);
 const passions = await readJson('data/passions.json', []);
 const versions = await readJson('data/versions.json', []);
 const books = await readJson('data/books.json', []);
+const audiobooks = await readJson('data/audiobooks.json', []);
 const places = await readJson('data/places.json', []);
 const museums = await readJson('data/museums.json', []);
 const monuments = await readJson('data/monuments.json', []);
@@ -414,6 +415,7 @@ const nav = [
   ['/places/', 'Места', 'places'],
   ['/legacy/', 'Наследие', 'legacy'],
   ['/books/', 'Книги', 'books'],
+  ['/audiobooks/', 'Аудиокниги', 'audiobooks'],
   ['/publications/', 'Журнал', 'publications'],
   ['/research/', 'Наука', 'research'],
 ];
@@ -586,6 +588,7 @@ ${content}
           <li><a href="/places/">Есенинские места</a></li>
           <li><a href="/legacy/">Наследие</a></li>
           <li><a href="/books/">Книги</a></li>
+          <li><a href="/audiobooks/">Аудиокниги</a></li>
         </ul>
       </div>
       <div>
@@ -693,9 +696,15 @@ const showPrice = config.affiliate?.showPrice === true;
 // Маркировка интернет-рекламы: форма записи задана рекламодателем и должна выводиться
 // мелким шрифтом рядом с рекламной ссылкой (ст. 18.1 ФЗ «О рекламе»).
 const advertiser = config.affiliate?.advertiser || {};
-const adSentence = advertiser.name
-  ? `Реклама. Рекламодатель ${advertiser.name}${advertiser.ogrn ? `, ОГРН ${advertiser.ogrn}` : ''}.`
-  : 'Реклама.';
+// Рекламодатель у каждого магазина свой (у «Читай-города» — ООО «ГРАМОТА», у ЛитРеса — ООО «ЛИТРЕС»),
+// поэтому маркировку собираем по конфигу магазина, а общий блок остаётся запасным вариантом.
+function adSentenceOf(adv) {
+  const a = adv || advertiser;
+  if (!a?.name) return 'Реклама.';
+  const ids = [a.ogrn ? `ОГРН ${a.ogrn}` : '', a.inn ? `ИНН ${a.inn}` : ''].filter(Boolean).join(', ');
+  return `Реклама. Рекламодатель ${a.name}${ids ? `, ${ids}` : ''}.`;
+}
+const adSentence = adSentenceOf(advertiser);
 
 function bookStoreLinks(b) {
   const links = [];
@@ -705,14 +714,14 @@ function bookStoreLinks(b) {
     const store = stores[l.store];
     if (!store || !l.url) continue;
     if (allow && !allow.has(l.store)) continue;
-    links.push({ key: l.store, label: store.label || l.store, url: affiliateUrl(l.url, store) });
+    links.push({ key: l.store, label: store.label || l.store, url: affiliateUrl(l.url, store), advertiser: store.advertiser });
   }
   for (const [key, store] of Object.entries(stores)) {
     if (!store.search) continue;
     if (allow && !allow.has(key)) continue;
     if ((b.links || []).some((l) => l.store === key)) continue;
     const q = b.searchQuery || `${A.lastName} ${b.title}`;
-    links.push({ key, label: store.label || key, url: affiliateUrl(store.search.replace('{q}', encodeURIComponent(q)), store) });
+    links.push({ key, label: store.label || key, url: affiliateUrl(store.search.replace('{q}', encodeURIComponent(q)), store), advertiser: store.advertiser });
   }
   return links;
 }
@@ -721,7 +730,7 @@ function bookCard(b, index) {
   const tone = index % 5;
   const isAudio = /аудио/i.test(b.format || '');
   const isPaper = /бумаж/i.test(b.format || '');
-  const meta = [b.year, b.pages ? `${b.pages} с.` : '', b.publisher, b.isbn ? `ISBN ${b.isbn}` : '', b.performer ? `Читает ${b.performer}` : '']
+  const meta = [b.year, b.duration || '', b.pages ? `${b.pages} с.` : '', b.publisher, b.isbn ? `ISBN ${b.isbn}` : '', b.performer ? `Читает ${b.performer}` : '']
     .filter(Boolean).map(esc).join(' · ');
   // erid — идентификатор маркировки интернет-рекламы (ст. 18.1 ФЗ «О рекламе»):
   // его нужно показывать рядом с рекламной ссылкой, поэтому вытаскиваем его из URL.
@@ -734,7 +743,7 @@ function bookCard(b, index) {
     const label = `Купить в ${esc(l.label)} (открывается в новой вкладке${erid ? ', реклама' : ''})`;
     return `<span class="book-buy">
       <a class="book-link${i === 0 ? ' is-primary' : ''}" href="${esc(l.url)}" target="_blank" rel="sponsored nofollow noopener" aria-label="${label}">${esc(l.label)} <span class="arr" aria-hidden="true">↗</span></a>
-      ${erid ? `<span class="book-ad">${esc(adSentence)}</span><span class="book-erid">erid: ${esc(erid)}</span>` : ''}
+      ${erid ? `<span class="book-ad">${esc(adSentenceOf(l.advertiser))}</span><span class="book-erid">erid: ${esc(erid)}</span>` : ''}
     </span>`;
   }).join('');
   const tags = (b.tags || []).slice(0, 3).map((t) => `<span class="tag">${esc(t)}</span>`).join('');
@@ -755,7 +764,7 @@ function bookCard(b, index) {
       ${b.series ? `<span class="bc-series">${esc(b.series)}</span>` : ''}
     </div>`;
 
-  return `<article class="book-card" data-title="${esc(b.title)}" data-cat="${esc(b.category || '')}" data-pub="${esc(b.publisher || '')}" data-pages="${Number(b.pages) || 0}" data-price="${Number(b.price) || 0}">
+  return `<article class="book-card" data-title="${esc(b.title)}" data-cat="${esc(b.category || '')}" data-pub="${esc(b.publisher || '')}" data-pages="${Number(b.pages) || 0}" data-price="${Number(b.price) || 0}" data-year="${Number(b.year) || 0}" data-duration="${Number(b.durationMinutes) || 0}">
     ${cover}
     <div class="book-body">
       <h3>${esc(b.title)}</h3>
@@ -1358,7 +1367,7 @@ const booksPage = `
 ${crumbs([['/', 'Главная'], [null, 'Книги']])}
 <div class="wrap page-head">
   <h1>Книги ${esc(A.genitive)}</h1>
-  <p>${books.length ? `${books.length} ${plural(books.length, ['издание', 'издания', 'изданий'])} в продаже — от школьных сборников до многотомных собраний сочинений.` : ''} Полные тексты произведений при этом остаются бесплатными в <a href="/works/">библиотеке</a>.</p>
+  <p>${books.length ? `${books.length} ${plural(books.length, ['издание', 'издания', 'изданий'])} в продаже — от школьных сборников до многотомных собраний сочинений.` : ''} Полные тексты произведений при этом остаются бесплатными в <a href="/works/">библиотеке</a>.${audiobooks.length ? ` Аудиокниги — ${audiobooks.length} ${plural(audiobooks.length, ['запись', 'записи', 'записей'])} в <a href="/audiobooks/">отдельном разделе</a>.` : ''}</p>
 </div>
 ${books.length ? `<div class="catalog-toolbar">
   <div class="wrap">
@@ -1391,6 +1400,56 @@ ${books.length ? `<div class="catalog-toolbar">
     <div class="note">Цены, наличие и формат указаны на стороне магазина и могут меняться. Проект не хранит данные о покупках. Ссылка ведёт в «Читай-город».</div>
     <a class="btn btn-ghost" href="/works/">Читать бесплатно в библиотеке</a>
   </div>` : `<div class="note">Раздел готовится: здесь появятся издания ${esc(A.genitive)} с партнёрскими ссылками. Пока полные тексты доступны в <a href="/works/">библиотеке</a>.</div>`}
+</div>`;
+
+
+// ---------- audiobooks ----------
+
+const audioCats = [...new Set(audiobooks.map((b) => b.category).filter(Boolean))];
+const audioMinutes = audiobooks.reduce((s, b) => s + (Number(b.durationMinutes) || 0), 0);
+const audioHours = Math.max(1, Math.round(audioMinutes / 60));
+const isoDuration = (m) => {
+  const n = Number(m) || 0;
+  if (!n) return '';
+  const h = Math.floor(n / 60);
+  const mm = n % 60;
+  return 'PT' + (h ? `${h}H` : '') + (mm ? `${mm}M` : '');
+};
+
+const audiobooksPage = `
+${crumbs([['/', 'Главная'], [null, 'Аудиокниги']])}
+<div class="wrap page-head">
+  <h1>Аудиокниги ${esc(A.genitive)}</h1>
+  <p>${audiobooks.length
+    ? `${audiobooks.length} ${plural(audiobooks.length, ['запись', 'записи', 'записей'])} в ЛитРесе — около ${audioHours} ${plural(audioHours, ['час', 'часа', 'часов'])} звучания: от отдельных поэм и спектаклей до полных собраний лирики.`
+    : 'Раздел готовится: здесь появятся аудиокниги с партнёрскими ссылками.'} Записи читают актёры и чтецы, поэтому это не замена тексту, а другой способ услышать его. Сами тексты по-прежнему бесплатны в <a href="/works/">библиотеке</a>.</p>
+</div>
+${audiobooks.length ? `<div class="catalog-toolbar">
+  <div class="wrap">
+    <div class="tag-row" role="group" aria-label="Тип записи">
+      <button class="filter-chip" data-books-cat="all" aria-pressed="true">Все аудиокниги (${audiobooks.length})</button>
+      ${audioCats.map((c) => `<button class="filter-chip" data-books-cat="${esc(c)}" aria-pressed="false">${esc(c)} (${audiobooks.filter((b) => b.category === c).length})</button>`).join('')}
+    </div>
+    <div class="catalog-controls">
+      <label class="visually-hidden" for="audio-sort">Сортировка</label>
+      <select id="audio-sort" data-books-sort>
+        <option value="year-desc" selected>Сначала новые</option>
+        <option value="title">По названию</option>
+        <option value="duration">По длительности</option>
+      </select>
+      <span class="results-line">Показано: <b data-books-count>${audiobooks.length}</b></span>
+    </div>
+  </div>
+</div>` : ''}
+<div class="wrap" style="padding-bottom:40px">
+  ${audiobooks.length ? `
+  <div class="note">Длительность и состав записи указаны по данным магазина. Одна и та же поэма часто существует в нескольких прочтениях — это разные записи, а не дубли: у каждой свой чтец.</div>
+  <div class="books-grid" data-books-grid>${audiobooks.map(bookCard).join('')}</div>
+  <button class="load-more" data-books-more hidden>Показать ещё</button>
+  <div class="books-foot">
+    <div class="note">Аудиокниги продаются в ЛитРесе; наличие, цена и формат уточняются на стороне магазина. Ссылки партнёрские: цена для покупателя не меняется, проект может получить вознаграждение. <a href="/books/">Бумажные издания — в разделе «Книги»</a>.</div>
+    <a class="btn btn-ghost" href="/works/">Читать бесплатно в библиотеке</a>
+  </div>` : `<div class="note">Пока записей нет. Тексты доступны в <a href="/works/">библиотеке</a>.</div>`}
 </div>`;
 
 // ---------- research ----------
@@ -1845,6 +1904,34 @@ await writePage('books/index.html', layout({
   } : null,
 }));
 
+await writePage('audiobooks/index.html', layout({
+  title: `Аудиокниги ${A.genitive}`,
+  description: `Аудиокниги ${A.genitive} в ЛитРесе: полные собрания лирики, поэмы и спектакли в исполнении актёров. Длительность, чтецы и партнёрские ссылки.`,
+  content: audiobooksPage, active: 'audiobooks',
+  breadcrumb: [['/', 'Главная'], [null, 'Аудиокниги']],
+  jsonLd: audiobooks.length ? {
+    '@type': 'ItemList',
+    name: `Аудиокниги ${A.genitive}`,
+    numberOfItems: audiobooks.length,
+    itemListElement: audiobooks.map((b, i) => ({
+      '@type': 'ListItem',
+      position: i + 1,
+      item: {
+        '@type': 'Audiobook',
+        name: b.title,
+        author: { '@id': `${SITE}/#person` },
+        inLanguage: LANG,
+        publisher: { '@type': 'Organization', name: 'ЛитРес' },
+        ...((b.readers || []).length ? { readBy: b.readers.map((name) => ({ '@type': 'Person', name })) } : {}),
+        ...(b.durationMinutes ? { duration: isoDuration(b.durationMinutes) } : {}),
+        ...(b.year ? { datePublished: String(b.year) } : {}),
+        ...(b.cover ? { image: SITE + b.cover } : {}),
+        ...((b.links || [])[0]?.url ? { url: (b.links || [])[0].url } : {}),
+      },
+    })),
+  } : null,
+}));
+
 await writePage('research/index.html', layout({
   title: 'Научные работы', description: `Библиографии и исследования о ${A.prepositional}: ${research.length} записей с аннотациями и выходными данными.`,
   content: researchPage, active: 'research',
@@ -1934,10 +2021,12 @@ const searchItems = [
   ...articles.map((a) => ({ t: a.title, u: `/biography/${a.slug}.html`, g: 'Биография', k: a.kind === 'overview' ? 'Обзор' : 'Период', s: a.excerpt || '' })),
   ...people.map((p) => ({ t: p.name, u: `/people/${p.id}.html`, g: 'Человек', k: p.role, s: String(p.summary || '').slice(0, 90) })),
   ...books.map((b) => ({ t: b.title, u: '/books/', g: 'Книга', k: `${b.format}${b.year ? ' · ' + b.year : ''}`, s: String(b.annotation || '').slice(0, 90) })),
+  ...audiobooks.map((b) => ({ t: b.title, u: '/audiobooks/', g: 'Аудиокнига', k: `${b.performer || 'Аудиокнига'}${b.year ? ' · ' + b.year : ''}`, s: String(b.annotation || '').slice(0, 90) })),
   ...research.map((r) => ({ t: r.title, u: '/research/', g: 'Научная работа', k: `${(r.authors || []).join(', ')} · ${r.year}`, s: r.annotation })),
   { t: 'Хронология', u: '/life/timeline.html', g: 'Раздел', k: 'Жизнь', s: 'Основные события биографии' },
   { t: 'Учёба', u: '/life/studies.html', g: 'Раздел', k: 'Жизнь', s: 'Школа, училище, университет' },
-  { t: 'Книги', u: '/books/', g: 'Раздел', k: 'Издания', s: 'Купить книги, аудиокниги' },
+  { t: 'Книги', u: '/books/', g: 'Раздел', k: 'Издания', s: 'Бумажные издания и партнёрские ссылки' },
+  { t: 'Аудиокниги', u: '/audiobooks/', g: 'Раздел', k: 'Аудио', s: 'Аудиокниги Есенина в ЛитРесе: чтецы, длительность' },
   { t: 'Источники', u: '/sources.html', g: 'Раздел', k: 'Реестр', s: 'Уровни достоверности' },
   { t: 'Версии', u: '/versions.html', g: 'Раздел', k: 'Спорные вопросы', s: 'Что установлено, а что — версия' },
   { t: 'О проекте', u: '/about.html', g: 'Раздел', k: 'Права и принципы', s: 'Лицензии, партнёрские ссылки, обновления' },
@@ -1957,7 +2046,7 @@ await writeFile(join(DIST, 'search.json'), JSON.stringify(uniqueSearch), 'utf8')
 // ---------- sitemap ----------
 
 const urls = [
-  '/', '/biography/', '/people/', '/life/', '/works/', '/books/', '/research/', '/places/', '/legacy/', '/topics/',
+  '/', '/biography/', '/people/', '/life/', '/works/', '/books/', '/audiobooks/', '/research/', '/places/', '/legacy/', '/topics/',
   '/versions.html', '/sources.html', '/about.html', '/faq.html', '/glossary.html', '/privacy.html',
   ...extra.urls,
   ...articles.map((a) => `/biography/${a.slug}.html`),
@@ -1976,6 +2065,10 @@ const pageImages = new Map();
 if (A.portrait) pageImages.set('/', [{ loc: SITE + A.portrait, title: A.portraitAlt || A.name }]);
 if (books.length) {
   pageImages.set('/books/', books.filter((b) => b.cover)
+    .map((b) => ({ loc: SITE + b.cover, title: b.coverAlt || `${b.title} — обложка` })));
+}
+if (audiobooks.length) {
+  pageImages.set('/audiobooks/', audiobooks.filter((b) => b.cover)
     .map((b) => ({ loc: SITE + b.cover, title: b.coverAlt || `${b.title} — обложка` })));
 }
 

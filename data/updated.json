@@ -1,12 +1,12 @@
 {
-  "generatedAt": "2026-11-04",
+  "generatedAt": "2026-11-05",
   "sections": {
-    "structure": "2026-11-04",
+    "structure": "2026-11-05",
     "works": "2026-11-03",
     "people": "2026-10-23",
     "timeline": "2026-10-23",
     "biography": "2026-10-23",
-    "publications": "2026-11-03",
+    "publications": "2026-11-04",
     "places": "2026-10-24",
     "legacy": "2026-10-24",
     "books": "2026-10-22",
@@ -30,7 +30,8 @@
     "content/publications/cherny-chelovek-1925.md": "2026-11-03",
     "content/publications/mariengof-roman-bez-vranya.md": "2026-11-03",
     "content/publications/otgovorila-roshcha-1924.md": "2026-11-03",
-    "content/publications/porosha-1914.md": "2026-11-03"
+    "content/publications/porosha-1914.md": "2026-11-03",
+    "content/publications/batum-1924-pristan.md": "2026-11-04"
   },
   "note": "Даты последнего изменения по разделам. Обновляется скриптом scripts/last-updated.mjs из истории git; в CI без истории используется этот файл."
 }

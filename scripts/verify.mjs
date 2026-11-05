@@ -358,6 +358,56 @@ for (const b of books) {
   }
 }
 
+// --- аудиокниги (ЛитРес, Партнёрская программа AdvCake) ---
+const audiobooks = await readJson('data/audiobooks.json');
+if (audiobooks.length) {
+  if (!locs.some((l) => l.endsWith('/audiobooks/'))) errors.push('sitemap: нет раздела аудиокниг');
+  const audioHtml = await readFile(join(DIST, 'audiobooks/index.html'), 'utf8');
+  const seenAudio = new Set();
+  for (const b of audiobooks) {
+    const id = b.id || '?';
+    if (!b.title || !b.annotation) errors.push(`audiobooks.json: у ${id} нет title/annotation`);
+    if (!b.durationMinutes || !b.duration) errors.push(`audiobooks.json: у ${id} нет длительности`);
+    if (!b.category) errors.push(`audiobooks.json: у ${id} нет категории`);
+    if (!b.performer) warnings.push(`audiobooks.json: у ${id} не указан чтец`);
+    if (seenAudio.has(b.productId)) errors.push(`audiobooks.json: товар ${b.productId} продублирован`);
+    seenAudio.add(b.productId);
+    if (!(b.links || []).length) errors.push(`audiobooks.json: у ${id} нет партнёрской ссылки`);
+    for (const l of b.links || []) {
+      if (!/^https:\/\//.test(l.url)) errors.push(`audiobooks.json: ${id} — ссылка не https`);
+      if (!/[?&]utm_source=advcake/.test(l.url)) errors.push(`audiobooks.json: ${id} — ссылка без меток advcake`);
+      if (!/[?&]erid=/.test(l.url)) errors.push(`audiobooks.json: ${id} — ссылка без erid`);
+    }
+    if (!b.cover) errors.push(`audiobooks.json: у ${id} нет обложки`);
+    for (const key of ['cover', 'coverWebp']) {
+      if (!b[key]) continue;
+      const file = join(DIST, b[key].replace(/^\//, ''));
+      if (!existsSync(file)) errors.push(`аудиокниги: ${id} — файл обложки ${b[key]} не попал в dist/`);
+      else if ((await stat(file)).size < 1024) errors.push(`аудиокниги: ${id} — обложка ${b[key]} подозрительно мала`);
+    }
+  }
+  const audioCards = (audioHtml.match(/class="book-card"/g) || []).length;
+  if (audioCards !== audiobooks.length) errors.push(`аудиокниги: карточек на странице ${audioCards}, а в данных ${audiobooks.length}`);
+  if (!audioHtml.includes('rel="sponsored')) errors.push('аудиокниги: у ссылок нет rel="sponsored"');
+  if (audioHtml.includes('class="book-price"')) errors.push('аудиокниги: цена попала на страницу при выключенном affiliate.showPrice');
+  // Рекламодатель у ЛитРеса свой — маркировка должна быть его, а не «Читай-города».
+  const litresAdv = config.affiliate?.stores?.litres?.advertiser || {};
+  if (litresAdv.name) {
+    const required = `Реклама. Рекламодатель ${litresAdv.name}${litresAdv.inn ? `, ИНН ${litresAdv.inn}` : litresAdv.ogrn ? `, ОГРН ${litresAdv.ogrn}` : ''}.`;
+    if (!audioHtml.includes(required)) errors.push(`аудиокниги: нет обязательной маркировки «${required}»`);
+  }
+  for (const b of audiobooks) {
+    for (const l of b.links || []) {
+      const erid = (String(l.url).match(/[?&]erid=([^&]+)/i) || [])[1];
+      if (erid && !audioHtml.includes(`erid: ${decodeURIComponent(erid)}`)) {
+        errors.push(`аудиокниги: у ${b.id} ссылка с erid=${decodeURIComponent(erid)}, но erid не выведен на странице`);
+      }
+    }
+  }
+  if (!search.some((s) => s.u === '/audiobooks/')) errors.push('search.json: нет раздела аудиокниг');
+  info.push(`аудиокниг проверено: ${audiobooks.length}`);
+}
+
 // --- тексты произведений ---
 // Импорт с Викитеки оставлял <h3>, __NOTOC__ и «== 1 ==» — на странице это мусор.
 const worksData = await readJson('data/works.json');

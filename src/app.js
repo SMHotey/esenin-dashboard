@@ -319,6 +319,9 @@
         title: (a, b) => a.dataset.title.localeCompare(b.dataset.title, 'ru'),
         pub: (a, b) => (a.dataset.pub || '').localeCompare(b.dataset.pub || '', 'ru') || a.dataset.title.localeCompare(b.dataset.title, 'ru'),
         pages: (a, b) => (+b.dataset.pages || 0) - (+a.dataset.pages || 0),
+        // Аудиокниги: год записи и длительность (у бумажных книг этих data-атрибутов нет).
+        'year-desc': (a, b) => (+b.dataset.year || 0) - (+a.dataset.year || 0) || a.dataset.title.localeCompare(b.dataset.title, 'ru'),
+        duration: (a, b) => (+b.dataset.duration || 0) - (+a.dataset.duration || 0) || a.dataset.title.localeCompare(b.dataset.title, 'ru'),
         // Цену не показываем, но она есть в data-price — сортируем по ней.
         'price-desc': (a, b) => (+b.dataset.price || 0) - (+a.dataset.price || 0) || a.dataset.title.localeCompare(b.dataset.title, 'ru'),
         'price-asc': (a, b) => (+a.dataset.price || 0) - (+b.dataset.price || 0) || a.dataset.title.localeCompare(b.dataset.title, 'ru'),

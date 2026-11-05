@@ -27,6 +27,9 @@ scratch/
 
 # состояние отправки в IndexNow (локальный кэш scripts/indexnow.mjs)
 .cache/
+# секреты локальной работы (API-ключи партнёрок), в git не попадают
+.secrets/
+
 # движок конвейера шагов ставится командой `hermes pipeline setup`, в git не хранится
 .pipeline/
 .hermes/

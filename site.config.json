@@ -60,7 +60,9 @@
         "label": "ЛитРес",
         "tagParam": "lfrom",
         "tag": "",
-        "search": "https://www.litres.ru/search/?q={q}"
+        "search": "https://www.litres.ru/search/?q={q}",
+        "advertiser": { "name": "ООО «ЛИТРЕС»", "inn": "7719571260" },
+        "note": "Партнёрская программа AdvCake (оффер litresru, erid 2VfnxyNkZrY). Готовые ссылки под каждый товар собирает Cakelink API: https://cakelink.ru/link?dl=<url>&pass=<ключ> — см. scripts/import-audiobooks.py."
       },
       "ozon": {
         "label": "Ozon",
