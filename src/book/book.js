@@ -5,6 +5,9 @@
 // S3: настоящий лист с изгибом на вендоренном StPageFlip (UMD, window.St.PageFlip),
 //     нарезка текста по Range на элементы .page, перелистывание мышью, пальцем и
 //     кнопками, пересборка по resize, откат на обычный текст при отказе библиотеки.
+// S4: звук листа — ленивый AudioContext, шумовой буфер 60 мс с полосовым
+//     фильтром, напористость влево/вправо, порог 120 мс, prefers-reduced-motion,
+//     кнопка «Звук» в тулбаре и персистентный ключ localStorage.
 //
 // Модуль загружается динамически: app.js импортирует его по клику «Режим книги»,
 // до этого запросов к /book/ нет (T5 постановки S2).
@@ -14,6 +17,17 @@
 const VIEW_KEY = 'book.view.v1';
 const PAGE_PREFIX = 'book.page.';
 const PAGE_SUFFIX = '.v1';
+
+// S4: звук листа. SOUND_KEY — сохранённый выбор читателя (R6); параметры — §7
+// документа и R5 постановки: «вперёд» громче и выше по полосе, «назад» тише на
+// 40 %, один тик включения — один старт.
+const SOUND_KEY = 'book.sound.v1';
+const SOUND_MS = 60;            // буфер: 60 мс шума — длина одного переворота
+const VOLUME = 0.18;            // громкость «вперёд»
+const BACK_VOLUME = 0.108;      // «назад»: 0.18 × 0.6
+const THROTTLE_MS = 120;        // порог подавления повтора (R5)
+const FWD_BAND = [900, 2600];   // полоса пропускания «вперёд»
+const BACK_BAND = [600, 1800];  // полоса «назад» — ниже (R2)
 
 // Автоопределение вида (§5 документа, вариант В2-A):
 // окно меньше 700 px — принудительно одна страница (сохранённый выбор не
@@ -25,7 +39,7 @@ const MIN_SPREAD = 1024;
 // снимается со сцены: CSS S2 задаёт ей clamp(480px, 70vh, 720px), а 700 px из
 // прототипа на экране высотой 768 px не влезают и обрезали бы низ листа.
 const PAGE_WIDTH_FALLBACK = 480;
-const FLIP_MS = 700;          // T4: flippingTime
+const FLIP_MS = 700;          // T4: flippingTime; T7: prefers-reduced-motion → 1 мс
 const SHADOW_OPACITY = 0.5;   // R9: тень при изгибе заметна, текст не «сереет»
 const SWIPE_DISTANCE = 30;    // T4: значение по умолчанию, задано явно
 const PAGE_CLASS = 'page';    // имя элемента страницы (T3)
@@ -39,6 +53,25 @@ let cssPromise = null;
 let libPromise = null;
 // Открытие идёт: повторный клик не поднимает вторую книгу.
 let opening = null;
+// S4: звук. Контекст и буфер ленивы — создаются на первом включении или первом
+// листании (R6), в close() закрываются. audioBroken — «звук недоступен»:
+// взводится один раз на открытие, глушит кнопку без повторного console.warn.
+let audioCtx = null;
+let noiseBuf = null;
+let lastPlayedAt = 0;
+let audioBroken = false;
+let soundOn = false;
+// Прогрев путей WebAudio уже сделан (см. warmAudio) — повторные касания
+// книги не строят граф заново.
+let graphWarmed = false;
+// Направление следующего звука (R2): кнопка «‹/›» → знак смещения при
+// перетаскивании → половина сцены под указателем (правая — вперёд) → вперёд.
+// pendingDir ставят обработчики кнопок и гасят в turn().
+let pendingDir = 0;
+let dragStartX = 0;
+let dragMoved = false;
+let dragDx = 0;
+let pressRightHalf = true;
 
 function pageKey(slug) {
   return PAGE_PREFIX + slug + PAGE_SUFFIX;
@@ -70,6 +103,28 @@ function viewFor(width) {
 function savedFrac(slug) {
   const value = Number(localStorage.getItem(pageKey(slug)));
   return Number.isFinite(value) && value >= 0 && value < 1 ? value : 0;
+}
+
+// ---------- S4: звук листа ----------
+
+// prefers-reduced-motion: у читателя с этим запросом анимация выключена — звук
+// по умолчанию выключен, а переворот почти мгновенный (T7).
+function prefersReduced() {
+  return Boolean(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+}
+
+// Сохранённый выбор главнее настройки системы; отсутствие ключа — автоопределение
+// (R6: по умолчанию звук включён, при prefers-reduced-motion — выключен без
+// записи в localStorage).
+function readSoundPref() {
+  const value = localStorage.getItem(SOUND_KEY);
+  if (value === 'on') return true;
+  if (value === 'off') return false;
+  return !prefersReduced();
+}
+
+function writeSoundPref(on) {
+  localStorage.setItem(SOUND_KEY, on ? 'on' : 'off');
 }
 
 // Книжный CSS подключается один раз, из этого модуля (§4 документа): ссылка
@@ -113,6 +168,130 @@ function ensureLib() {
     document.head.appendChild(script);
   });
   return libPromise;
+}
+
+// Аудиоконтекст создаётся только по жесту — включением звука или первым
+// листанием (R6: ни при загрузке модуля, ни при открытии книги). Уже
+// существующий поднимается из suspended — вкладка могла заснуть.
+function ensureAudio() {
+  if (audioCtx) {
+    if (audioCtx.state === 'suspended') resumeAudio(audioCtx);
+    return audioCtx;
+  }
+  const Ctor = window.AudioContext || window.webkitAudioContext;
+  if (typeof Ctor !== 'function') {
+    settleAudioError(new Error('AudioContext недоступен в этом браузере'));
+    return null;
+  }
+  try {
+    audioCtx = new Ctor();
+  } catch (err) {
+    settleAudioError(err);
+    return null;
+  }
+  if (audioCtx.state === 'suspended') resumeAudio(audioCtx);
+  return audioCtx;
+}
+
+function resumeAudio(ctx) {
+  const resumed = ctx.resume();
+  if (resumed && typeof resumed.catch === 'function') {
+    resumed.catch((err) => settleAudioError(err));
+  }
+}
+
+// Один буфер на открытие: 60 мс белого шума (RMS ≈ 0.577 — слышно как короткий
+// шелест листа). В close() буфер обнуляется вместе с контекстом.
+function noiseBuffer(ctx) {
+  if (noiseBuf) return noiseBuf;
+  const len = Math.max(1, Math.round(ctx.sampleRate * (SOUND_MS / 1000)));
+  const buffer = ctx.createBuffer(1, len, ctx.sampleRate);
+  const data = buffer.getChannelData(0);
+  for (let i = 0; i < data.length; i += 1) data[i] = Math.random() * 2 - 1;
+  noiseBuf = buffer;
+  return buffer;
+}
+
+// Отказ аудио (нет конструктора, new AudioContext бросил, resume() отклонился):
+// один console.warn, кнопка гаснет, книга и её листание не трогаются.
+function settleAudioError(err) {
+  if (audioBroken) return;
+  audioBroken = true;
+  fail('звук недоступен', err);
+  const btn = state && state.btnSound;
+  if (btn) {
+    btn.disabled = true;
+    btn.setAttribute('aria-pressed', 'false');
+    btn.title = 'Звук недоступен в этом браузере';
+  }
+}
+
+// Прогрев аудиоконтекста на первом касании книги — жест читателя на тулбаре
+// или сцене. Холодный new AudioContext меряется 50…1600 мс, а первые вызовы
+// методов WebAudio на холодной службе звука — десятками миллисекунд каждый
+// (замер стенда S4): без прогрева первый старт опаздывал на 100…1400 мс и
+// экспонента успевала схлопнуться до самого старта (R1, G4.5, G4.3/R5).
+// Поэтому здесь строится весь путь — буфер, фильтр, гейн, спад, соединения —
+// но без start(): звука нет, пробного звука нет (R11), читатель ничего не
+// слышит. При выключенном звуке и после отказа — ничего не создаётся; R6 не
+// нарушен: ни при загрузке модуля, ни при открытии книги контекста нет (G4.1).
+function warmAudio() {
+  if (!soundOn || audioBroken || graphWarmed) return;
+  const ctx = ensureAudio();
+  if (!ctx || audioBroken) return;
+  try {
+    const freq = Math.sqrt(FWD_BAND[0] * FWD_BAND[1]);
+    noiseBuffer(ctx);
+    const source = ctx.createBufferSource();
+    const filter = ctx.createBiquadFilter();
+    filter.type = 'bandpass';
+    filter.frequency.value = freq;
+    filter.Q.value = freq / (FWD_BAND[1] - FWD_BAND[0]);
+    const gain = ctx.createGain();
+    gain.gain.value = VOLUME;
+    gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + SOUND_MS / 1000);
+    source.connect(filter);
+    filter.connect(gain);
+    gain.connect(ctx.destination);
+    graphWarmed = true;
+  } catch (err) {
+    settleAudioError(err);
+  }
+}
+
+// Один старт на тик: шум 60 мс с экспоненциальным спадом за те же 60 мс,
+// полосовой фильтр (целевая — геометрическая середина полосы,
+// Q = f / (высокая − низкая)), «назад» тише на 40 % и ниже по полосе (R2),
+// порог 120 мс между стартами (R5).
+function playFlip(dir) {
+  if (!soundOn || audioBroken || !state) return;
+  const now = performance.now();
+  if (now - lastPlayedAt < THROTTLE_MS) return;
+  const ctx = ensureAudio();
+  if (!ctx) return;
+  try {
+    const band = dir < 0 ? BACK_BAND : FWD_BAND;
+    const freq = Math.sqrt(band[0] * band[1]);
+    const source = ctx.createBufferSource();
+    source.buffer = noiseBuffer(ctx);
+    const filter = ctx.createBiquadFilter();
+    filter.type = 'bandpass';
+    filter.frequency.value = freq;
+    filter.Q.value = freq / (band[1] - band[0]);
+    const gain = ctx.createGain();
+    const volume = dir < 0 ? BACK_VOLUME : VOLUME;
+    const begin = ctx.currentTime;
+    gain.gain.value = volume;
+    // Спад не до полной тишины, а до 0.0001: экспонента не щёлкает на нуле.
+    gain.gain.exponentialRampToValueAtTime(0.0001, begin + SOUND_MS / 1000);
+    source.connect(filter);
+    filter.connect(gain);
+    gain.connect(ctx.destination);
+    source.start();
+    lastPlayedAt = now;
+  } catch (err) {
+    settleAudioError(err);
+  }
 }
 
 // Размер листа: ширина — из CSS книги, высота — фактическая высота сцены.
@@ -254,6 +433,47 @@ function turn(delta) {
   } catch (err) {
     fail('перелистывание не удалось', err);
   }
+  // Направление гасится здесь же: changeState приходит синхронно внутри
+  // flipNext/flipPrev и уже забрало pendingDir; если лист не пошёл (граница,
+  // идёт анимация) — хвост не должен направить чужой следующий звук.
+  pendingDir = 0;
+}
+
+// Направление звука по приоритету R2: нажатие кнопки «‹/›» → знак смещения
+// перетаскивания → половина сцены под указателем (правая — вперёд) → вперёд.
+function nextDir() {
+  if (pendingDir !== 0) {
+    const dir = pendingDir;
+    pendingDir = 0;
+    return dir;
+  }
+  if (dragMoved) return dragDx < 0 ? 1 : -1;
+  return pressRightHalf ? 1 : -1;
+}
+
+// S4: жест на сцене. pointerdown запоминает точку и половину сцены, pointermove
+// (перехват, passive) — признак и знак смещения больше 5 px, pointerup — единственный
+// звук перетаскивания: библиотека на отпускании листает без события changeState.
+function onStagePointerDown(event) {
+  dragStartX = event.clientX;
+  dragMoved = false;
+  dragDx = 0;
+  const rect = state.stage.getBoundingClientRect();
+  pressRightHalf = event.clientX >= rect.left + rect.width / 2;
+}
+
+function onStagePointerMove(event) {
+  if (Math.abs(event.clientX - dragStartX) > 5) {
+    dragMoved = true;
+    dragDx = event.clientX - dragStartX;
+  }
+}
+
+function onStagePointerUp() {
+  if (!dragMoved) return;
+  const dir = dragDx < 0 ? 1 : -1;
+  dragMoved = false;
+  playFlip(dir);
 }
 
 // Пересборка книги: из копий блоков источника режется текст, листы монтируются
@@ -317,9 +537,11 @@ function mount(frac) {
     autoSize: false,
     usePortrait: true,
     showCover: false,
-    drawShadow: true,
+    // T7: при prefers-reduced-motion — без тени и почти мгновенный переворот
+    // (1 мс; ноль библиотека отвергает как Invalid flippingTime).
+    drawShadow: !prefersReduced(),
     maxShadowOpacity: SHADOW_OPACITY,
-    flippingTime: FLIP_MS,
+    flippingTime: prefersReduced() ? 1 : FLIP_MS,
     useMouseEvents: true,
     clickEventForward: true,
     disableFlipByClick: false,
@@ -336,6 +558,12 @@ function mount(frac) {
   s.section.book = flip;
 
   flip.on('flip', onFlip);
+  // Звук листа: библиотека сообщает начало переворота событием changeState
+  // (payload {data}), состояние «flipping» — единственный, который звучит;
+  // направление даёт nextDir() по приоритету R2.
+  flip.on('changeState', (event) => {
+    if (event && event.data === 'flipping') playFlip(nextDir());
+  });
   // Ориентацию выбирает библиотека по ширине сцены (R3): здесь только синхронизация.
   flip.on('changeOrientation', sync);
   // Доля из localStorage применяется при готовности книги, без анимации (T6).
@@ -412,6 +640,18 @@ function buildSection(view) {
   btnSpread.setAttribute('aria-pressed', String(view === 'spread'));
   btnSpread.textContent = 'Разворот';
 
+  // Кнопка звука (T5): между «Разворот» и «‹», без формы, aria-pressed —
+  // по текущему soundOn; если аудио уже отказалось, сразу disabled.
+  const btnSound = document.createElement('button');
+  btnSound.type = 'button';
+  btnSound.setAttribute('data-book-sound', '');
+  btnSound.textContent = 'Звук';
+  btnSound.setAttribute('aria-pressed', String(soundOn));
+  if (audioBroken) {
+    btnSound.disabled = true;
+    btnSound.title = 'Звук недоступен в этом браузере';
+  }
+
   const prev = document.createElement('button');
   prev.type = 'button';
   prev.setAttribute('data-book-prev', '');
@@ -428,7 +668,7 @@ function buildSection(view) {
   next.setAttribute('aria-label', 'Следующая страница');
   next.textContent = '›';
 
-  bar.append(exit, btnSingle, btnSpread, prev, counter, next);
+  bar.append(exit, btnSingle, btnSpread, btnSound, prev, counter, next);
 
   const stage = document.createElement('div');
   stage.setAttribute('data-book-stage', '');
@@ -436,12 +676,29 @@ function buildSection(view) {
   section.append(bar, stage);
 
   exit.addEventListener('click', () => close());
-  prev.addEventListener('click', () => turn(-1));
-  next.addEventListener('click', () => turn(1));
+  // Направление звука ставится до листания (R2, приоритет 1): changeState
+  // приходит синхронно внутри turn().
+  prev.addEventListener('click', () => {
+    pendingDir = -1;
+    turn(-1);
+  });
+  next.addEventListener('click', () => {
+    pendingDir = 1;
+    turn(1);
+  });
   btnSingle.addEventListener('click', () => setView('single'));
   btnSpread.addEventListener('click', () => setView('spread'));
+  // Переключатель звука (T5): выбор пишется сразу; включение — жест, в котором
+  // создаётся контекст, пробного звука нет (R6). Отказ аудио гасит кнопку.
+  btnSound.addEventListener('click', () => {
+    if (audioBroken) return;
+    soundOn = !soundOn;
+    writeSoundPref(soundOn);
+    btnSound.setAttribute('aria-pressed', String(soundOn));
+    if (soundOn) ensureAudio();
+  });
 
-  return { section, stage, counter, prev, next, btnSingle, btnSpread };
+  return { section, stage, counter, prev, next, btnSingle, btnSpread, btnSound };
 }
 
 async function openInternal() {
@@ -470,6 +727,18 @@ async function openInternal() {
 
     document.addEventListener('keydown', onKeydown);
     window.addEventListener('resize', onResize);
+
+    // S4: состояние звука читается после mount — кнопка соответствует ключу
+    // (T8), и жесты сцены: pointerdown/move/up в фазе перехвата, pointermove
+    // passive; слушатели снимаются в close().
+    soundOn = readSoundPref();
+    state.btnSound.setAttribute('aria-pressed', String(soundOn));
+    if (audioBroken) state.btnSound.disabled = true;
+    // Прогрев контекста — на всём тулбаре и сцене (см. warmAudio()).
+    state.section.addEventListener('pointerdown', warmAudio, true);
+    state.stage.addEventListener('pointerdown', onStagePointerDown, true);
+    state.stage.addEventListener('pointermove', onStagePointerMove, { capture: true, passive: true });
+    state.stage.addEventListener('pointerup', onStagePointerUp, true);
 
     // Верх секции (тулбар + сцена) — на 90 px ниже верха окна. Привязываемся
     // к секции, а не к сцене: шапка сайта липкая и занимает 73 px, при привязке
@@ -515,6 +784,31 @@ export function close() {
   document.removeEventListener('keydown', onKeydown);
   window.removeEventListener('resize', onResize);
   clearTimeout(timer);
+
+  // S4: жесты сцены снять, аудио закрыть, состояния вернуть к умолчаниям —
+  // следующее открытие прочитает ключ заново (T8). Кнопка «Звук» при этом
+  // уже убрана вместе с секцией.
+  state.section.removeEventListener('pointerdown', warmAudio, true);
+  state.stage.removeEventListener('pointerdown', onStagePointerDown, true);
+  state.stage.removeEventListener('pointermove', onStagePointerMove, { capture: true, passive: true });
+  state.stage.removeEventListener('pointerup', onStagePointerUp, true);
+  if (audioCtx) {
+    try {
+      audioCtx.close();
+    } catch (err) {
+      fail('не удалось закрыть AudioContext', err);
+    }
+  }
+  audioCtx = null;
+  noiseBuf = null;
+  lastPlayedAt = 0;
+  audioBroken = false;
+  soundOn = false;
+  graphWarmed = false;
+  pendingDir = 0;
+  dragMoved = false;
+  dragDx = 0;
+  pressRightHalf = true;
   state = null;
 
   const source = document.querySelector('div.poem[data-book-source]');

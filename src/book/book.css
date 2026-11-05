@@ -50,6 +50,8 @@ html[data-book-open] .poem-tools { display: none; }
 [data-book] .book-tools button:disabled { opacity: .45; cursor: default; }
 [data-book] .book-tools button:disabled:hover { background: transparent; }
 [data-book] .book-tools [data-book-view-btn][aria-pressed="true"] { background: var(--paper-2); }
+/* S4 (T5, R7): кнопка «Звук» в том же оформлении активного состояния. */
+[data-book] .book-tools [data-book-sound][aria-pressed="true"] { background: var(--paper-2); }
 [data-book] .book-tools [data-book-counter] {
   color: var(--muted);
   font-size: 13px;
