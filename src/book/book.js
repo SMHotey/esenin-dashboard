@@ -102,6 +102,31 @@ function fail(what, err) {
   console.warn('Режим книги: ' + what, err);
 }
 
+// ---------- S6: цели Метрики (T7, R7) ----------
+
+// Идентификатор счётчика продублирован из site.config.json
+// (analytics.yandexMetrika): src/book копируется в dist как есть и конфигу
+// файл недоступен. Сверка константы с конфигом — строкой отчёта, не гейтом.
+const YM_ID = '113725113';
+// book_flip не чаще раза в 10 с (§9): последняя отметка времени в модуле.
+const FLIP_GOAL_MS = 10000;
+let lastFlipGoalAt = 0;
+// Монтирование и смена вида переворачивают книгу сами (loadFromHTML, restore
+// позиции): это не листание читателя. Флаг гасит цель на таких переворотах —
+// иначе открытие съело бы первые 10 с окна book_flip.
+let mounting = false;
+
+// Все четыре цели идут через одну точку. Счётчик не пришёл или заблокирован —
+// тихо выходим: книга от цели не должна зависеть.
+function goal(name, params) {
+  if (typeof window.ym !== 'function') return;
+  try {
+    window.ym(YM_ID, 'reachGoal', name, params);
+  } catch {
+    // цель — не повод ломать чтение
+  }
+}
+
 // Вид: сохранённый выбор главнее автоопределения, но окно меньше 700 px
 // всегда показывает одну страницу — разворот туда просто не влезает.
 function viewFor(width) {
@@ -446,6 +471,13 @@ function savePosition() {
 function onFlip() {
   sync();
   savePosition();
+  // S6 (T7): книжная цель — не чаще раза в 10 с; параметр — текущая книга.
+  if (mounting) return;
+  const now = Date.now();
+  if (now - lastFlipGoalAt >= FLIP_GOAL_MS) {
+    lastFlipGoalAt = now;
+    goal('book_flip', { slug: state && state.slug });
+  }
 }
 
 // Переход на конкретную страницу для Home/End (R2): тем же turnToPage, которым
@@ -635,11 +667,24 @@ function mount(frac) {
   flip.on('init', () => {
     const total = flip.getPageCount();
     const target = Math.min(total - 1, Math.max(0, Math.floor(frac * total)));
-    if (target > 0) flip.turnToPage(target);
+    if (target > 0) {
+      // Переворот к сохранённому месту — тоже не листание читателя.
+      mounting = true;
+      try {
+        flip.turnToPage(target);
+      } finally {
+        mounting = false;
+      }
+    }
     sync();
   });
-  flip.loadFromHTML(pages);
-  sync();
+  mounting = true;
+  try {
+    flip.loadFromHTML(pages);
+    sync();
+  } finally {
+    mounting = false;
+  }
 }
 
 // Смена вида: ширина сцены берётся из CSS по data-book-view, ориентацию
@@ -754,6 +799,14 @@ function buildSection(view) {
   prev.setAttribute('aria-label', 'Предыдущая страница');
   prev.textContent = '‹';
 
+  // Кнопка «Печать» (S6, R5): печать из книги идёт тем же @media print, что и
+  // из обычного вида, — на бумагу уходит оригинал div.poem, а не сцена.
+  const btnPrint = document.createElement('button');
+  btnPrint.type = 'button';
+  btnPrint.setAttribute('data-book-print', '');
+  btnPrint.textContent = 'Печать';
+  btnPrint.addEventListener('click', () => window.print());
+
   const counter = document.createElement('span');
   counter.setAttribute('data-book-counter', '');
   counter.textContent = '1 из 1';
@@ -767,7 +820,7 @@ function buildSection(view) {
   next.setAttribute('aria-label', 'Следующая страница');
   next.textContent = '›';
 
-  bar.append(exit, btnSingle, btnSpread, btnSound, prev, counter, next);
+  bar.append(exit, btnSingle, btnSpread, btnSound, btnPrint, prev, counter, next);
 
   const stage = document.createElement('div');
   stage.setAttribute('data-book-stage', '');
@@ -804,6 +857,8 @@ function buildSection(view) {
     soundOn = !soundOn;
     writeSoundPref(soundOn);
     btnSound.setAttribute('aria-pressed', String(soundOn));
+    // S6 (T7): цель уходит при каждом переключении — и вкл, и выкл.
+    goal('book_sound', { on: soundOn });
     warmAudio();
   });
 
@@ -831,6 +886,10 @@ async function openInternal() {
 
     source.after(parts.section);
     document.documentElement.setAttribute('data-book-open', '');
+    // S6 (T7): цель открытия — после появления атрибута; жанр читаем с самой
+    // страницы (.meta-line .badge), конфиг сборки модулю недоступен.
+    const badge = document.querySelector('.meta-line .badge');
+    goal('book_open', { slug, genre: badge ? badge.textContent.trim() : '' });
     state = { slug, view, page: 0, pageCount: 0, pageW: 0, pageH: 0, timer: 0, flip: null, pages: [], ...parts };
     mount(frac);
 
@@ -899,6 +958,9 @@ export function close() {
   unmount();
   section.remove();
   document.documentElement.removeAttribute('data-book-open');
+  // S6 (T7): закрытие возможно только при открытом состоянии (см. начало
+  // close()), поэтому пара book_exit/book_open симметрична.
+  goal('book_exit', { slug });
   document.removeEventListener('keydown', onKeydown, true);
   window.removeEventListener('resize', onResize);
   clearTimeout(timer);

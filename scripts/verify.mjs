@@ -493,6 +493,11 @@ for (const w of worksData) {
     while (i < got.length && got[i] === want[i]) i += 1;
     errors.push(`${rel}: текст книги расходится с works.json на позиции ${i}: «${got.slice(i, i + 40)}» вместо «${want.slice(i, i + 40)}»`);
   }
+  // S6 (п.6, R4): chars — длина текста по-сырому; строковое равенство выше
+  // держит собранные знаки, здесь — связка «chars = длине text».
+  if (w.chars !== w.text.length) {
+    errors.push(`${rel}: chars ${w.chars} при длине text ${w.text.length} в works.json`);
+  }
 }
 if (bookPages.size !== 17) errors.push(`book: страниц с обёрткой data-book-source ${bookPages.size} вместо 17`);
 
@@ -553,6 +558,47 @@ for (const file of files.filter((f) => extname(f) === '.html')) {
   const html = await readFile(file, 'utf8');
   if (/<canvas[\s>]/i.test(html)) errors.push(`${file.replace(/\\/g, '/')}: элемент canvas в разметке`);
 }
+
+// S6 (п.3б, R3): суммарный бюджет книжного кода. Порог шага 65 536 (64 КБ) —
+// документ §8 п.3 требует 20 480, расхождение держит вопрос В1.
+const BOOK_BUDGET = 65536;
+let bookCodeBytes = 0;
+let bookCodeComplete = true;
+for (const f of ['book.js', 'book.css']) {
+  const p = join(DIST, 'book', f);
+  if (!existsSync(p)) { bookCodeComplete = false; continue; }
+  bookCodeBytes += (await stat(p)).size;
+}
+if (bookCodeComplete && bookCodeBytes > BOOK_BUDGET) {
+  errors.push(`dist/book: book.js + book.css ${bookCodeBytes} байт при бюджете ${BOOK_BUDGET} — порог шага, документ требует 20 480 — см. В1`);
+}
+
+// S6 (п.7): книга грузится по клику (S2), поэтому book.js не должен стоять
+// статическим script src ни в одной собранной странице.
+for (const file of files.filter((f) => extname(f) === '.html')) {
+  const html = await readFile(file, 'utf8');
+  if (/<script[^>]+src="[^"]*book\.js/.test(html)) {
+    errors.push(`${file.replace(/\\/g, '/')}: book.js подключён статическим script src в HTML`);
+  }
+}
+
+// S6 (п.8): кнопка «Режим книги» — ровно у 17 отобранных текстов и ни у кого
+// из коротких (проза-жанры с chars < reader.book.minChars).
+const bookShortSlugs = new Set(
+  worksData.filter((w) => bookGenres.has(w.genre) && (w.chars || 0) < bookMin).map((w) => w.slug),
+);
+let bookBtnPages = 0;
+for (const w of worksData) {
+  const rel = `works/${w.slug}.html`;
+  const file = join(DIST, rel);
+  if (!existsSync(file)) continue;
+  const html = await readFile(file, 'utf8');
+  const hasBtn = html.includes('data-poem-action="book"');
+  if (hasBtn) bookBtnPages += 1;
+  if (bookSelSlugs.has(w.slug) && !hasBtn) errors.push(`${rel}: у текста книги нет кнопки «Режим книги»`);
+  if (bookShortSlugs.has(w.slug) && hasBtn) errors.push(`${rel}: кнопка «Режим книги» у короткого текста (chars ${w.chars} < ${bookMin})`);
+}
+if (bookBtnPages !== 17) errors.push(`book: страниц с кнопкой «Режим книги» ${bookBtnPages} вместо 17`);
 
 // --- служебные файлы ---
 for (const f of ['404.html', 'robots.txt', 'sitemap.xml', 'search.json', '_headers', '_redirects', '.nojekyll', 'favicon.svg', 'styles.css', 'app.js']) {

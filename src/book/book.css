@@ -5,8 +5,8 @@
    Здесь только книжная типографика: src/styles.css шаг не правит, у книги
    свой кегль (--book-size), а не --poem-size обычной вёрстки. Цвета — только
    через переменные темы, светлая тема работает без отдельных правил.
-   Анимацию листа даёт StPageFlip (S3), звук, печать и клавиатура кроме Esc
-   придут в S4-S6, поэтому @media print здесь намеренно нет. */
+   Анимацию листа даёт StPageFlip (S3), звук — S4, клавиатура — S5, печать —
+   S6; @media print живёт в конце файла (T5). */
 
 /* Обычная вёрстка уходит, пока книга открыта. Оригинал div.poem остаётся в
    DOM и не меняется — книжный поток строится из его копий. */
@@ -119,3 +119,15 @@ html[data-book-open] .poem-tools { display: none; }
 [data-book] .page p.book-date { margin: .9em 0; text-align: center; text-indent: 0; }
 [data-book] .page h3.book-head { margin: 1.4em 0 .8em; font-size: 1em; text-align: center; }
 [data-book] .page .book-verse { margin: 1.2em 0; text-align: left; text-indent: 0; }
+
+/* ---------- печать (S6, T5) ----------
+
+   При открытой книге обычный вид выключен (правило выше), а печатать нужно
+   всё произведение целиком, а не текущий разворот: на бумагу возвращается
+   оригинал div.poem (он не менялся, книжный поток собран из его копий),
+   секция книги — тулбар, сцена и листья — уходит. Итог печати совпадает с
+   обычным видом, @media print из src/styles.css печатает .poem отсюда же. */
+@media print {
+  html[data-book-open] .poem { display: block; }
+  [data-book] { display: none !important; }
+}
