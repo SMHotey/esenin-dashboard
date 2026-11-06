@@ -53,6 +53,8 @@ let cssPromise = null;
 let libPromise = null;
 // Открытие идёт: повторный клик не поднимает вторую книгу.
 let opening = null;
+// S5 (R1): куда вернуть фокус после выхода; пишется в open() до первого await.
+let returnFocus = null;
 // S4: звук. Контекст и буфер ленивы — создаются на первом включении или первом
 // листании (R6), в close() закрываются. audioBroken — «звук недоступен»:
 // взводится один раз на открытие, глушит кнопку без повторного console.warn.
@@ -76,6 +78,16 @@ let pressRightHalf = true;
 
 function pageKey(slug) {
   return PAGE_PREFIX + slug + PAGE_SUFFIX;
+}
+
+// S5 (T2): словоформа к числу страниц для имени контейнера — «Книга, 17 страниц».
+// Правило для 1/21, 2-4/22-24 и всего остального (0, 5-20, 12-14).
+function pluralPages(n) {
+  const mod10 = n % 10;
+  const mod100 = n % 100;
+  if (mod10 === 1 && mod100 !== 11) return 'страница';
+  if (mod10 >= 2 && mod10 <= 4 && (mod100 < 12 || mod100 > 14)) return 'страницы';
+  return 'страниц';
 }
 
 function slugFromPath() {
@@ -408,10 +420,21 @@ function sync() {
   const index = s.flip.getCurrentPageIndex();
   s.page = index;
   s.pageCount = total;
-  s.counter.textContent = (Math.min(index, Math.max(total - 1, 0)) + 1) + ' из ' + total;
+  // S5 (T2, R3): число страницы считается один раз — счётчик, имя контейнера
+  // и живой регион берут его из этой переменной, второго вычисления нет.
+  const shown = Math.min(index, Math.max(total - 1, 0)) + 1;
+  s.counter.textContent = shown + ' из ' + total;
   const step = s.flip.getOrientation() === 'landscape' ? 2 : 1;
   s.prev.disabled = total <= 1 || index <= 0;
   s.next.disabled = total <= 1 || index >= total - step;
+  // Имя контейнера — «Книга, N страниц» (T2 п.2): роль без имени скринридер
+  // игнорирует. Пишется, только когда отличается, — remount не шумит.
+  const label = 'Книга, ' + total + ' ' + pluralPages(total);
+  if (s.section.getAttribute('aria-label') !== label) s.section.setAttribute('aria-label', label);
+  // Живой регион: текст меняется только вместе со страницей (R3), иначе
+  // пересборка на ресайзе или смене вида повторно объявила бы ту же страницу.
+  const announcement = 'Страница ' + shown + ' из ' + total;
+  if (s.live && s.live.textContent !== announcement) s.live.textContent = announcement;
 }
 
 function savePosition() {
@@ -423,6 +446,22 @@ function savePosition() {
 function onFlip() {
   sync();
   savePosition();
+}
+
+// Переход на конкретную страницу для Home/End (R2): тем же turnToPage, которым
+// восстановлена позиция чтения (F6) — событие flip придёт само, sync()
+// идемпотентна и нужна на случай, когда библиотека промолчала.
+function goto(index) {
+  const s = state;
+  if (!s || !s.flip) return;
+  try {
+    const total = s.flip.getPageCount();
+    s.flip.turnToPage(Math.max(0, Math.min(total - 1, index)));
+    sync();
+    savePosition();
+  } catch (err) {
+    fail('переход по клавише не удался', err);
+  }
 }
 
 // Перелистывание кнопками «‹»/«›» — один лист за нажатие (R4).
@@ -621,9 +660,35 @@ function setView(view) {
   }
 }
 
+// S5 (T4): клавиатура книги. Подписан на document в capture-фазе (R10): охрана
+// «открыт диалог поиска» обязана отработать раньше чужого обработчика в
+// src/app.js, иначе тот успевает снять open и книга закрывается вместе с диалогом.
 function onKeydown(event) {
-  // Esc закрывает книгу (§6 документа). Стрелки и остальная клавиатура — в S5.
-  if (event.key === 'Escape') close();
+  // 1. Комбинации не наши: Ctrl/Cmd+K и прочие живут в src/app.js.
+  if (event.ctrlKey || event.metaKey || event.altKey) return;
+  // 2. Открыт диалог поиска: его Esc и стрелки ведёт app.js, книга не мешает.
+  //    Диалог — div в футере с атрибутом open (F9), а не тег dialog: тега в
+  //    дереве нет, и селектор 'dialog[open]' не совпал бы ни с чем.
+  if (document.querySelector('[data-search-dialog][open]')) return;
+  const t = event.target instanceof Element ? event.target : null;
+  // 3. Ввод текста: стрелки двигают курсор, Space печатает пробел.
+  if (t && t.closest('input, textarea, select, [contenteditable="true"]')) return;
+  if (event.key === 'Escape') { close(); return; }
+  const s = state;
+  if (!s || !s.flip) return;
+  // R4: на кнопках и ссылках работает нативное срабатывание — перехват дал бы
+  // двойное действие (Space на «Обычный текст» не должен листать книгу).
+  const interactive = t && t.closest('button, a[href], summary, [role="button"]');
+  if (event.code === 'Space' || event.key === ' ') {
+    if (interactive) return;
+    event.preventDefault();          // Space не прокручивает страницу под книгой
+    turn(1);
+    return;
+  }
+  if (event.key === 'ArrowRight') { event.preventDefault(); turn(1); return; }
+  if (event.key === 'ArrowLeft')  { event.preventDefault(); turn(-1); return; }
+  if (event.key === 'Home')       { event.preventDefault(); goto(0); return; }
+  if (event.key === 'End')        { event.preventDefault(); goto(s.flip.getPageCount() - 1); return; }
 }
 
 function onResize() {
@@ -645,6 +710,11 @@ function buildSection(view) {
   const section = document.createElement('section');
   section.setAttribute('data-book', '');
   section.setAttribute('data-book-view', view);
+  // S5 (T1): секция — точка фокуса и именованная область для скринридера.
+  // Имя с числом страниц ставит sync(), когда число уже известно (T2).
+  section.setAttribute('tabindex', '0');
+  section.setAttribute('role', 'region');
+  section.setAttribute('aria-roledescription', 'книга');
 
   const bar = document.createElement('div');
   bar.className = 'book-tools';
@@ -687,6 +757,9 @@ function buildSection(view) {
   const counter = document.createElement('span');
   counter.setAttribute('data-book-counter', '');
   counter.textContent = '1 из 1';
+  // S5 (R6): номер читает живой регион, счётчик для скринридера пуст —
+  // иначе «1 из 17» объявлялось бы дважды.
+  counter.setAttribute('aria-hidden', 'true');
 
   const next = document.createElement('button');
   next.type = 'button';
@@ -699,7 +772,16 @@ function buildSection(view) {
   const stage = document.createElement('div');
   stage.setAttribute('data-book-stage', '');
 
-  section.append(bar, stage);
+  // S5 (T1): живой регион — вне сцены, чтобы пересборка книги его не сносила;
+  // текст в него пишет sync() (T2, R3). Класс .visually-hidden уже есть в
+  // src/styles.css (F8), страница произведения его подключает.
+  const live = document.createElement('p');
+  live.className = 'visually-hidden';
+  live.setAttribute('data-book-live', '');
+  live.setAttribute('aria-live', 'polite');
+  live.setAttribute('aria-atomic', 'true');
+
+  section.append(bar, stage, live);
 
   exit.addEventListener('click', () => close());
   // Направление звука ставится до листания (R2, приоритет 1): changeState
@@ -725,7 +807,7 @@ function buildSection(view) {
     warmAudio();
   });
 
-  return { section, stage, counter, prev, next, btnSingle, btnSpread, btnSound };
+  return { section, stage, live, counter, prev, next, btnSingle, btnSpread, btnSound };
 }
 
 async function openInternal() {
@@ -752,7 +834,7 @@ async function openInternal() {
     state = { slug, view, page: 0, pageCount: 0, pageW: 0, pageH: 0, timer: 0, flip: null, pages: [], ...parts };
     mount(frac);
 
-    document.addEventListener('keydown', onKeydown);
+    document.addEventListener('keydown', onKeydown, true);
     window.addEventListener('resize', onResize);
 
     // S4: состояние звука — после mount, кнопка по ключу (T8). Жесты сцены —
@@ -776,6 +858,10 @@ async function openInternal() {
     // кнопки отдавал ссылку шапки, и «Обычный текст» вёл на главную.
     const top = state.section.getBoundingClientRect().top + window.scrollY - 90;
     window.scrollTo(0, Math.max(0, top));
+    // S5 (R1, T3): фокус — на секцию книги; после клика активным остался бы
+    // body, и клавиатура не дошла бы до книги. Прокрутка уже выставлена,
+    // поэтому preventScroll: focus не сбивает место чтения.
+    state.section.focus({ preventScroll: true });
     return true;
   } catch (err) {
     close();
@@ -789,6 +875,8 @@ async function openInternal() {
 export async function open() {
   if (state) return true;
   if (opening) return opening;
+  // S5 (R1): активный элемент запоминается до первого await — пока клик «свежий».
+  returnFocus = document.activeElement;
   opening = openInternal();
   try {
     return await opening;
@@ -811,7 +899,7 @@ export function close() {
   unmount();
   section.remove();
   document.documentElement.removeAttribute('data-book-open');
-  document.removeEventListener('keydown', onKeydown);
+  document.removeEventListener('keydown', onKeydown, true);
   window.removeEventListener('resize', onResize);
   clearTimeout(timer);
 
@@ -846,5 +934,11 @@ export function close() {
     const top = source.getBoundingClientRect().top + window.scrollY;
     window.scrollTo(0, Math.max(0, top + frac * source.offsetHeight - 90));
   }
+  // S5 (R1, T3): фокус возвращается туда, откуда книгу открыли, а при
+  // программном открытии (активный элемент — body) — на кнопку «Режим книги».
+  // Обе ветки выхода идут через close(): Esc и «Обычный текст».
+  const target = (returnFocus && returnFocus.isConnected && returnFocus !== document.body) ? returnFocus : document.querySelector('.poem-tools [data-poem-action="book"]');
+  returnFocus = null;
+  if (target) target.focus({ preventScroll: true });
   return true;
 }

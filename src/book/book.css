@@ -52,6 +52,15 @@ html[data-book-open] .poem-tools { display: none; }
 [data-book] .book-tools [data-book-view-btn][aria-pressed="true"] { background: var(--paper-2); }
 /* S4 (T5, R7): кнопка «Звук» в том же оформлении активного состояния. */
 [data-book] .book-tools [data-book-sound][aria-pressed="true"] { background: var(--paper-2); }
+
+/* S5 (T5): видимый фокус — тот же акцентный ободок, что у .icon-btn в
+   src/styles.css. Контейнер получает его, когда на него пришли клавишей;
+   программный focus() при открытии ободка не рисует (норма :focus-visible). */
+[data-book]:focus-visible,
+[data-book] .book-tools button:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
 [data-book] .book-tools [data-book-counter] {
   color: var(--muted);
   font-size: 13px;
