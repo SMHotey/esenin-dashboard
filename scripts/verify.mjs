@@ -560,7 +560,7 @@ for (const file of files.filter((f) => extname(f) === '.html')) {
 }
 
 // S6 (п.3б, R3): суммарный бюджет книжного кода. Порог шага 65 536 (64 КБ) —
-// документ §8 п.3 требует 20 480, расхождение держит вопрос В1.
+// документ §8 п.3 приведён к этому факту 06.11.2026 (В1 = A), см. §16.
 const BOOK_BUDGET = 65536;
 let bookCodeBytes = 0;
 let bookCodeComplete = true;
@@ -570,7 +570,7 @@ for (const f of ['book.js', 'book.css']) {
   bookCodeBytes += (await stat(p)).size;
 }
 if (bookCodeComplete && bookCodeBytes > BOOK_BUDGET) {
-  errors.push(`dist/book: book.js + book.css ${bookCodeBytes} байт при бюджете ${BOOK_BUDGET} — порог шага, документ требует 20 480 — см. В1`);
+  errors.push(`dist/book: book.js + book.css ${bookCodeBytes} байт при бюджете ${BOOK_BUDGET} — порог гейта, см. §8 п.3 документа`);
 }
 
 // S6 (п.7): книга грузится по клику (S2), поэтому book.js не должен стоять

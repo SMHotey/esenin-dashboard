@@ -8,6 +8,8 @@
 // S4: звук листа — ленивый AudioContext, шумовой буфер 60 мс с полосовым
 //     фильтром, напористость влево/вправо, порог 120 мс, prefers-reduced-motion,
 //     кнопка «Звук» в тулбаре и персистентный ключ localStorage.
+// S7: кегль книги 18/20/22 px кнопками A−/A+ (ключ book.size.v1) и адаптивная
+//     ширина листа — на узком окне лист сужается вместе с секцией.
 //
 // Модуль загружается динамически: app.js импортирует его по клику «Режим книги»,
 // до этого запросов к /book/ нет (T5 постановки S2).
@@ -35,10 +37,14 @@ const BACK_BAND = [600, 1800];  // полоса «назад» — ниже (R2)
 const MIN_WINDOW = 700;
 const MIN_SPREAD = 1024;
 
-// Параметры листа (T4). Ширина совпадает с --book-page-w из book.css, высота
-// снимается со сцены: CSS S2 задаёт ей clamp(480px, 70vh, 720px), а 700 px из
-// прототипа на экране высотой 768 px не влезают и обрезали бы низ листа.
-const PAGE_WIDTH_FALLBACK = 480;
+// S7 (R2): кегли книги 18/20/22 px (документ §5); ключ помнит индекс, как view.
+const SIZE_KEY = 'book.size.v1';
+const BOOK_SIZES = [18, 20, 22];
+const SIZE_DEFAULT = 1;
+
+// Параметры листа (T4). Ширина снимается со сцены: с S7 (R3) она адаптивная;
+// высоту задаёт CSS S2 — clamp(480px, 70vh, 720px): 700 px из прототипа на
+// экране высотой 768 px не влезают и обрезали бы низ листа.
 const FLIP_MS = 700;          // T4: flippingTime; T7: prefers-reduced-motion → 1 мс
 const SHADOW_OPACITY = 0.5;   // R9: тень при изгибе заметна, текст не «сереет»
 const SWIPE_DISTANCE = 30;    // T4: значение по умолчанию, задано явно
@@ -163,6 +169,22 @@ function readSoundPref() {
 
 function writeSoundPref(on) {
   localStorage.setItem(SOUND_KEY, on ? 'on' : 'off');
+}
+
+// ---------- S7: кегль книги ----------
+
+// Индекс кегля; отсутствие ключа или мусор — значение по умолчанию.
+function readSizeIndex() {
+  const raw = localStorage.getItem(SIZE_KEY);
+  // Number(null) = 0 — без этой проверки читатель получал бы минимальный кегль.
+  if (raw === null) return SIZE_DEFAULT;
+  const value = Number(raw);
+  if (!Number.isInteger(value) || value < 0 || value >= BOOK_SIZES.length) return SIZE_DEFAULT;
+  return value;
+}
+
+function writeSizePref(index) {
+  localStorage.setItem(SIZE_KEY, String(index));
 }
 
 // Книжный CSS подключается один раз, из этого модуля (§4 документа): ссылка
@@ -333,10 +355,15 @@ function playFlip(dir) {
   }
 }
 
-// Размер листа: ширина — из CSS книги, высота — фактическая высота сцены.
+// Размер листа — по фактической сцене: --book-page-w адаптивная (min() от 100vw),
+// а getComputedStyle отдаёт min() неразрешённым. В «одной странице» сцена и есть
+// лист, в развороте — два листа и корешок между ними.
 function pageSize(stage) {
-  const fromCss = parseFloat(getComputedStyle(stage).getPropertyValue('--book-page-w'));
-  const pageW = Math.floor(Number.isFinite(fromCss) && fromCss > 0 ? fromCss : PAGE_WIDTH_FALLBACK);
+  const stageW = Math.floor(stage.clientWidth);
+  const gap = parseFloat(getComputedStyle(stage).getPropertyValue('--book-gap')) || 0;
+  const section = stage.closest('[data-book]');
+  const spread = Boolean(section) && section.getAttribute('data-book-view') === 'spread';
+  const pageW = Math.floor(spread ? (stageW - gap) / 2 : stageW);
   const pageH = Math.floor(stage.clientHeight);
   if (!(pageW > 0) || !(pageH > 0)) {
     throw new Error('сцена книги не измерилась: ' + pageW + '×' + pageH + ' (стили книги не подключены?)');
@@ -705,6 +732,26 @@ function setView(view) {
   }
 }
 
+// S7 (R2): смена кегля — как у смены вида: пересборка на ту же долю, запись
+// выбора, обновление границ.
+function setSize(delta) {
+  const s = state;
+  if (!s || !delta) return;
+  const next = Math.max(0, Math.min(BOOK_SIZES.length - 1, s.sizeIndex + delta));
+  if (next === s.sizeIndex) return;
+  const frac = s.pageCount > 0 ? s.page / s.pageCount : savedFrac(s.slug);
+  try {
+    s.sizeIndex = next;
+    s.section.style.setProperty('--book-size', BOOK_SIZES[next] + 'px');
+    writeSizePref(next);
+    s.btnSmaller.disabled = next <= 0;
+    s.btnBigger.disabled = next >= BOOK_SIZES.length - 1;
+    mount(frac);
+  } catch (err) {
+    fail('смена кегля не удалась', err);
+  }
+}
+
 // S5 (T4): клавиатура книги. Подписан на document в capture-фазе (R10): охрана
 // «открыт диалог поиска» обязана отработать раньше чужого обработчика в
 // src/app.js, иначе тот успевает снять open и книга закрывается вместе с диалогом.
@@ -751,10 +798,13 @@ function onResize() {
   }, 200);
 }
 
-function buildSection(view) {
+function buildSection(view, sizeIndex) {
   const section = document.createElement('section');
   section.setAttribute('data-book', '');
   section.setAttribute('data-book-view', view);
+  // S7 (R2): кегль объявлен на секции, лист его наследует; на самом листе
+  // объявление перебило бы наследование и смена кегля не работала бы.
+  section.style.setProperty('--book-size', BOOK_SIZES[sizeIndex] + 'px');
   // S5 (T1): секция — точка фокуса и именованная область для скринридера.
   // Имя с числом страниц ставит sync(), когда число уже известно (T2).
   section.setAttribute('tabindex', '0');
@@ -793,6 +843,22 @@ function buildSection(view) {
     btnSound.title = 'Звук недоступен в этом браузере';
   }
 
+  // S7 (R2): кегль — две кнопки в фазе «режим, звук, A−/A+» (документ §7);
+  // на границах диапазона кнопка гаснет.
+  const btnSmaller = document.createElement('button');
+  btnSmaller.type = 'button';
+  btnSmaller.setAttribute('data-book-size', 'smaller');
+  btnSmaller.setAttribute('aria-label', 'Меньше шрифт');
+  btnSmaller.textContent = 'A−';
+  btnSmaller.disabled = sizeIndex <= 0;
+
+  const btnBigger = document.createElement('button');
+  btnBigger.type = 'button';
+  btnBigger.setAttribute('data-book-size', 'bigger');
+  btnBigger.setAttribute('aria-label', 'Больше шрифт');
+  btnBigger.textContent = 'A+';
+  btnBigger.disabled = sizeIndex >= BOOK_SIZES.length - 1;
+
   const prev = document.createElement('button');
   prev.type = 'button';
   prev.setAttribute('data-book-prev', '');
@@ -820,7 +886,7 @@ function buildSection(view) {
   next.setAttribute('aria-label', 'Следующая страница');
   next.textContent = '›';
 
-  bar.append(exit, btnSingle, btnSpread, btnSound, btnPrint, prev, counter, next);
+  bar.append(exit, btnSingle, btnSpread, btnSound, btnSmaller, btnBigger, btnPrint, prev, counter, next);
 
   const stage = document.createElement('div');
   stage.setAttribute('data-book-stage', '');
@@ -849,6 +915,9 @@ function buildSection(view) {
   });
   btnSingle.addEventListener('click', () => setView('single'));
   btnSpread.addEventListener('click', () => setView('spread'));
+  // S7 (R2): кегль — шаг по массиву BOOK_SIZES; пересборка на ту же долю.
+  btnSmaller.addEventListener('click', () => setSize(-1));
+  btnBigger.addEventListener('click', () => setSize(1));
   // Переключатель звука (T5): выбор пишется сразу; включение — жест, в котором
   // создаётся контекст и прогревается граф, пробного звука нет (R6, R11).
   // Отказ аудио гасит кнопку.
@@ -862,7 +931,7 @@ function buildSection(view) {
     warmAudio();
   });
 
-  return { section, stage, live, counter, prev, next, btnSingle, btnSpread, btnSound };
+  return { section, stage, live, counter, prev, next, btnSingle, btnSpread, btnSound, btnSmaller, btnBigger };
 }
 
 async function openInternal() {
@@ -881,8 +950,9 @@ async function openInternal() {
 
     const slug = slugFromPath();
     const view = viewFor(window.innerWidth);
+    const sizeIndex = readSizeIndex();
     const frac = savedFrac(slug);
-    const parts = buildSection(view);
+    const parts = buildSection(view, sizeIndex);
 
     source.after(parts.section);
     document.documentElement.setAttribute('data-book-open', '');
@@ -890,7 +960,7 @@ async function openInternal() {
     // страницы (.meta-line .badge), конфиг сборки модулю недоступен.
     const badge = document.querySelector('.meta-line .badge');
     goal('book_open', { slug, genre: badge ? badge.textContent.trim() : '' });
-    state = { slug, view, page: 0, pageCount: 0, pageW: 0, pageH: 0, timer: 0, flip: null, pages: [], ...parts };
+    state = { slug, view, sizeIndex, page: 0, pageCount: 0, pageW: 0, pageH: 0, timer: 0, flip: null, pages: [], ...parts };
     mount(frac);
 
     document.addEventListener('keydown', onKeydown, true);
