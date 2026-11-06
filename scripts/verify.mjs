@@ -635,6 +635,21 @@ for (const file of htmlFiles) {
     if (lowered.includes(phrase)) errors.push(`${file}: служебная оговорка «${phrase}» видна читателю`);
   }
 }
+// Печать: на бумагу идёт только произведение. «Похожие произведения», переходы
+// к соседним текстам и блок источника помечены классами и выключены в @media
+// print — проверяем, что разметка и правило не разошлись между собой.
+const printCss = await readFile(join(DIST, 'styles.css'), 'utf8');
+const printBlocks = [...printCss.matchAll(/@media print \{[\s\S]*?\n\}/g)].map((m) => m[0]);
+if (!printBlocks.some((b) => b.includes('.related-works') && b.includes('.work-nav') && b.includes('.source-box'))) {
+  errors.push('styles.css: в @media print не выключены «Похожие произведения», переходы или источник');
+}
+const sampleWork = worksData.find((w) => existsSync(join(DIST, 'works', `${w.slug}.html`)));
+if (sampleWork) {
+  const sampleHtml = await readFile(join(DIST, 'works', `${sampleWork.slug}.html`), 'utf8');
+  if (!sampleHtml.includes('class="section related-works"')) errors.push(`works/${sampleWork.slug}.html: «Похожие произведения» без класса related-works — блок попадёт на печать`);
+  if (!sampleHtml.includes('class="work-nav"')) errors.push(`works/${sampleWork.slug}.html: переходы к соседним текстам без класса work-nav`);
+}
+
 for (const f of ['404.html', 'robots.txt', 'sitemap.xml', 'search.json', '_headers', '_redirects', '.nojekyll', 'favicon.svg', 'styles.css', 'app.js']) {
   if (!existsSync(join(DIST, f))) errors.push(`dist/${f} отсутствует`);
 }

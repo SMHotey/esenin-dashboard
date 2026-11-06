@@ -1354,12 +1354,12 @@ function workPage(w, index) {
       <a class="chip" href="/glossary.html">Словарь к стихам</a>
       <a class="chip" href="/topics/">Все подборки</a>
     </div>
-    <nav style="display:flex;justify-content:space-between;gap:16px;margin-top:30px" aria-label="Навигация по произведениям">
+    <nav class="work-nav" style="display:flex;justify-content:space-between;gap:16px;margin-top:30px" aria-label="Навигация по произведениям">
       <span>${prev ? `<a href="${workUrl(prev)}">← ${esc(prev.title)}</a>` : ''}</span>
       <span>${next ? `<a href="${workUrl(next)}">${esc(next.title)} →</a>` : ''}</span>
     </nav>
   </article>
-  <section class="section">
+  <section class="section related-works">
     <div class="wrap">
       <div class="section-head"><div><h2 style="font-size:26px">Похожие произведения</h2></div><a class="section-link" href="/works/">В каталог →</a></div>
       <div class="works-grid">${related.map(workCard).join('')}</div>

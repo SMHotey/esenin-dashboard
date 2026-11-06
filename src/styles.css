@@ -898,10 +898,17 @@ select, .select {
 
 @media print {
   .site-header, .site-footer, .poem-tools, .hero-actions, .search-dialog { display: none !important; }
-  .desk-art, .error-art { display: none !important; }
+  /* На бумагу — только произведение: название, текст и всё, что помечено
+     .print-only. Темы, «Похожие произведения», переходы к соседним текстам,
+     источник и хлебные крошки на печать не идут. */
+  .desk-art, .error-art, .print-cta, .chip, .tag-row, .related, .related-works,
+  .work-nav, .crumbs, .meta-line, .source-box, .aside-card, .skip-link { display: none !important; }
   body { background: #fff; color: #000; }
   .poem { font-size: 14pt; line-height: 1.6; }
+  .poem-page { padding-top: 0 !important; }
+  .poem-title { font-size: 20pt; margin: 0 0 12pt; }
   a { color: #000; text-decoration: none; }
+  @page { margin: 18mm 20mm; }
 }
 
 .hidden { display: none !important; }
