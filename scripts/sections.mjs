@@ -426,7 +426,7 @@ export function buildSectionPages(ctx) {
     ${(languages.blocks || []).map((b) => `<h2>${esc(b.h)}</h2><p>${esc(b.p)}</p>`).join('')}
     <h2>Языки</h2>
     <div class="lang-grid">${(languages.languages || []).map((l) => `<span class="tag">${esc(l)}</span>`).join('')}</div>
-    <div class="source-box"><b>О списке.</b> ${esc(languages.note || '')}</div>
+    ${languages.note ? `<div class="source-box"><b>О списке.</b> ${esc(languages.note)}</div>` : ''}
   </article>
   <aside>
     <div class="aside-card">

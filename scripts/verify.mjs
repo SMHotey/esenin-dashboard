@@ -615,6 +615,26 @@ for (const w of worksData) {
 if (bookBtnPages !== 17) errors.push(`book: страниц с кнопкой «Режим книги» ${bookBtnPages} вместо 17`);
 
 // --- служебные файлы ---
+
+// Служебные оговорки сборщика не должны доходить до читателя: на странице —
+// готовый текст, а не разговор сайта с самим собой. Ловим формулировки,
+// которые уже попадали в публикацию («в этом пакете», «выдуманный список»);
+// одиночное «выдуманный» не ловим — оно встречается в художественных текстах.
+const META_PHRASES = [
+  'в этом пакете',
+  'в данном пакете',
+  'перед публикацией его нужно сверить',
+  'выдуманный длинный список',
+  'каждая строка подтверждается',
+  'сокращён сознательно',
+];
+for (const file of htmlFiles) {
+  const html = await readFile(file, 'utf8');
+  const lowered = html.toLowerCase();
+  for (const phrase of META_PHRASES) {
+    if (lowered.includes(phrase)) errors.push(`${file}: служебная оговорка «${phrase}» видна читателю`);
+  }
+}
 for (const f of ['404.html', 'robots.txt', 'sitemap.xml', 'search.json', '_headers', '_redirects', '.nojekyll', 'favicon.svg', 'styles.css', 'app.js']) {
   if (!existsSync(join(DIST, f))) errors.push(`dist/${f} отсутствует`);
 }
