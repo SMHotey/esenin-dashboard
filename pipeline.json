@@ -36,6 +36,7 @@
   ],
   "require_prompt": true,
   "max_actions": 1,
+  "max_fix_rounds": 3,
   "runtimes": {
     "step": "270m",
     "review": "225m",
