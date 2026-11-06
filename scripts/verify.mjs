@@ -573,6 +573,20 @@ if (bookCodeComplete && bookCodeBytes > BOOK_BUDGET) {
   errors.push(`dist/book: book.js + book.css ${bookCodeBytes} байт при бюджете ${BOOK_BUDGET} — порог гейта, см. §8 п.3 документа`);
 }
 
+// Счётчик Метрики продублирован в src/book/book.js (модулю конфиг недоступен).
+// Перенос серии 06.11.2026: у сайтов разные счётчики, и подмена одного другим
+// при клонировании — реальная ошибка, поэтому сверка с конфигом стала гейтом,
+// а не строкой отчёта.
+const ymId = String(config.analytics?.yandexMetrika || '');
+if (ymId) {
+  const bookJs = existsSync(join(DIST, 'book', 'book.js'))
+    ? await readFile(join(DIST, 'book', 'book.js'), 'utf8') : '';
+  const inBook = /const YM_ID = '(\d+)'/.exec(bookJs);
+  if (!inBook) errors.push('dist/book/book.js: не найдена константа YM_ID');
+  else if (inBook[1] !== ymId) errors.push(`dist/book/book.js: YM_ID ${inBook[1]} не совпадает с analytics.yandexMetrika ${ymId}`);
+  else info.push('book: счётчик Метрики совпадает с конфигом');
+}
+
 // S6 (п.7): книга грузится по клику (S2), поэтому book.js не должен стоять
 // статическим script src ни в одной собранной странице.
 for (const file of files.filter((f) => extname(f) === '.html')) {
