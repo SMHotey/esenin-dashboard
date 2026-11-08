@@ -69,7 +69,23 @@ if (onlyChanged && existsSync(STATE)) {
     sent = new Set();
   }
 }
-let queue = (onlyChanged ? urls.filter((x) => !sent.has(x.url)) : urls.slice()).map((x) => x.url);
+// Порядок отправки: сначала хабы и T1–T4 (разборы, биография, места, наука, досье),
+// потом библиотека. Робот охотнее обходит то, что приходит первым, а тексты
+// произведений — не главный вход из поиска.
+const tier = (u) => {
+  const p = new URL(u).pathname;
+  if (p === "/") return 0;
+  if (/^\/publications\/[^/]+\.html$/.test(p)) return 1;
+  if (/^\/(biography|places|research|people)\/[^/]+\.html$/.test(p)) return 1;
+  if (/^\/(versions|sources|faq|glossary)(\.html)?\/?$/.test(p)) return 1;
+  if (p.endsWith("/")) return 2;
+  if (/^\/works\//.test(p)) return 3;
+  return 2;
+};
+const ordered = (onlyChanged ? urls.filter((x) => !sent.has(x.url)) : urls.slice())
+  .map((x) => x.url)
+  .sort((a, b) => tier(a) - tier(b));
+let queue = ordered;
 if (limit) queue = queue.slice(0, limit);
 
 if (!queue.length) {

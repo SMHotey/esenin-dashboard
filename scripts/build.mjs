@@ -791,6 +791,8 @@ const stats = {
   years: A.years,
 };
 
+// Как называть каталог в заголовке: у поэта — «Стихи», у прозаика и поэта — «Стихи и проза».
+const worksNoun = works.every((w) => /^(Стихотворение|Поэма|Стихи|Поэма в)/i.test(String(w.genre || ''))) ? 'Стихи' : 'Стихи и проза';
 const worksWord = (n) => plural(n, ['произведение', 'произведения', 'произведений']);
 const initials = `${String(A.firstName || '').trim()[0] || ''}${String(A.lastName || '').trim()[0] || ''}`;
 
@@ -1057,7 +1059,7 @@ if (scheduled.length) console.log(`  запланировано, ещё не в�
 const biographyIndex = `
 ${crumbs([['/', 'Главная'], [null, 'Биография']])}
 <div class="wrap page-head">
-  <h1>Биография</h1>
+  <h1>Биография ${esc(A.genitive)}</h1>
   <p>Обзорный очерк и статьи о ключевых периодах жизни ${esc(A.genitive)}. Даты и имена сверены с академическими изданиями; спорные сюжеты вынесены в раздел «Версии».</p>
 </div>
 <div class="wrap" style="padding-bottom:50px">
@@ -1275,7 +1277,7 @@ const genreSummary = genres.map((g) => `${esc(String(g).toLowerCase())} — ${wo
 const worksIndex = `
 ${crumbs([['/', 'Главная'], [null, 'Библиотека']])}
 <div class="wrap page-head">
-  <h1>Библиотека</h1>
+  <h1>${worksNoun} ${esc(A.genitive)}</h1>
   <p>${stats.works} ${worksWord(stats.works)}${genreSummary ? `: ${genreSummary}` : ''}. Поиск — по названию и первой строке.</p>
   <div class="tag-row" style="margin-top:14px">
     <a class="chip" href="/topics/">Стихи по темам</a>
@@ -1708,7 +1710,7 @@ await writePage('index.html', layout({
 }));
 
 await writePage('biography/index.html', layout({
-  title: 'Биография', description: `Обзорная биография ${A.genitive}: детство, учёба, Петроград, Кавказ, последние месяцы — и статьи о периодах жизни с датами и ссылками на источники.`,
+  title: `Биография ${A.genitive}: годы, места, события`, description: `Обзорная биография ${A.genitive}: детство, учёба, Петроград, Кавказ, последние месяцы — и статьи о периодах жизни с датами и ссылками на источники.`,
   content: biographyIndex, active: 'biography',
   breadcrumb: [['/', 'Главная'], [null, 'Биография']],
 }));
@@ -1770,7 +1772,7 @@ function pubPage(p) {
 }
 
 await writePage('publications/index.html', layout({
-  title: `Журнал ${A.genitive}`,
+  title: `Журнал ${A.genitive}: разборы и статьи`,
   description: `Журнал о ${A.prepositional}: разборы текстов, история публикаций, документы и разбор спорных дат.`,
   content: `${crumbs([['/', 'Главная'], [null, 'Журнал']])}
 <div class="wrap page-head">
@@ -1816,7 +1818,7 @@ for (const key of Object.keys(categories)) {
   const list = people.filter((p) => p.category === key);
   if (!list.length) continue;
   await writePage(`people/${key}.html`, layout({
-    title: categories[key], description: `${categories[key]} ${A.genitive}: ${list.length} карточек с ролью, годами жизни и указанием источника.`,
+    title: `${categories[key]} ${A.genitive}: биографии и связи`, description: `${categories[key]} ${A.genitive}: ${list.length} карточек с ролью, годами жизни и указанием источника.`,
     content: categoryPage(key), active: 'people',
     breadcrumb: [['/', 'Главная'], ['/people/', 'Люди'], [null, categories[key]]],
   }));
@@ -1869,7 +1871,7 @@ await writePage('life/timeline.html', layout({
 }));
 
 await writePage('works/index.html', layout({
-  title: 'Библиотека произведений', description: `Каталог произведений ${A.genitive}: ${stats.works} текстов с поиском и фильтрами.`,
+  title: `${worksNoun} ${A.genitive}: все произведения списком`, description: `Каталог произведений ${A.genitive}: ${stats.works} текстов с поиском и фильтрами.`,
   content: worksIndex, active: 'works',
   breadcrumb: [['/', 'Главная'], [null, 'Библиотека']],
 }));

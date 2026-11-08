@@ -127,10 +127,16 @@ const entries = sitemapEntries();
 {
   if (!liveLocs) add('deploy', 'Сборка и живой sitemap совпадают', 'SKIP', 'нет живого sitemap');
   else {
-    const localPaths = new Set(sitemapEntries().map((e) => locToPath(e.loc)));
-    const livePaths = new Set(liveLocs.map((u) => { try { return decodeURIComponent(new URL(u).pathname); } catch { return u; } }));
-    const ahead = [...localPaths].filter((p) => !livePaths.has(p) && !livePaths.has(p + 'index.html'));
-    const behind = [...livePaths].filter((p) => !localPaths.has(p) && !localPaths.has(p.replace(/\/$/, '') + '/index.html'));
+    // Приводим оба набора к одному виду: '/', '/biography/', '/works/x.html'.
+    const normPath = (p) => {
+      if (p === 'index.html' || p === '/') return '/';
+      const s = p.startsWith('/') ? p : `/${p}`;
+      return s.replace(/index\.html$/, '');
+    };
+    const localPaths = new Set(sitemapEntries().map((e) => normPath(locToPath(e.loc) || '')));
+    const livePaths = new Set(liveLocs.map((u) => { try { return normPath(decodeURIComponent(new URL(u).pathname)); } catch { return normPath(u); } }));
+    const ahead = [...localPaths].filter((p) => !livePaths.has(p));
+    const behind = [...livePaths].filter((p) => !localPaths.has(p));
     const status = behind.length ? 'FAIL' : ahead.length ? 'WARN' : 'PASS';
     const detail = ahead.length || behind.length
       ? `в сборке сверх сайта: ${ahead.length}${ahead.length ? ` (${ahead.slice(0, 3).join(', ')})` : ''}; на сайте сверх сборки: ${behind.length}${behind.length ? ` (${behind.slice(0, 3).join(', ')})` : ''} — нужен деплой`
