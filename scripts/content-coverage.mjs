@@ -67,8 +67,19 @@ const okShare = shareDescriptive >= TARGET_SHARE;
 const ok = okCount && okShare;
 
 // Тонкие страницы — для справки: меньше 200 слов в читаемой части.
+// Отдельно считаем короткие произведения (текст самого стихотворения < 400 знаков):
+// такая страница тонкая не потому, что её не заполнили, а потому что короче текст
+// в природе. Это разные задачи: первая требует контента, вторая — ничего.
+const workTextLen = new Map();
+try {
+  for (const w of JSON.parse(readFileSync(join(ROOT, 'data', 'works.json'), 'utf8'))) {
+    workTextLen.set(w.slug, (w.text || '').trim().length);
+  }
+} catch { /* без works.json считаем всё «страницами без текста» */ }
+
 let thin = 0;
 let thinWorks = 0;
+let thinShortWorks = 0;
 for (const e of entries) {
   const rel = locToPath(e.loc, config);
   if (!rel) continue;
@@ -76,7 +87,12 @@ for (const e of entries) {
   if (!html) continue;
   if (words(mainText(html)).length < 200) {
     thin += 1;
-    if (rel.startsWith('works/')) thinWorks += 1;
+    if (rel.startsWith('works/')) {
+      thinWorks += 1;
+      const slug = decodeURIComponent(rel.slice('works/'.length).replace(/\.html$/, ''));
+      const len = workTextLen.get(slug);
+      if (len !== undefined && len < 400) thinShortWorks += 1;
+    }
   }
 }
 
@@ -107,6 +123,7 @@ if (args.includes('--json')) {
   console.log(`  works:                ${works} (${fmtPct(worksShare)} sitemap; стоп-правило ≤ ${fmtPct(WORKS_STOP)})`);
   console.log(`  описательных всего:   ${descriptive} (хабы ${hubs}, персоны без досье ${person}, прочее ${other})`);
   console.log(`  тонких (<200 слов):   ${thin}, из них works ${thinWorks}`);
+  console.log(`  из них короткие тексты произведений (<400 знаков): ${thinShortWorks}, прочих тонких works (текст есть, страница короткая): ${thinWorks - thinShortWorks}`);
   console.log('');
   console.log(`  Норма: T1–T4 ≥ ${MIN_PAGES} страниц и ≥ ${fmtPct(TARGET_SHARE)} описательных.`);
   console.log(`  Итог: ${ok ? 'PASS' : `FAIL — не хватает ${need} страниц T1–T4`}`);
