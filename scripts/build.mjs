@@ -523,7 +523,7 @@ function layout({ title, description, content, active = '', bodyClass = '', json
   if (jsonLd) graph.push(...(Array.isArray(jsonLd) ? jsonLd : [jsonLd]));
 
   return `<!doctype html>
-<html lang="${esc(LANG)}" data-theme="dark" data-v="${assetVersion}">
+<html lang="${esc(LANG)}" data-theme="dark" data-v="${assetVersion}"${String(config.analytics?.yandexMetrika || '').trim() ? ` data-ym="${esc(String(config.analytics.yandexMetrika).trim())}"` : ''}>
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -762,7 +762,7 @@ function bookCard(b, index) {
       ${b.series ? `<span class="bc-series">${esc(b.series)}</span>` : ''}
     </div>`;
 
-  return `<article class="book-card" data-title="${esc(b.title)}" data-cat="${esc(b.category || '')}" data-pub="${esc(b.publisher || '')}" data-pages="${Number(b.pages) || 0}" data-price="${Number(b.price) || 0}" data-year="${Number(b.year) || 0}" data-duration="${Number(b.durationMinutes) || 0}">
+  return `<article class="book-card" data-audio="${isAudio ? '1' : '0'}" data-title="${esc(b.title)}" data-cat="${esc(b.category || '')}" data-pub="${esc(b.publisher || '')}" data-pages="${Number(b.pages) || 0}" data-price="${Number(b.price) || 0}" data-year="${Number(b.year) || 0}" data-duration="${Number(b.durationMinutes) || 0}">
     ${cover}
     <div class="book-body">
       <h3>${esc(b.title)}</h3>
@@ -1042,6 +1042,16 @@ for (const f of pubFiles) {
   if (PUBLISH_ALL || date <= TODAY) publications.push(item); else scheduled.push(item);
 }
 publications.sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : 0));
+
+// Разборы, привязанные к произведению: frontmatter publications → work: <slug>.
+// Нужно для двусторонней перелинковки «разбор ↔ текст».
+const pubByWork = new Map();
+for (const p of publications) {
+  const s = String(p.work || '').trim();
+  if (!s) continue;
+  if (!pubByWork.has(s)) pubByWork.set(s, []);
+  pubByWork.get(s).push(p);
+}
 if (scheduled.length) console.log(`  запланировано, ещё не выпущено: ${scheduled.length} (${scheduled[0].date} — ${scheduled[scheduled.length - 1].date})`);
 
 const biographyIndex = `
@@ -1354,6 +1364,7 @@ function workPage(w, index) {
       <a class="chip" href="/glossary.html">Словарь к стихам</a>
       <a class="chip" href="/topics/">Все подборки</a>
     </div>
+    ${(pubByWork.get(w.slug) || []).length ? `<div class="panel" style="margin-top:22px"><h3>Разборы этого текста</h3><ul>${(pubByWork.get(w.slug) || []).slice(0, 3).map((p) => `<li><a href="/publications/${p.slug}.html">${esc(p.title)}</a></li>`).join('')}</ul></div>` : ''}
     <nav class="work-nav" style="display:flex;justify-content:space-between;gap:16px;margin-top:30px" aria-label="Навигация по произведениям">
       <span>${prev ? `<a href="${workUrl(prev)}">← ${esc(prev.title)}</a>` : ''}</span>
       <span>${next ? `<a href="${workUrl(next)}">${esc(next.title)} →</a>` : ''}</span>
@@ -1697,7 +1708,7 @@ await writePage('index.html', layout({
 }));
 
 await writePage('biography/index.html', layout({
-  title: 'Биография', description: `Обзорная биография ${A.genitive} и статьи о периодах жизни.`,
+  title: 'Биография', description: `Обзорная биография ${A.genitive}: детство, учёба, Петроград, Кавказ, последние месяцы — и статьи о периодах жизни с датами и ссылками на источники.`,
   content: biographyIndex, active: 'biography',
   breadcrumb: [['/', 'Главная'], [null, 'Биография']],
 }));
@@ -1736,6 +1747,17 @@ function pubPage(p) {
       <div class="source-box"><b>Источники.</b> ${esc(p.sources || 'Даты, имена и обстоятельства сверены с академическими изданиями; перечень — в разделе «Источники».')} <a href="/sources.html">Смотреть «Источники»</a>.</div>
     </article>
     <aside>
+      ${(() => {
+        const workSlug = String(p.work || '').trim();
+        const linkedWork = workSlug ? works.find((w) => w.slug === workSlug) : null;
+        const topicId = String(p.topic || '').trim();
+        const linkedTopic = topicId ? topics.find((t) => t.id === topicId) : null;
+        return `<div class="panel"><h3>Текст и контекст</h3><ul>
+        ${linkedWork ? `<li><a href="${workUrl(linkedWork)}">Полный текст: «${esc(linkedWork.title)}»</a></li>` : ''}
+        <li><a href="/biography/">Биография ${esc(A.genitive)}</a></li>
+        ${linkedTopic ? `<li><a href="/topics/${linkedTopic.id}.html">${esc(linkedTopic.title)}</a></li>` : ''}
+      </ul></div>`;
+      })()}
       ${others.length ? `<div class="panel"><h3>Читайте дальше</h3><ul>${others.map((x) => `<li><a href="/publications/${x.slug}.html">${esc(x.title)}</a></li>`).join('')}</ul></div>` : ''}
       <div class="panel"><h3>Разделы</h3><ul>
         <li><a href="/biography/">Биография</a></li>
@@ -2092,7 +2114,13 @@ ${uniqueUrls.map((u) => {
     .map((i) => `<image:image><image:loc>${encodeURI(i.loc)}</image:loc><image:title>${esc(i.title)}</image:title></image:image>`)
     .join('');
   const lastmod = updatedForPage(u);
-  return `  <url><loc>${encodeURI(SITE + u)}</loc><lastmod>${lastmod}</lastmod><priority>${u === '/' ? '1.0' : u.endsWith('/') ? '0.8' : '0.6'}</priority>${imageXml}</url>`;
+  // Приоритеты: публикации-разборы 0.9, хабы 0.8, прочие описательные 0.6,
+  // тексты произведений 0.5 — их много, и они не главный вход из поиска.
+  const priority = u === '/' ? '1.0'
+    : /^\/publications\/[^/]+\.html$/.test(u) ? '0.9'
+      : /^\/works\/[^/]+\.html$/.test(u) ? '0.5'
+        : u.endsWith('/') ? '0.8' : '0.6';
+  return `  <url><loc>${encodeURI(SITE + u)}</loc><lastmod>${lastmod}</lastmod><priority>${priority}</priority>${imageXml}</url>`;
 }).join('\n')}
 </urlset>`;
 await writeFile(join(DIST, 'sitemap.xml'), sitemap, 'utf8');

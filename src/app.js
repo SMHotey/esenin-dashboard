@@ -19,6 +19,39 @@
   const saved = localStorage.getItem(THEME_KEY);
   applyTheme(saved === 'light' ? 'light' : 'dark');
 
+  // ---------- цели Метрики ----------
+  // Номер счётчика приходит из разметки (data-ym в <html>): без него события
+  // молча не отправляются, и страница работает как обычно. Имена событий
+  // фиксированы — по ним владелец создаёт цели в кабинете Метрики.
+  const ymId = document.documentElement.dataset.ym || '';
+  function reachGoal(name) {
+    if (!ymId || typeof window.ym !== 'function') return;
+    try { window.ym(ymId, 'reachGoal', name); } catch { /* счётчик ещё не готов */ }
+  }
+
+  // Клики по магазинным ссылкам: аудиокниги считаем отдельно от бумажных и
+  // электронных — это разные сценарии покупки.
+  document.addEventListener('click', (e) => {
+    const link = e.target.closest('.book-link');
+    if (!link) return;
+    const card = link.closest('.book-card');
+    reachGoal(card?.dataset.audio === '1' ? 'audiobook_click' : 'book_click');
+  });
+
+  // Дочитывание: 90% высоты страницы, один раз за визит.
+  let scrollSent = false;
+  function trackScroll() {
+    if (scrollSent) return;
+    const doc = document.documentElement;
+    const depth = (window.scrollY + window.innerHeight) / Math.max(doc.scrollHeight, 1);
+    if (depth >= 0.9) {
+      scrollSent = true;
+      reachGoal('scroll_90');
+    }
+  }
+  window.addEventListener('scroll', trackScroll, { passive: true });
+  window.addEventListener('load', trackScroll, { once: true });
+
   document.addEventListener('click', (e) => {
     const t = e.target.closest('[data-theme-toggle]');
     if (t) {
@@ -274,6 +307,7 @@
       } else if (act === 'plain') {
         poemPage.classList.toggle('plain');
       } else if (act === 'print') {
+        reachGoal('print');
         window.print();
       } else if (act === 'book') {
         // Ленивая загрузка: книжный модуль и его стили запрашиваются только
@@ -292,6 +326,12 @@
       poemPage.style.setProperty('--poem-size', sizes[sizeIndex] + 'px');
       localStorage.setItem('poem-size', String(sizeIndex));
     });
+
+    // ?print=1 — открыть диалог печати сразу: адрес для поисковых сценариев
+    // «распечатать текст» (кнопка «Печать» делает то же).
+    if (new URLSearchParams(location.search).get('print') === '1') {
+      setTimeout(() => { reachGoal('print'); window.print(); }, 250);
+    }
   }
 
   // ---------- книги: фильтры по типу издания и издательству + «показать ещё» ----------

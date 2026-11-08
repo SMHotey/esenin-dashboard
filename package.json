@@ -20,12 +20,18 @@
     "inventory": "node scripts/inventory.mjs",
     "analyze": "node scripts/analyze/corpus.mjs",
     "dossiers": "node scripts/dossier-merge.mjs",
-    "verify": "npm run build && npm run check && node scripts/text-audit.mjs && node scripts/verify.mjs",
-    "verify:strict": "npm run build && npm run check && node scripts/text-audit.mjs --strict && node scripts/verify.mjs --strict",
+    "verify": "npm run build && npm run check && node scripts/text-audit.mjs && node scripts/verify.mjs && node scripts/content-coverage.mjs --gate && node scripts/links-orphans.mjs && node scripts/metrika-goals.mjs",
+    "verify:strict": "npm run build && npm run check && node scripts/text-audit.mjs --strict && node scripts/verify.mjs --strict&& node scripts/content-coverage.mjs --gate && node scripts/links-orphans.mjs && node scripts/metrika-goals.mjs",
     "serve": "node scripts/serve.mjs",
     "preview": "npm run build && npm run serve",
     "dev": "npm run build && npm run serve",
-    "queue:status": "node scripts/queue-status.mjs"
+    "queue:status": "node scripts/queue-status.mjs",
+    "seo:audit": "node scripts/seo-audit.mjs",
+    "seo:report": "node scripts/seo-report.mjs",
+    "content:coverage": "node scripts/content-coverage.mjs",
+    "links:orphans": "node scripts/links-orphans.mjs",
+    "metrika:goals": "node scripts/metrika-goals.mjs",
+    "indexnow:dry": "node scripts/indexnow.mjs --dry-run"
   },
   "engines": {
     "node": ">=20"
