@@ -6,7 +6,7 @@
     "people": "2026-10-23",
     "timeline": "2026-10-23",
     "biography": "2026-10-23",
-    "publications": "2026-11-08",
+    "publications": "2026-11-09",
     "places": "2026-10-24",
     "legacy": "2026-10-24",
     "books": "2026-11-06",
@@ -27,12 +27,17 @@
     "content/publications/pyat-avtobiografiy-1916-1925.md": "2026-10-28",
     "content/publications/schet-naslediya-pochemu-raskhozhdeniya.md": "2026-11-01",
     "content/publications/slovo-v-korpuse-1910-1925.md": "2026-10-28",
-    "content/publications/cherny-chelovek-1925.md": "2026-11-03",
+    "content/publications/cherny-chelovek-1925.md": "2026-11-09",
     "content/publications/mariengof-roman-bez-vranya.md": "2026-11-03",
-    "content/publications/otgovorila-roshcha-1924.md": "2026-11-06",
-    "content/publications/porosha-1914.md": "2026-11-03",
+    "content/publications/otgovorila-roshcha-1924.md": "2026-11-09",
+    "content/publications/porosha-1914.md": "2026-11-09",
     "content/publications/batum-1924-pristan.md": "2026-11-04",
-    "content/publications/shagane-pyat-strof-pantum.md": "2026-11-08"
+    "content/publications/shagane-pyat-strof-pantum.md": "2026-11-08",
+    "content/publications/ne-zhaleyu-smysl.md": "2026-11-09",
+    "content/publications/pismo-k-zhenshchine-razbor.md": "2026-11-09",
+    "content/publications/pismo-materi-kak-ustroeno.md": "2026-11-09",
+    "content/publications/rus-sovetskaya-vozvrashchenie.md": "2026-11-09",
+    "content/publications/sobake-kachalova-adresat.md": "2026-11-09"
   },
   "note": "Даты последнего изменения по разделам. Обновляется скриптом scripts/last-updated.mjs из истории git; в CI без истории используется этот файл."
 }
