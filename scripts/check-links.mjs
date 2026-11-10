@@ -79,7 +79,7 @@ async function checkUrl(u) {
     const ctl = new AbortController();
     const t = setTimeout(() => ctl.abort(), 12000);
     const res = await fetch(u, { method: 'GET', redirect: 'follow', signal: ctl.signal,
-      headers: { 'User-Agent': 'Mozilla/5.0 (compatible; AuthorSiteLinkCheck/1.0)' } });
+      headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36', 'Accept-Language': 'ru-RU,ru;q=0.9' } });
     clearTimeout(t);
     if (res.status >= 500) return { u, kind: 'err', why: `HTTP ${res.status}` };
     if (res.status === 404 || res.status === 410) return { u, kind: 'err', why: `HTTP ${res.status}` };
