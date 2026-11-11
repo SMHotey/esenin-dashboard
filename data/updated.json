@@ -1,12 +1,12 @@
 {
-  "generatedAt": "2026-11-10",
+  "generatedAt": "2026-11-11",
   "sections": {
-    "structure": "2026-11-09",
+    "structure": "2026-11-11",
     "works": "2026-11-03",
     "people": "2026-10-23",
     "timeline": "2026-10-23",
     "biography": "2026-10-23",
-    "publications": "2026-11-09",
+    "publications": "2026-11-11",
     "places": "2026-10-24",
     "legacy": "2026-10-24",
     "books": "2026-11-06",
@@ -48,7 +48,9 @@
     "content/publications/ya-pokinul-rodimy-dom-razbor.md": "2026-11-09",
     "content/publications/pesn-o-velikom-pokhode-1924.md": "2026-11-09",
     "content/publications/pugachev-1921-razbor.md": "2026-11-09",
-    "content/publications/rus-ukhodyashchaya-1924.md": "2026-11-09"
+    "content/publications/rus-ukhodyashchaya-1924.md": "2026-11-09",
+    "content/publications/inoniya-1918-razbor.md": "2026-11-11",
+    "content/publications/poema-o-36-1924-razbor.md": "2026-11-11"
   },
   "note": "Даты последнего изменения по разделам. Обновляется скриптом scripts/last-updated.mjs из истории git; в CI без истории используется этот файл."
 }
