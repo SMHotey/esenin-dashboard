@@ -303,7 +303,7 @@ export function buildSectionPages(ctx) {
 </div>
 <div class="wrap" style="padding-bottom:40px">
   <h2 style="font-size:26px;margin-bottom:14px">Музеи</h2>
-  ${museums.map((m) => `<div class="panel place-panel">
+  ${museums.map((m) => `<div class="panel place-panel${m.photo ? '' : ' no-photo'}">
     ${m.photo ? `<picture class="panel-photo">${m.photoWebp ? `<source srcset="${esc(m.photoWebp)}" type="image/webp">` : ''}<img src="${esc(m.photo)}" alt="${esc(m.photoAlt || m.name)}" loading="lazy" decoding="async"></picture>` : ''}
     <div>
       <div class="meta-line"><span class="badge">${esc(m.place)}</span>${m.founded ? `<span>${esc(m.founded)}</span>` : ''}</div>
@@ -316,7 +316,7 @@ export function buildSectionPages(ctx) {
     </div>
   </div>`).join('')}
   <h2 style="font-size:26px;margin:34px 0 14px">Памятники и могила</h2>
-  ${monuments.map((m) => `<div class="panel place-panel">
+  ${monuments.map((m) => `<div class="panel place-panel${m.photo ? '' : ' no-photo'}">
     ${m.photo ? `<picture class="panel-photo">${m.photoWebp ? `<source srcset="${esc(m.photoWebp)}" type="image/webp">` : ''}<img src="${esc(m.photo)}" alt="${esc(m.photoAlt || m.name)}" loading="lazy" decoding="async"></picture>` : ''}
     <div>
       <div class="meta-line"><span class="badge">${esc(m.place)}</span>${m.year ? `<span>${esc(m.year)}</span>` : ''}</div>

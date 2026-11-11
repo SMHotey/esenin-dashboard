@@ -1071,6 +1071,8 @@ select, .select {
 
 /* музеи и памятники: фото слева, текст справа */
 .place-panel { display: grid; grid-template-columns: 200px 1fr; gap: 20px; margin-bottom: 14px; }
+.place-panel.no-photo { grid-template-columns: 1fr; }
+.place-panel.no-photo > div:only-child { max-width: 84ch; }
 .panel-photo { margin: 0; }
 .panel-photo img {
   width: 100%; height: 148px; object-fit: cover; border-radius: 10px;

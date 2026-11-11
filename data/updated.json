@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-09",
+  "generatedAt": "2026-11-10",
   "sections": {
     "structure": "2026-11-09",
     "works": "2026-11-03",
@@ -37,7 +37,18 @@
     "content/publications/pismo-k-zhenshchine-razbor.md": "2026-11-09",
     "content/publications/pismo-materi-kak-ustroeno.md": "2026-11-09",
     "content/publications/rus-sovetskaya-vozvrashchenie.md": "2026-11-09",
-    "content/publications/sobake-kachalova-adresat.md": "2026-11-09"
+    "content/publications/sobake-kachalova-adresat.md": "2026-11-09",
+    "content/publications/cheremukha-1915-razbor.md": "2026-11-09",
+    "content/publications/goy-ty-rus-rodnaya-razbor.md": "2026-11-09",
+    "content/publications/krasny-vecher-doroga-razbor.md": "2026-11-09",
+    "content/publications/kray-lyubimy-pokinut-razbor.md": "2026-11-09",
+    "content/publications/my-teper-ukhodim-razbor.md": "2026-11-09",
+    "content/publications/ne-brodit-razbor.md": "2026-11-09",
+    "content/publications/sorokoust-1920-razbor.md": "2026-11-09",
+    "content/publications/ya-pokinul-rodimy-dom-razbor.md": "2026-11-09",
+    "content/publications/pesn-o-velikom-pokhode-1924.md": "2026-11-09",
+    "content/publications/pugachev-1921-razbor.md": "2026-11-09",
+    "content/publications/rus-ukhodyashchaya-1924.md": "2026-11-09"
   },
   "note": "Даты последнего изменения по разделам. Обновляется скриптом scripts/last-updated.mjs из истории git; в CI без истории используется этот файл."
 }
