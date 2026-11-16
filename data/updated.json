@@ -1,12 +1,12 @@
 {
-  "generatedAt": "2026-11-15",
+  "generatedAt": "2026-11-16",
   "sections": {
     "structure": "2026-11-11",
     "works": "2026-11-03",
     "people": "2026-10-23",
     "timeline": "2026-10-23",
     "biography": "2026-10-23",
-    "publications": "2026-11-13",
+    "publications": "2026-11-15",
     "places": "2026-10-24",
     "legacy": "2026-10-24",
     "books": "2026-11-06",
@@ -52,7 +52,8 @@
     "content/publications/inoniya-1918-razbor.md": "2026-11-11",
     "content/publications/poema-o-36-1924-razbor.md": "2026-11-11",
     "content/publications/pesn-o-sobake-razbor.md": "2026-11-12",
-    "content/publications/poyot-zima-aukaet-razbor.md": "2026-11-13"
+    "content/publications/poyot-zima-aukaet-razbor.md": "2026-11-13",
+    "content/publications/rus-1914-razbor.md": "2026-11-15"
   },
   "note": "Даты последнего изменения по разделам. Обновляется скриптом scripts/last-updated.mjs из истории git; в CI без истории используется этот файл."
 }
