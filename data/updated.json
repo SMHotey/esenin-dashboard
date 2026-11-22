@@ -1,12 +1,12 @@
 {
-  "generatedAt": "2026-11-21",
+  "generatedAt": "2026-11-22",
   "sections": {
     "structure": "2026-11-11",
     "works": "2026-11-18",
     "people": "2026-10-23",
     "timeline": "2026-10-23",
     "biography": "2026-10-23",
-    "publications": "2026-11-19",
+    "publications": "2026-11-21",
     "places": "2026-10-24",
     "legacy": "2026-10-24",
     "books": "2026-11-06",
@@ -56,7 +56,8 @@
     "content/publications/rus-1914-razbor.md": "2026-11-15",
     "content/publications/spit-kovyl-ravnina-razbor.md": "2026-11-16",
     "content/publications/pesn-o-evpatii-kolovrate-razbor.md": "2026-11-18",
-    "content/publications/ballada-o-dvadcati-shesti-1924-razbor.md": "2026-11-19"
+    "content/publications/ballada-o-dvadcati-shesti-1924-razbor.md": "2026-11-19",
+    "content/publications/rus-bespriyutnaya-1924-razbor.md": "2026-11-21"
   },
   "note": "Даты последнего изменения по разделам. Обновляется скриптом scripts/last-updated.mjs из истории git; в CI без истории используется этот файл."
 }
