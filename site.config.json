@@ -40,21 +40,58 @@
     "children": "Дети"
   },
   "home": {
-    "featuredWorks": ["Берёза", "Черёмуха", "Письмо к женщине", "Анна Снегина", "Чёрный человек", "Спит ковыль. Равнина дорогая"],
-    "featuredPeople": ["alexander-nikitich", "tatyana-fyodorovna", "zinaida-raikh", "isadora-duncan", "sofia-tolstaya", "blok", "mariengof", "benislavskaya"],
-    "keyEvents": ["1895-10-03", "1909", "1914", "1915", "1916", "1917-07-30", "1922-05-02", "1925-12-28"]
+    "featuredWorks": [
+      "Берёза",
+      "Черёмуха",
+      "Письмо к женщине",
+      "Анна Снегина",
+      "Чёрный человек",
+      "Спит ковыль. Равнина дорогая"
+    ],
+    "featuredPeople": [
+      "alexander-nikitich",
+      "tatyana-fyodorovna",
+      "zinaida-raikh",
+      "isadora-duncan",
+      "sofia-tolstaya",
+      "blok",
+      "mariengof",
+      "galina-benislavskaya"
+    ],
+    "keyEvents": [
+      "1895-10-03",
+      "1909",
+      "1914",
+      "1915",
+      "1916",
+      "1917-07-30",
+      "1922-05-02",
+      "1925-12-28"
+    ],
+    "featuredPlaces": [
+      "konstantinovo",
+      "moskva",
+      "peterburg"
+    ]
   },
   "reader": {
     "book": {
       "available": true,
-      "genres": ["Проза", "Статья", "Автобиография"],
+      "genres": [
+        "Проза",
+        "Статья",
+        "Автобиография"
+      ],
       "minChars": 1500
     }
   },
   "affiliate": {
     "enabled": true,
     "showPrice": false,
-    "advertiser": { "name": "ООО «ГРАМОТА»", "ogrn": "1037706012376" },
+    "advertiser": {
+      "name": "ООО «ГРАМОТА»",
+      "ogrn": "1037706012376"
+    },
     "disclosure": "Материал содержит рекламу. Ссылки на книги — партнёрские: если вы купите книгу по такой ссылке, проект может получить вознаграждение от магазина. Цена для покупателя не меняется; наличие, цена и формат уточняются на стороне магазина.",
     "stores": {
       "litres": {
@@ -62,7 +99,10 @@
         "tagParam": "lfrom",
         "tag": "",
         "search": "https://www.litres.ru/search/?q={q}",
-        "advertiser": { "name": "ООО «ЛИТРЕС»", "inn": "7719571260" },
+        "advertiser": {
+          "name": "ООО «ЛИТРЕС»",
+          "inn": "7719571260"
+        },
         "note": "Партнёрская программа AdvCake (оффер litresru, erid 2VfnxyNkZrY). Готовые ссылки под каждый товар собирает Cakelink API: https://cakelink.ru/link?dl=<url>&pass=<ключ> — см. scripts/import-audiobooks.py."
       },
       "ozon": {

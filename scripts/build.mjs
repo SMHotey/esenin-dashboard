@@ -806,11 +806,18 @@ const featured = (featuredTitles.length ? featuredTitles.map((t) => works.find((
   .filter(Boolean).slice(0, 6);
 
 const keyEventDates = config.home?.keyEvents || [];
-const keyEvents = (keyEventDates.length ? timeline.filter((e) => keyEventDates.includes(e.date)) : timeline).slice(0, 8);
+const keyEventMatch = (e) => keyEventDates.some((d) => e.date === d || String(e.date).startsWith(String(d) + '-'));
+const keyEvents = (keyEventDates.length ? timeline.filter(keyEventMatch) : timeline).slice(0, 8);
 
 const homePeopleIds = config.home?.featuredPeople || [];
 const homePeople = (homePeopleIds.length ? homePeopleIds.map((id) => people.find((p) => p.id === id)) : people.slice(0, 8))
   .filter(Boolean).slice(0, 8);
+
+// Места на главной — из конфига: жёсткие id прежнего автора после клонирования
+// молча отфильтровывались, и блок показывал меньше карточек, чем задумано.
+const homePlaceIds = config.home?.featuredPlaces || [];
+const homePlaces = (homePlaceIds.length ? homePlaceIds.map((id) => places.find((p) => p.id === id)) : places.slice(0, 3))
+  .filter(Boolean).slice(0, 3);
 
 const homeBooks = (books.some((b) => b.highlight) ? books.filter((b) => b.highlight) : books).slice(0, 2);
 
@@ -911,11 +918,11 @@ const home = `
 <section class="section">
   <div class="wrap">
     <div class="section-head">
-      <div><h2>Есенинские места</h2><p>Восемь точек на карте: родина, две столицы, Кавказ и заграничные поездки.</p></div>
+      <div><h2>Есенинские места</h2><p>${places.length} ${plural(places.length, ['точка', 'точки', 'точек'])} на карте: село Константиново, две столицы, Кавказ и заграничные поездки.</p></div>
       <a class="section-link" href="/places/">Все места →</a>
     </div>
     <div class="works-grid">
-      ${['konstantinovo', 'moskva', 'peterburg'].map((id) => places.find((p) => p.id === id)).filter(Boolean).map((p) => `<a class="work-card" href="/places/${p.id}.html">
+      ${homePlaces.map((p) => `<a class="work-card" href="/places/${p.id}.html">
         <span class="genre">${esc(p.kicker)}</span><span class="title">${esc(p.title)}</span>
         <span class="year">${esc(p.years || '')}</span><span class="preview">${esc(p.subtitle)}</span>
       </a>`).join('')}

@@ -39,6 +39,33 @@ for (const person of peopleData) {
   if (!/pd|public domain|cc0/i.test(String(person.photoLicense || ''))) errors.push(`фото персоны ${person.id}: лицензия «${person.photoLicense || 'нет'}» — нужна свободная`);
   if (!person.photoSource) errors.push(`фото персоны ${person.id}: нет ссылки на страницу файла`);
 }
+// Плашки главной ссылаются на данные: после клонирования id прежнего автора
+// молча отфильтровывались, и блок показывал меньше карточек, чем задумано.
+if (config.home && (config.home.featuredWorks || config.home.featuredPeople || config.home.featuredPlaces || config.home.keyEvents)) {
+  const homeCfg = config.home;
+  const worksAll = await readJson('data/works.json', []);
+  const placesAll = existsSync('data/places.json') ? await readJson('data/places.json', []) : [];
+  const timelineAll = existsSync('data/timeline.json') ? await readJson('data/timeline.json', []) : [];
+  const normId = (s) => String(s || '').toLowerCase().replace(/ё/g, 'е').replace(/[^a-zа-я0-9]+/gi, ' ').trim();
+  const peopleIds = new Set(peopleData.map((p) => p.id));
+  const placeIds = new Set(placesAll.map((p) => p.id));
+  const dates = new Set(timelineAll.map((e) => e.date));
+  for (const t of homeCfg.featuredWorks || []) {
+    if (!worksAll.some((w) => normId(w.title).startsWith(normId(t)))) errors.push(`home.featuredWorks: нет произведения «${t}»`);
+  }
+  for (const id of homeCfg.featuredPeople || []) {
+    if (!peopleIds.has(id)) errors.push(`home.featuredPeople: нет персоны «${id}»`);
+  }
+  for (const id of homeCfg.featuredPlaces || []) {
+    if (!placeIds.has(id)) errors.push(`home.featuredPlaces: нет места «${id}»`);
+  }
+  for (const d of homeCfg.keyEvents || []) {
+    const isYear = /^\d{4}$/.test(String(d));
+    const ok = dates.has(d) || (isYear && timelineAll.some((e) => String(e.date).startsWith(d + '-')));
+    if (!ok) errors.push(`home.keyEvents: нет события на ${d}`);
+  }
+}
+
 if (photos) info.push(`фото персон: ${photos} из ${peopleData.length}`);
 
 // Досье персон: каждое утверждение должно нести ссылку на источник.
