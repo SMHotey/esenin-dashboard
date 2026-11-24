@@ -949,44 +949,6 @@
     "coverHeight": 626
   },
   {
-    "id": "klen-ty-moy-opavshiy-7869573",
-    "productId": "7869573",
-    "title": "Клен ты мой опавший...",
-    "format": "Бумажная книга",
-    "publisher": "АСТ",
-    "isbn": "978-5-17-135744-3",
-    "pages": 416,
-    "coverType": "Твердая обложка",
-    "productUrl": "https://www.chitai-gorod.ru/product/klen-ty-moy-opavshiy-7869573",
-    "stores": [
-      "chitai-gorod"
-    ],
-    "links": [
-      {
-        "store": "chitai-gorod",
-        "url": "https://www.chitai-gorod.ru/r/zXzrb?erid=2W5zFGf5jyB"
-      }
-    ],
-    "category": "Стихотворения",
-    "tags": [
-      "Твердая обложка",
-      "Стихотворения",
-      "АСТ"
-    ],
-    "searchQuery": "Есенин Клен ты мой опавший...",
-    "cover": "/img/books/klen-ty-moy-opavshiy-7869573.jpg",
-    "coverWebp": "/img/books/klen-ty-moy-opavshiy-7869573.webp",
-    "coverAlt": "Клен ты мой опавший... — обложка издания",
-    "coverCredit": "Фото: Читай-город",
-    "price": 270,
-    "priceCurrency": "RUB",
-    "availability": "InStock",
-    "priceCheckedAt": "2026-10-21",
-    "annotation": "Только стихотворения: лирика разных лет, без прозы и поэм. 416 с., твёрдый переплёт, АСТ.",
-    "coverWidth": 400,
-    "coverHeight": 615
-  },
-  {
     "id": "kluci-marii-proza-stat-i-ocerki-3107144",
     "productId": "3107144",
     "title": "Ключи Марии. Проза, статьи, очерки",
@@ -2314,44 +2276,6 @@
     "annotation": "И лирика, и крупные вещи в одном томе — от «Черёмухи» до «Чёрного человека». 350 с., твёрдый переплёт, Звонница.",
     "coverWidth": 400,
     "coverHeight": 522
-  },
-  {
-    "id": "stihotvoreniya-poemy-7981114",
-    "productId": "7981114",
-    "title": "Стихотворения. Поэмы",
-    "format": "Бумажная книга",
-    "publisher": "Эксмо",
-    "isbn": "978-5-04-185788-2",
-    "pages": 368,
-    "coverType": "Твердая обложка",
-    "productUrl": "https://www.chitai-gorod.ru/product/stihotvoreniya-poemy-7981114",
-    "stores": [
-      "chitai-gorod"
-    ],
-    "links": [
-      {
-        "store": "chitai-gorod",
-        "url": "https://www.chitai-gorod.ru/r/AVjkV?erid=2W5zFFy4Qqo"
-      }
-    ],
-    "category": "Стихотворения и поэмы",
-    "tags": [
-      "Твердая обложка",
-      "Стихотворения и поэмы",
-      "Эксмо"
-    ],
-    "searchQuery": "Есенин Стихотворения. Поэмы",
-    "cover": "/img/books/stihotvoreniya-poemy-7981114.jpg",
-    "coverWebp": "/img/books/stihotvoreniya-poemy-7981114.webp",
-    "coverAlt": "Стихотворения. Поэмы — обложка издания",
-    "coverCredit": "Фото: Читай-город",
-    "price": 498,
-    "priceCurrency": "RUB",
-    "availability": "InStock",
-    "priceCheckedAt": "2026-10-21",
-    "annotation": "И лирика, и крупные вещи в одном томе — от «Черёмухи» до «Чёрного человека». 368 с., твёрдый переплёт, Эксмо.",
-    "coverWidth": 400,
-    "coverHeight": 629
   },
   {
     "id": "stihotvoreniya-poemy-2663119",
