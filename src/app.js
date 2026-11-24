@@ -15,9 +15,9 @@
     if (meta) meta.setAttribute('content', theme === 'dark' ? '#141311' : '#f7f2e8');
   }
 
-  // Тема по умолчанию — тёмная; светлая включается только выбором читателя.
+  // Тема по умолчанию — светлая; тёмная включается только выбором читателя.
   const saved = localStorage.getItem(THEME_KEY);
-  applyTheme(saved === 'light' ? 'light' : 'dark');
+  applyTheme(saved === 'dark' ? 'dark' : 'light');
 
   // ---------- цели Метрики ----------
   // Номер счётчика приходит из разметки (data-ym в <html>): без него события

@@ -789,6 +789,13 @@ function onResize() {
   state.timer = setTimeout(() => {
     if (!state) return;
     try {
+      // Смена раскладки на границе 700 px: narrow — одна страница,
+      // wide — разворот.
+      const want = viewFor(window.innerWidth);
+      if (want !== state.view) {
+        remount(want);
+        return;
+      }
       // Пересборка на ту же долю: без неё resize затёр бы место чтения.
       const frac = state.pageCount > 0 ? state.page / state.pageCount : savedFrac(state.slug);
       mount(frac);
@@ -796,6 +803,20 @@ function onResize() {
       fail('пересборка после ресайза не удалась', err);
     }
   }, 200);
+}
+
+// buildSection вешает обработчики на свои кнопки, поэтому секцию
+// можно заменить целиком.
+function remount(newView) {
+  const s = state;
+  const frac = s.pageCount > 0 ? s.page / s.pageCount : savedFrac(s.slug);
+  const parts = buildSection(newView, s.sizeIndex);
+  s.section.replaceWith(parts.section);
+  state = { ...s, view: newView, page: 0, pageCount: 0, pageW: 0, pageH: 0, flip: null, pages: [], ...parts };
+  state.btnSound.setAttribute('aria-pressed', String(soundOn));
+  state.stage.addEventListener('pointerdown', onStagePointerDown, true);
+  mount(frac);
+  state.section.focus({ preventScroll: true });
 }
 
 function buildSection(view, sizeIndex) {
@@ -981,15 +1002,11 @@ async function openInternal() {
     window.addEventListener('pointermove', onStagePointerMove, { capture: true, passive: true });
     window.addEventListener('pointerup', onStagePointerUp, true);
 
-    // Верх секции (тулбар + сцена) — на 90 px ниже верха окна. Привязываемся
-    // к секции, а не к сцене: шапка сайта липкая и занимает 73 px, при привязке
-    // к верху сцены тулбар уходил целиком под шапку — elementFromPoint в центре
-    // кнопки отдавал ссылку шапки, и «Обычный текст» вёл на главную.
-    const top = state.section.getBoundingClientRect().top + window.scrollY - 90;
-    window.scrollTo(0, Math.max(0, top));
+    // Книга — оверлей поверх шапки, прокручивать страницу не нужно;
+    // фокус с preventScroll оставляет фон на месте.
     // S5 (R1, T3): фокус — на секцию книги; после клика активным остался бы
-    // body, и клавиатура не дошла бы до книги. Прокрутка уже выставлена,
-    // поэтому preventScroll: focus не сбивает место чтения.
+    // body, и клавиатура не дошла бы до книги. preventScroll: focus не сбивает
+    // место чтения.
     state.section.focus({ preventScroll: true });
     return true;
   } catch (err) {
