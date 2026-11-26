@@ -1,12 +1,12 @@
 {
-  "generatedAt": "2026-11-25",
+  "generatedAt": "2026-11-26",
   "sections": {
     "structure": "2026-11-24",
     "works": "2026-11-18",
     "people": "2026-11-24",
     "timeline": "2026-10-23",
     "biography": "2026-10-23",
-    "publications": "2026-11-24",
+    "publications": "2026-11-25",
     "places": "2026-10-24",
     "legacy": "2026-10-24",
     "books": "2026-11-24",
@@ -59,7 +59,8 @@
     "content/publications/ballada-o-dvadcati-shesti-1924-razbor.md": "2026-11-19",
     "content/publications/rus-bespriyutnaya-1924-razbor.md": "2026-11-21",
     "content/publications/vozvrashenie-na-rodinu-1924-razbor.md": "2026-11-22",
-    "content/publications/lebedushka-1913-razbor.md": "2026-11-24"
+    "content/publications/lebedushka-1913-razbor.md": "2026-11-24",
+    "content/publications/pismo-k-sestre-1925-razbor.md": "2026-11-25"
   },
   "note": "Даты последнего изменения по разделам. Обновляется скриптом scripts/last-updated.mjs из истории git; в CI без истории используется этот файл."
 }
