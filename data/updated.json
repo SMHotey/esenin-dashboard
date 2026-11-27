@@ -1,12 +1,12 @@
 {
-  "generatedAt": "2026-11-26",
+  "generatedAt": "2026-11-27",
   "sections": {
     "structure": "2026-11-24",
     "works": "2026-11-18",
     "people": "2026-11-24",
     "timeline": "2026-10-23",
     "biography": "2026-10-23",
-    "publications": "2026-11-25",
+    "publications": "2026-11-26",
     "places": "2026-10-24",
     "legacy": "2026-10-24",
     "books": "2026-11-24",
@@ -60,7 +60,8 @@
     "content/publications/rus-bespriyutnaya-1924-razbor.md": "2026-11-21",
     "content/publications/vozvrashenie-na-rodinu-1924-razbor.md": "2026-11-22",
     "content/publications/lebedushka-1913-razbor.md": "2026-11-24",
-    "content/publications/pismo-k-sestre-1925-razbor.md": "2026-11-25"
+    "content/publications/pismo-k-sestre-1925-razbor.md": "2026-11-25",
+    "content/publications/ya-posledniy-poet-derevni-1920-razbor.md": "2026-11-26"
   },
   "note": "Даты последнего изменения по разделам. Обновляется скриптом scripts/last-updated.mjs из истории git; в CI без истории используется этот файл."
 }
